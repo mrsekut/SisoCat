@@ -1,4 +1,4 @@
-import { UserM, LineNodeM, NoteM, ProjectM, NotesM } from './types';
+import { UserM, NoteM, ProjectM, NotesM } from './types';
 
 /**
  * User
@@ -14,38 +14,38 @@ const user1: UserM = {
  * =====================
  */
 
-// 記事: [Json]の正規化
-export const title1: LineNodeM = {
-  type: 'line',
-  line: {
-    id: 'line10',
-    text: '[Json]の正規化',
-    indent: 0,
-    nodes: [
-      {
-        type: 'link',
-        value: 'Json',
-        references: ['note2'],
-      },
-      {
-        type: 'normal',
-        value: 'の正規化',
-      },
-    ],
-  },
-};
-
 export const note1: NoteM = {
   id: 'note1',
   author: user1,
-  title: title1,
+  title: '[Json]の正規化',
   created: 1608260148,
   updated: 1608260148,
   nodes: [
     {
       type: 'line',
       line: {
+        id: 'line10',
+        lineIndex: 1,
+        text: '[Json]の正規化',
+        indent: 0,
+        nodes: [
+          {
+            type: 'link',
+            value: 'Json',
+            references: ['note2'],
+          },
+          {
+            type: 'normal',
+            value: 'の正規化',
+          },
+        ],
+      },
+    },
+    {
+      type: 'line',
+      line: {
         id: 'line11',
+        lineIndex: 2,
         indent: 1,
         text: '\t[json]は[正規化]するのが良い',
         nodes: [
@@ -60,6 +60,7 @@ export const note1: NoteM = {
       type: 'line',
       line: {
         id: 'line12',
+        lineIndex: 3,
         indent: 1,
         text: '\t正規化はよいことばかり',
         nodes: [{ type: 'normal', value: '\t正規化はよいことばかり' }],
@@ -70,6 +71,7 @@ export const note1: NoteM = {
       line: {
         id: 'line13',
         indent: 1,
+        lineIndex: 4,
         text: '\t[CUE]も良い感じらしい',
         nodes: [
           { type: 'link', value: 'CUE', references: [] },
@@ -83,28 +85,29 @@ export const note1: NoteM = {
 };
 
 // 記事: Json
-const title2: LineNodeM = {
-  type: 'line',
-  line: {
-    id: 'line20',
-    text: 'Json',
-    indent: 1,
-    nodes: [{ type: 'normal', value: 'Json' }],
-  },
-};
-
 export const note2: NoteM = {
   id: 'note2',
   author: user1,
-  title: title2,
+  title: 'Json',
   created: 1608260148,
   updated: 1608260148,
   nodes: [
     {
       type: 'line',
       line: {
-        id: 'line21',
+        id: 'line20',
+        text: 'Json',
+        lineIndex: 1,
         indent: 1,
+        nodes: [{ type: 'normal', value: 'Json' }],
+      },
+    },
+    {
+      type: 'line',
+      line: {
+        id: 'line21',
+        lineIndex: 2,
+        indent: 2,
         text: '[/ JavaScript Object Notraion]',
         nodes: [{ type: 'italic', value: 'JavaScript Object Notraion' }],
       },

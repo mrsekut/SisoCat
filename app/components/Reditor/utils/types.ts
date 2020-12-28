@@ -8,146 +8,142 @@ export type UserId = `user${number}`;
 export type NoteId = `note${number}`;
 export type LineId = `line${number}`;
 
-/**
- *
- * Network Model
- * =====================
- */
+// -------------------------------------------------------------------------------------
+// Network Model
+// -------------------------------------------------------------------------------------
+
 export type NetworkM = {
-  projects: ProjectM[];
+  readonly projects: ProjectM[];
 };
 
-/**
- *
- * Project Model
- * =====================
- */
+// -------------------------------------------------------------------------------------
+// Project Model
+// -------------------------------------------------------------------------------------
+
 export type ProjectM = {
-  id: ProjectId;
-  name: string;
-  author: UserM;
-  notes: NoteId[];
+  readonly id: ProjectId;
+  readonly name: string;
+  readonly author: UserM;
+  readonly notes: NoteId[];
 };
 
-/**
- *
- * Notes Model
- * =====================
- */
+// -------------------------------------------------------------------------------------
+// Notes Model
+// -------------------------------------------------------------------------------------
+
 export type NotesM = Normalize<NoteId, NoteM>;
 export type NoteM = {
-  id: NoteId;
-  author: UserM;
-  title: NodeM;
-  created: number;
-  updated: number;
-  nodes: NodeM[];
-  references: NoteId[];
-  referenced: NoteId[]; // NOTE: 必要？
+  readonly id: NoteId;
+  readonly author: UserM;
+  readonly title: string;
+  readonly created: number;
+  readonly updated: number;
+  readonly nodes: NodeM[];
+  readonly references: NoteId[];
+  readonly referenced: NoteId[]; // NOTE: 必要？
 };
 
-/**
- *
- * Node Model
- * =====================
- */
+// -------------------------------------------------------------------------------------
+// Node Model
+// -------------------------------------------------------------------------------------
+
 export type NodeM = BlokNodeM | LineNodeM;
 
 // BlockNode
 type BlockType = BlockM['type'];
 
 export type BlokNodeM = {
-  type: 'block';
-  block: BlockM;
-  lines: LineNodeM[];
+  readonly type: 'block';
+  readonly block: BlockM;
+  readonly lines: LineNodeM[];
 };
 
 type BlockM =
   | {
-      type: 'code';
-      extension: ExtensionType;
+      readonly type: 'code';
+      readonly extension: ExtensionType;
     }
   | {
-      type: 'tex';
+      readonly type: 'tex';
     };
 type ExtensionType =
   | {
-      language: 'Haskell';
-      extension: '.hs';
+      readonly language: 'Haskell';
+      readonly extension: '.hs';
     }
   | {
-      language: 'TypeScript';
-      extension: '.ts';
+      readonly language: 'TypeScript';
+      readonly extension: '.ts';
     };
 
 // LineNode
 export type LineNodeM = {
-  type: 'line';
-  line: LineM;
+  readonly type: 'line';
+  readonly line: LineM;
 };
 
-/**
- *
- * Line Model
- * =====================
- */
+// -------------------------------------------------------------------------------------
+// Line Model
+// -------------------------------------------------------------------------------------
+
 export type LineM = {
-  id: LineId;
-  text: string;
-  indent: number;
-  nodes: NotationM[];
+  readonly id: LineId;
+  readonly lineIndex: number; // 持つ意味ある？
+  readonly text: string;
+  readonly indent: number;
+  readonly nodes: NotationM[];
 };
 
 export type NotationType = NotationM['type'];
 export type NotationM =
-  | { type: 'normal'; value: string } // hoge
   | {
-      type: 'link';
-      value: string;
-      references: NoteId[];
+      readonly type: 'normal';
+      readonly value: string;
+    } // hoge
+  | {
+      readonly type: 'link';
+      readonly value: string;
+      readonly references: NoteId[];
     } // [hoge]
   | {
-      type: 'strong';
-      value: string;
-      level: 1 | 2 | 3 | 4 | 5 | 6;
+      readonly type: 'strong';
+      readonly value: string;
+      readonly level: 1 | 2 | 3 | 4 | 5 | 6;
     } // [** hoge]
   | {
-      type: 'redirect';
-      value: string;
-      references: NoteId[];
+      readonly type: 'redirect';
+      readonly value: string;
+      readonly references: NoteId[];
     } // [→ hoge]
   | {
-      type: 'expand';
-      value: string;
-      note: NoteId;
+      readonly type: 'expand';
+      readonly value: string;
+      readonly note: NoteId;
     } // [> hoge]
   | {
-      type: 'italic';
-      value: string;
+      readonly type: 'italic';
+      readonly value: string;
     }
   | {
-      type: 'tex';
-      value: string;
+      readonly type: 'tex';
+      readonly value: string;
     }
   | {
-      type: 'code';
-      value: string;
+      readonly type: 'code';
+      readonly value: string;
     } // [` hoge]
   | {
-      type: 'url';
-      value: string;
-      url: string;
+      readonly type: 'url';
+      readonly value: string;
+      readonly url: string;
     }; // [http://example.com hoge]
 
-/**
- * Utils
- * =====================
- */
+// -------------------------------------------------------------------------------------
+// Utils
+// -------------------------------------------------------------------------------------
 
-type Normalize<K extends string, V> = {
-  byId: {
-    [id in K]: V;
-  };
+type Normalize<K extends keyof any, V> = {
+  byId: Record<K, V>;
   allIds: K[];
 };
 
@@ -155,12 +151,3 @@ const keyBy = <T, K extends string | number, R extends { [key in keyof T]: T }>(
   arr: T[],
   key: (e: T) => K,
 ) => arr.reduce((acc, cur) => ({ ...acc, [key(cur)]: cur }), {} as R);
-
-/**
- * Cursor Position ?
- * もっと一般的なPositon?
- */
-export type Position = {
-  top: number;
-  left: number;
-};

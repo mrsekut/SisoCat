@@ -1,33 +1,40 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Position } from '../../utils/types';
+import { CursorPos } from '../../hooks/useCursor';
+import { textStyle } from '../../utils/settings';
 
-export const Cursor: React.FC = () => {
-  const [position, setPosition] = useState({ top: 10, left: 8 });
-  return (
-    <span>
-      <Carret position={position} />
-    </span>
-  );
+type Props = {
+  cursorPos: CursorPos;
 };
 
-export const Carret: React.FC<{
-  position: Position;
-}> = ({ position }) => {
-  const cursorSize = 20;
-
+export const Cursor: React.FC<Props> = ({ cursorPos }) => {
   return (
-    <Wrap top={position.top} left={position.left}>
-      <svg width='1px' height={cursorSize}>
-        <rect x={0} y={0} width={1} height='100%' />
-      </svg>
+    <Wrap cursorPos={cursorPos}>
+      <Carret />
+      {/* <Textarea cursorPos={cursorPos} /> */}
     </Wrap>
   );
 };
 
-const Wrap = styled.div<{ top: number; left: number }>`
+const Wrap = styled.div<{ cursorPos: CursorPos }>(
+  p => `
   position: absolute;
-  top: ${p => p.top + 16}px;
-  left: ${p => p.left}px;
-  color: red;
+  top: ${p.cursorPos.top}px;
+  left: ${p.cursorPos.left}px;
+  height: ${textStyle.lineHeight}px;
+`,
+);
+
+// const Textarea = styled.textarea<{ position: Position }>(p => ` `);
+
+const Carret = styled.div`
+  height: ${textStyle.lineHeight}px;
+  width: 1px;
+  font-size: ${textStyle.fontSize}px;
+
+  background-color: red;
+  line-height: ${textStyle.lineHeight}px;
+  letter-spacing: 0px;
+  display: block;
+  visibility: inherit;
 `;

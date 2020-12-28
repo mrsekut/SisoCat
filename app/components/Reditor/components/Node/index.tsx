@@ -1,31 +1,36 @@
 import React from 'react';
 import styled from 'styled-components';
+import { CursorPos } from '../../hooks/useCursor';
 import { BlokNodeM, LineNodeM, NodeM, NotationM } from '../../utils/types';
 
 type Props = {
   node: NodeM;
+  cursorPos: CursorPos;
 };
 
-export const Node: React.FC<Props> = ({ node }) => {
-  console.log({ node });
-
+export const Node: React.FC<Props> = ({ node, cursorPos }) => {
   if (node.type === 'block') {
     return <Block block={node} />;
   }
 
   return (
     <>
-      <Line line={node} />
+      <Line line={node} isFocus={node.line.lineIndex === cursorPos.lineIndex} />
       <br />
     </>
   );
 };
 
+// FIXME: move
 const Block: React.FC<{ block: BlokNodeM }> = ({ block }) => {
   return null;
 };
 
-const Line: React.FC<{ line: LineNodeM }> = ({ line }) => {
+// FIXME: move
+const Line: React.FC<{ line: LineNodeM; isFocus: boolean }> = ({
+  line,
+  isFocus,
+}) => {
   return (
     <>
       {line.line.nodes.map(node => (
@@ -35,6 +40,7 @@ const Line: React.FC<{ line: LineNodeM }> = ({ line }) => {
   );
 };
 
+// FIXME: move
 const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
   switch (notation.type) {
     case 'normal':
