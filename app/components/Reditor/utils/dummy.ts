@@ -26,7 +26,7 @@ export const note1: NoteM = {
       line: {
         id: 'line10',
         lineIndex: 1,
-        text: '[Json]の正規化',
+        // text: '[Json]の正規化',
         indent: 0,
         nodes: [
           {
@@ -47,7 +47,7 @@ export const note1: NoteM = {
         id: 'line11',
         lineIndex: 2,
         indent: 1,
-        text: '\t[json]は[正規化]するのが良い',
+        // text: '\t[json]は[正規化]するのが良い',
         nodes: [
           { type: 'link', value: 'json', references: [] },
           { type: 'normal', value: 'は' },
@@ -62,7 +62,7 @@ export const note1: NoteM = {
         id: 'line12',
         lineIndex: 3,
         indent: 1,
-        text: '\t正規化はよいことばかり',
+        // text: '\t正規化はよいことばかり',
         nodes: [{ type: 'normal', value: '\t正規化はよいことばかり' }],
       },
     },
@@ -72,7 +72,7 @@ export const note1: NoteM = {
         id: 'line13',
         indent: 1,
         lineIndex: 4,
-        text: '\t[CUE]も良い感じらしい',
+        // text: '\t[CUE]も良い感じらしい',
         nodes: [
           { type: 'link', value: 'CUE', references: [] },
           { type: 'normal', value: 'も良い感じらしい' },
@@ -96,7 +96,7 @@ export const note2: NoteM = {
       type: 'line',
       line: {
         id: 'line20',
-        text: 'Json',
+        // text: 'Json',
         lineIndex: 1,
         indent: 1,
         nodes: [{ type: 'normal', value: 'Json' }],
@@ -108,7 +108,7 @@ export const note2: NoteM = {
         id: 'line21',
         lineIndex: 2,
         indent: 2,
-        text: '[/ JavaScript Object Notraion]',
+        // text: '[/ JavaScript Object Notraion]',
         nodes: [{ type: 'italic', value: 'JavaScript Object Notraion' }],
       },
     },

@@ -89,54 +89,85 @@ export type LineNodeM = {
 export type LineM = {
   readonly id: LineId;
   readonly lineIndex: number; // 持つ意味ある？
-  readonly text: string;
+  // // readonly text: string;
   readonly indent: number;
-  readonly nodes: NotationM[];
+  readonly nodes: readonly NotationM[];
 };
+
+// -------------------------------------------------------------------------------------
+// Notation Model
+// -------------------------------------------------------------------------------------
 
 export type NotationType = NotationM['type'];
 export type NotationM =
-  | {
-      readonly type: 'normal';
-      readonly value: string;
-    } // hoge
-  | {
-      readonly type: 'link';
-      readonly value: string;
-      readonly references: NoteId[];
-    } // [hoge]
-  | {
-      readonly type: 'strong';
-      readonly value: string;
-      readonly level: 1 | 2 | 3 | 4 | 5 | 6;
-    } // [** hoge]
-  | {
-      readonly type: 'redirect';
-      readonly value: string;
-      readonly references: NoteId[];
-    } // [→ hoge]
-  | {
-      readonly type: 'expand';
-      readonly value: string;
-      readonly note: NoteId;
-    } // [> hoge]
-  | {
-      readonly type: 'italic';
-      readonly value: string;
-    }
-  | {
-      readonly type: 'tex';
-      readonly value: string;
-    }
-  | {
-      readonly type: 'code';
-      readonly value: string;
-    } // [` hoge]
-  | {
-      readonly type: 'url';
-      readonly value: string;
-      readonly url: string;
-    }; // [http://example.com hoge]
+  | NormalN
+  | LinkN
+  | StrongN
+  | RedirectN
+  | ExpandN
+  | ItalicN
+  | TexN
+  | CodeN
+  | UrlN;
+
+// hoge
+export type NormalN = {
+  readonly type: 'normal';
+  readonly value: string;
+};
+
+// [hoge]
+export type LinkN = {
+  readonly type: 'link';
+  readonly value: string;
+  readonly references: NoteId[];
+};
+
+// [** hoge]
+export type StrongN = {
+  readonly type: 'strong';
+  readonly value: string;
+  readonly level: 1 | 2 | 3;
+};
+
+// [→ hoge]
+export type RedirectN = {
+  readonly type: 'redirect';
+  readonly value: string;
+  readonly references: NoteId[];
+};
+
+// [> hoge]
+export type ExpandN = {
+  readonly type: 'expand';
+  readonly value: string;
+  readonly note: NoteId;
+};
+
+// [/ hoge]
+export type ItalicN = {
+  readonly type: 'italic';
+  readonly value: string;
+};
+
+// [$ hoge]
+export type TexN = {
+  readonly type: 'tex';
+  readonly value: string;
+};
+
+// [` hoge]
+export type CodeN = {
+  readonly type: 'code';
+  readonly value: string;
+};
+
+// [http://example.com hoge]
+export type UrlN = {
+  readonly type: 'url';
+  readonly value: string;
+  readonly url: string;
+};
 
 // -------------------------------------------------------------------------------------
 // Utils
