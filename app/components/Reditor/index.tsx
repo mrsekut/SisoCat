@@ -1,11 +1,10 @@
 import { run } from 'parser-ts/lib/code-frame';
 import React from 'react';
-import styled from 'styled-components';
+import { x } from '@xstyled/styled-components';
 import { Cursor } from './components/Cursor';
 import { Node } from './components/Node';
 import { CursorPos, useCursor } from './hooks/useCursor';
 import { lineParser } from './utils/parsers/parser';
-import { textStyle } from './utils/settings';
 import { LineId, LineNodeM, NodeM } from './utils/types';
 import * as E from 'fp-ts/lib/Either';
 
@@ -16,17 +15,12 @@ type Props = {
 export const Reditor: React.FC<Props> = ({ text }) => {
   const { position } = useCursor();
   return (
-    <Wrap>
+    <x.div bg='gray-200' position='relative'>
       <Cursor cursorPos={position} />
       <TextLines text={text} cursorPos={position} />
-    </Wrap>
+    </x.div>
   );
 };
-
-const Wrap = styled.div`
-  background-color: #c7c7c7;
-  position: relative;
-`;
 
 // FIXME: move
 export const TextLines: React.FC<{ text: string; cursorPos: CursorPos }> = ({
@@ -37,17 +31,13 @@ export const TextLines: React.FC<{ text: string; cursorPos: CursorPos }> = ({
   console.log({ nodes });
 
   return (
-    <W>
+    <x.div>
       {nodes.map(node => (
         <Node node={node} cursorPos={cursorPos} />
       ))}
-    </W>
+    </x.div>
   );
 };
-
-const W = styled.div`
-  line-height: ${textStyle.lineHeight}px;
-`;
 
 // FIXME: move
 const useNote = (): NodeM[] => {

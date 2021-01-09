@@ -1,14 +1,15 @@
 import { BlitzPage } from 'blitz';
 import Layout from 'app/layouts/Layout';
 import { Reditor } from 'app/components/Reditor';
+import { x } from '@xstyled/styled-components';
 
 const Home: BlitzPage = () => {
   return (
-    <div className='container'>
-      <main>
+    <x.div className='container'>
+      <x.main>
         <Reditor text='私は[Haskell]が好きです' />
-      </main>
-    </div>
+      </x.main>
+    </x.div>
   );
 };
 

@@ -1,7 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
+import { x } from '@xstyled/styled-components';
 import { CursorPos } from '../../hooks/useCursor';
-import { textStyle } from '../../utils/settings';
 
 type Props = {
   cursorPos: CursorPos;
@@ -9,32 +8,25 @@ type Props = {
 
 export const Cursor: React.FC<Props> = ({ cursorPos }) => {
   return (
-    <Wrap cursorPos={cursorPos}>
+    <x.div
+      position='absolute'
+      top={cursorPos.top}
+      left={cursorPos.left}
+      h={'1em'}
+    >
       <Carret />
       {/* <Textarea cursorPos={cursorPos} /> */}
-    </Wrap>
+    </x.div>
   );
 };
 
-const Wrap = styled.div<{ cursorPos: CursorPos }>(
-  p => `
-  position: absolute;
-  top: ${p.cursorPos.top}px;
-  left: ${p.cursorPos.left}px;
-  height: ${textStyle.lineHeight}px;
-`,
+const Carret = () => (
+  <x.div
+    h='1em'
+    w={1.5}
+    fontSize='sm'
+    lineHeight='snug'
+    bg='red-500'
+    display='block'
+  />
 );
-
-// const Textarea = styled.textarea<{ position: Position }>(p => ` `);
-
-const Carret = styled.div`
-  height: ${textStyle.lineHeight}px;
-  width: 1px;
-  font-size: ${textStyle.fontSize}px;
-
-  background-color: red;
-  line-height: ${textStyle.lineHeight}px;
-  letter-spacing: 0px;
-  display: block;
-  visibility: inherit;
-`;

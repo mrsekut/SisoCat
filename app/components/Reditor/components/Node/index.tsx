@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
 import { CursorPos } from '../../hooks/useCursor';
 import { BlokNodeM, LineNodeM, NodeM, NotationM } from '../../utils/types';
+import { x } from '@xstyled/styled-components';
 
 type Props = {
   node: NodeM;
@@ -52,9 +52,9 @@ const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
         </span>
       );
     case 'italic':
-      return <ItalicNode>{notation.value}</ItalicNode>;
+      return <x.span fontStyle='italic'>{notation.value}</x.span>;
     case 'link':
-      return <Anchor href=''>{notation.value}</Anchor>;
+      return <x.a href=''>{notation.value}</x.a>;
     default:
       return <></>;
   }
@@ -63,9 +63,3 @@ const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
 export const Char: React.FC = ({ children }) => {
   return <span>{children}</span>;
 };
-
-const Anchor = styled.a``;
-
-const ItalicNode = styled.span`
-  font-style: italic;
-`;
