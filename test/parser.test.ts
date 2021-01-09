@@ -14,7 +14,7 @@ import {
   zenkaku,
   stringWithSpaces,
   indent,
-  line,
+  lineParser,
 } from 'app/components/Reditor/utils/parsers/parser';
 import {
   ItalicN,
@@ -109,7 +109,7 @@ describe('Notation Parsers', () => {
 
 describe('Line Parsers', () => {
   it('notations', () => {
-    const parsed = run(notations, '[TypeScript]は、 [*** すごい]\n');
+    const parsed = run(notations, '[TypeScript]は、 [*** すごい]');
     assert(E.isRight(parsed));
     const expected: NotationM[] = [
       { type: 'link', references: [], value: 'TypeScript' },
@@ -120,9 +120,19 @@ describe('Line Parsers', () => {
   });
 
   it('notations', () => {
+    const parsed = run(notations, '[TypeScript]は ');
+    assert(E.isRight(parsed));
+    const expected: NotationM[] = [
+      { type: 'link', references: [], value: 'TypeScript' },
+      { type: 'normal', value: 'は ' },
+    ];
+    assert.deepStrictEqual(parsed.right, expected);
+  });
+
+  it('notations', () => {
     const parsed = run(
-      line('line2', 3),
-      '\t\t 　[TypeScript]は、 [*** すごい]\n',
+      lineParser('line2', 3),
+      '\t\t 　[TypeScript]は、 [*** すごい]',
     );
     assert(E.isRight(parsed));
     const expected: LineM = {

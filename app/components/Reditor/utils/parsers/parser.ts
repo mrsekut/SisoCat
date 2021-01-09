@@ -63,7 +63,6 @@ export const link: P.Parser<string, LinkN> = brackets(
   ),
 );
 
-// FIXME: name, clean
 export const strong: P.Parser<string, StrongN> = brackets(
   pipe(
     asterisks,
@@ -99,9 +98,12 @@ export const italic: P.Parser<string, ItalicN> = brackets(
 
 const notation = anyOf<string, NotationM>([strong, italic, link, normal]);
 
-export const notations = P.manyTill(notation, C.char('\n'));
+export const notations = P.manyTill(notation, P.eof());
 
-export const line = (id: LineId, index: number): P.Parser<string, LineM> =>
+export const lineParser = (
+  id: LineId,
+  index: number,
+): P.Parser<string, LineM> =>
   pipe(
     indent,
     P.chain(idt =>
