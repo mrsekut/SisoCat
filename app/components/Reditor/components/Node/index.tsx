@@ -44,7 +44,13 @@ const Line: React.FC<{ line: LineNodeM; isFocus: boolean }> = ({
 const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
   switch (notation.type) {
     case 'normal':
-      return <span>{notation.value}</span>;
+      return (
+        <span>
+          {[...notation.value].map((char, index) => (
+            <Char key={index}>{char}</Char>
+          ))}
+        </span>
+      );
     case 'italic':
       return <ItalicNode>{notation.value}</ItalicNode>;
     case 'link':
@@ -52,6 +58,10 @@ const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
     default:
       return <></>;
   }
+};
+
+export const Char: React.FC = ({ children }) => {
+  return <span>{children}</span>;
 };
 
 const Anchor = styled.a``;
