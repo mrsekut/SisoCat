@@ -14,8 +14,8 @@ type Props = {
 };
 
 export const Reditor: React.FC<Props> = ({ text }) => {
-  const { up, right, down, left } = useCursorKeymap();
-  useHotKeyMapping({ up, right, down, left });
+  const keys = useCursorKeymap();
+  useHotKeyMapping(keys);
 
   return (
     <x.div bg='gray-200' position='relative'>

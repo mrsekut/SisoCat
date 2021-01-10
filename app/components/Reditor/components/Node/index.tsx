@@ -95,7 +95,7 @@ export const Char: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <x.span ref={a} fontSize='base' fontFamily='mono'>
+    <x.span ref={a} fontSize='base' fontFamily='mono' lineHeight='snug'>
       {children}
     </x.span>
   );

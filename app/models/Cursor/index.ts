@@ -6,8 +6,6 @@ import {
 } from '@xstyled/styled-components';
 import produce from 'immer';
 
-const decN = (n1: number, n2: number) => Math.max(n1 - n2, 0);
-
 // px単位のposition
 type PxPos = { top: number; left: number };
 
@@ -60,28 +58,32 @@ export const useCursor = () => {
 
 export const useCursorKeymap = () => {
   const [cursor, setCursor] = useRecoilState(cursorS);
+  const textLength = cursor.lineText.length;
 
   const fontSize = useFontSize('base');
   const font = useFont('mono');
   const textWidths = getTextWidths(cursor.lineText, `${fontSize} ${font}`);
 
-  const lineHeight = useLineHeight('snug');
+  // FIXME:
+  // const lineHeight = useLineHeight('snug');
+  const lineHeight = 24;
 
   /**
-   * Key
+   * Keys
    * =====================
    */
-  const up = () =>
+  const up = () => {
     setCursor(cur =>
       produce(cur, c => {
         c.pos.ln = decN(cur.pos.ln, 1);
         c.pxPos.top = decN(cur.pxPos.top, lineHeight);
       }),
     );
+  };
 
-  const right = () =>
+  const right = () => {
     setCursor(cur => {
-      if (cur.pos.col === cursor.lineText.length) {
+      if (cur.pos.col === textLength) {
         return cur;
       }
 
@@ -90,24 +92,53 @@ export const useCursorKeymap = () => {
         c.pxPos.left = cur.pxPos.left + textWidths[cur.pos.col];
       });
     });
+  };
 
-  const down = () =>
+  const down = () => {
     setCursor(cur =>
       produce(cur, c => {
         c.pos.ln = cur.pos.ln + 1;
         c.pxPos.top = cur.pxPos.top + lineHeight;
       }),
     );
+  };
 
-  const left = () =>
+  const left = () => {
     setCursor(cur =>
       produce(cur, c => {
         c.pos.col = decN(cur.pos.col, 1);
         c.pxPos.left = decN(cur.pxPos.left, textWidths[decN(cur.pos.col, 1)]);
       }),
     );
+  };
 
-  return { up, right, down, left };
+  const begin = () => {
+    setCursor(cur =>
+      produce(cur, c => {
+        c.pos.col = 0;
+        c.pxPos.left = 0;
+      }),
+    );
+  };
+
+  const end = () => {
+    setCursor(cur =>
+      produce(cur, c => {
+        c.pos.col = textLength;
+        c.pxPos.left = sum(textWidths);
+      }),
+    );
+  };
+
+  return {
+    up,
+    right,
+    down,
+    left,
+
+    begin,
+    end,
+  };
 };
 
 /**
@@ -119,6 +150,10 @@ export const useCursorKeymap = () => {
 // -------------------------------------------------------------------------------------
 // Utils
 // -------------------------------------------------------------------------------------
+
+const decN = (n1: number, n2: number) => Math.max(n1 - n2, 0);
+
+const sum = (ns: number[]) => ns.reduce((acc, cur) => acc + cur, 0);
 
 export const getTextWidths = (text: string, font: string): number[] => {
   if (typeof window != 'undefined') {
