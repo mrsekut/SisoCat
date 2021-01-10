@@ -1,19 +1,12 @@
 import React from 'react';
 import { x } from '@xstyled/styled-components';
-import { CursorPos } from '../../hooks/useCursor';
+import { cursorS } from 'app/models/Cursor';
+import { useRecoilValue } from 'recoil';
 
-type Props = {
-  cursorPos: CursorPos;
-};
-
-export const Cursor: React.FC<Props> = ({ cursorPos }) => {
+export const Cursor: React.FC = () => {
+  const { pxPos } = useRecoilValue(cursorS);
   return (
-    <x.div
-      position='absolute'
-      top={cursorPos.top}
-      left={cursorPos.left}
-      h={'1em'}
-    >
+    <x.div position='absolute' top={pxPos.top} left={pxPos.left} h={'1em'}>
       <Carret />
       {/* <Textarea cursorPos={cursorPos} /> */}
     </x.div>
@@ -22,7 +15,7 @@ export const Cursor: React.FC<Props> = ({ cursorPos }) => {
 
 const Carret = () => (
   <x.div
-    h='1em'
+    h='1.5em'
     w={1.5}
     fontSize='sm'
     lineHeight='snug'

@@ -1,21 +1,22 @@
 import React, { useRef } from 'react';
-import { CursorPos } from '../../hooks/useCursor';
 import { BlokNodeM, LineNodeM, NodeM, NotationM } from '../../utils/types';
 import { x } from '@xstyled/styled-components';
+import { useRecoilValue } from 'recoil';
+import { cursorS } from 'app/models/Cursor';
 
 type Props = {
   node: NodeM;
-  cursorPos: CursorPos;
 };
 
-export const Node: React.FC<Props> = ({ node, cursorPos }) => {
+export const Node: React.FC<Props> = ({ node }) => {
+  const cursor = useRecoilValue(cursorS);
   if (node.type === 'block') {
     return <Block block={node} />;
   }
 
   return (
     <>
-      <Line line={node} isFocus={node.line.lineIndex === cursorPos.lineIndex} />
+      <Line line={node} isFocus={node.line.lineIndex === cursor.pos.ln} />
       <br />
     </>
   );
@@ -53,6 +54,8 @@ const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
       return <x.span fontStyle='italic'>{notation.value}</x.span>;
     case 'link':
       return <x.a href=''>{notation.value}</x.a>;
+    case 'strong':
+      return <x.span fontWeight='bold'>{notation.value}</x.span>;
     default:
       return <></>;
   }

@@ -3,37 +3,33 @@ import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Cursor } from './components/Cursor';
 import { Node } from './components/Node';
-import { CursorPos, useCursor } from './hooks/useCursor';
 import { lineParser } from './utils/parsers/parser';
 import { LineId, LineNodeM, NodeM } from './utils/types';
 import * as E from 'fp-ts/lib/Either';
+import { useCursor } from 'app/models/Cursor';
 
 type Props = {
   text: string;
 };
 
 export const Reditor: React.FC<Props> = ({ text }) => {
-  const { position } = useCursor();
+  const _ = useCursor();
   return (
     <x.div bg='gray-200' position='relative'>
-      <Cursor cursorPos={position} />
-      <TextLines text={text} cursorPos={position} />
+      <Cursor />
+      <TextLines text={text} />
     </x.div>
   );
 };
 
 // FIXME: move
-export const TextLines: React.FC<{ text: string; cursorPos: CursorPos }> = ({
-  text,
-  cursorPos,
-}) => {
+export const TextLines: React.FC<{ text: string }> = ({ text }) => {
   const nodes = useNote();
-  console.log({ nodes });
 
   return (
-    <x.div>
+    <x.div onMouseDown={e => console.log(e.clientX)}>
       {nodes.map(node => (
-        <Node node={node} cursorPos={cursorPos} />
+        <Node node={node} />
       ))}
     </x.div>
   );

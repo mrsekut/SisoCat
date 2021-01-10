@@ -6,6 +6,7 @@ import {
   AuthorizationError,
 } from 'blitz';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
+import { RecoilRoot } from 'recoil';
 import { queryCache } from 'react-query';
 import LoginForm from 'app/auth/components/LoginForm';
 import { defaultTheme, ThemeProvider } from '@xstyled/styled-components';
@@ -29,7 +30,7 @@ export default function App({ Component, pageProps }: AppProps) {
       }}
     >
       <ThemeProvider theme={theme}>
-        {getLayout(<Component {...pageProps} />)}
+        <RecoilRoot>{getLayout(<Component {...pageProps} />)}</RecoilRoot>
       </ThemeProvider>
     </ErrorBoundary>
   );
