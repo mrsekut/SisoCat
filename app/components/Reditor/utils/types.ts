@@ -89,7 +89,7 @@ export type LineNodeM = {
 export type LineM = {
   readonly id: LineId;
   readonly lineIndex: number; // 持つ意味ある？
-  // // readonly text: string;
+  readonly text: string;
   readonly indent: number;
   readonly nodes: readonly NotationM[];
 };

@@ -101,6 +101,7 @@ const notation = anyOf<string, NotationM>([strong, italic, link, normal]);
 export const notations = P.manyTill(notation, P.eof());
 
 export const lineParser = (
+  text: string,
   id: LineId,
   index: number,
 ): P.Parser<string, LineM> =>
@@ -112,6 +113,7 @@ export const lineParser = (
         P.map(v => ({
           id,
           lineIndex: index,
+          text: text,
           nodes: v,
           indent: idt.length,
         })),

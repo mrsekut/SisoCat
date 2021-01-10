@@ -130,15 +130,14 @@ describe('Line Parsers', () => {
   });
 
   it('notations', () => {
-    const parsed = run(
-      lineParser('line2', 3),
-      '\t\t 　[TypeScript]は、 [*** すごい]',
-    );
+    const text = '\t\t 　[TypeScript]は、 [*** すごい]';
+    const parsed = run(lineParser(text, 'line2', 3), text);
     assert(E.isRight(parsed));
     const expected: LineM = {
       id: 'line2',
       lineIndex: 3,
       indent: 4,
+      text,
       nodes: [
         { type: 'link', references: [], value: 'TypeScript' },
         { type: 'normal', value: 'は、 ' },

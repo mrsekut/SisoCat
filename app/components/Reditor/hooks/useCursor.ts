@@ -17,6 +17,9 @@ export type CursorPos = {
  * - 文字の幅を取得する
  */
 
+/**
+ * NOTE: これはこういうHookとして置いておきたい
+ */
 export const useCursor = () => {
   const [pos, setPos] = useState<CursorPos>({ top: 0, left: 0, lineIndex: 0 });
 
@@ -56,4 +59,21 @@ export const useCursor = () => {
   useHotkeys('left', left);
 
   return { position: pos };
+};
+
+export const getTextWidth = (text: string, font?: string): number => {
+  // if given, use cached canvas for better performance
+  // else, create new canvas
+  const canvas =
+    getTextWidth.canvas ||
+    (getTextWidth.canvas = document.createElement('canvas'));
+  const context = canvas.getContext('2d');
+  context.font = font;
+  const metrics = context.measureText(text);
+
+  return metrics.width;
+};
+
+export const getCharsWidth = (text: string, font?: string): number[] => {
+  return [...text].map(t => getTextWidth(t, font));
 };

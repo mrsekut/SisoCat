@@ -49,8 +49,8 @@ const useNote = (): NodeM[] => {
     '[TypeScript]は、 [*** すごい]',
   ];
 
-  const line: LineNodeM[] = texts.map((t, i) => {
-    const result = run(lineParser(`line${i}` as LineId, i), `${t}\n`);
+  const line: LineNodeM[] = texts.map((text, i) => {
+    const result = run(lineParser(text, `line${i}` as LineId, i), `${text}`);
     if (E.isRight(result)) {
       return { type: 'line', line: result.right };
     }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { CursorPos } from '../../hooks/useCursor';
 import { BlokNodeM, LineNodeM, NodeM, NotationM } from '../../utils/types';
 import { x } from '@xstyled/styled-components';
@@ -27,10 +27,14 @@ const Block: React.FC<{ block: BlokNodeM }> = ({ block }) => {
 };
 
 // FIXME: move
-const Line: React.FC<{ line: LineNodeM; isFocus: boolean }> = ({
-  line,
-  isFocus,
-}) => {
+const Line: React.FC<{
+  line: LineNodeM;
+  isFocus: boolean;
+}> = ({ line, isFocus }) => {
+  if (isFocus) {
+    return <Normal value={line.line.text} />;
+  }
+
   return (
     <>
       {line.line.nodes.map(node => (
@@ -44,13 +48,7 @@ const Line: React.FC<{ line: LineNodeM; isFocus: boolean }> = ({
 const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
   switch (notation.type) {
     case 'normal':
-      return (
-        <span>
-          {[...notation.value].map((char, index) => (
-            <Char key={index}>{char}</Char>
-          ))}
-        </span>
-      );
+      return <Normal value={notation.value} />;
     case 'italic':
       return <x.span fontStyle='italic'>{notation.value}</x.span>;
     case 'link':
@@ -60,6 +58,27 @@ const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
   }
 };
 
+// FIXME: move
+const Normal: React.FC<{ value: string }> = ({ value }) => {
+  return (
+    <span>
+      {[...value].map((char, index) => (
+        <Char key={index}>{char}</Char>
+      ))}
+    </span>
+  );
+};
+
+// FIXME: move
 export const Char: React.FC = ({ children }) => {
-  return <span>{children}</span>;
+  const a = useRef(null);
+
+  const [width, setWidth] = React.useState(0);
+
+  // console.log({ width });
+  // React.useEffect(() => {
+  //   console.log(JSON.stringify(a.current.getBoundingClientRect()));
+  // }, []);
+
+  return <span ref={a}>{children}</span>;
 };
