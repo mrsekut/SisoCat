@@ -6,14 +6,17 @@ import { Node } from './components/Node';
 import { lineParser } from './utils/parsers/parser';
 import { LineId, LineNodeM, NodeM } from './utils/types';
 import * as E from 'fp-ts/lib/Either';
-import { useCursor } from 'app/models/Cursor';
+import { useCursorKeymap } from 'app/models/Cursor';
+import { useHotKeyMapping } from './hooks/useHotKeyMapping';
 
 type Props = {
   text: string;
 };
 
 export const Reditor: React.FC<Props> = ({ text }) => {
-  const _ = useCursor();
+  const { up, right, down, left } = useCursorKeymap();
+  useHotKeyMapping({ up, right, down, left });
+
   return (
     <x.div bg='gray-200' position='relative'>
       <Cursor />

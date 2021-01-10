@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BlokNodeM, LineNodeM, NodeM, NotationM } from '../../utils/types';
 import { x } from '@xstyled/styled-components';
 import { useRecoilValue } from 'recoil';
-import { cursorS } from 'app/models/Cursor';
+import { cursorS, useCursor } from 'app/models/Cursor';
 
 type Props = {
   node: NodeM;
@@ -10,6 +10,7 @@ type Props = {
 
 export const Node: React.FC<Props> = ({ node }) => {
   const cursor = useRecoilValue(cursorS);
+
   if (node.type === 'block') {
     return <Block block={node} />;
   }
@@ -32,6 +33,14 @@ const Line: React.FC<{
   line: LineNodeM;
   isFocus: boolean;
 }> = ({ line, isFocus }) => {
+  const { setLineText } = useCursor();
+
+  useEffect(() => {
+    if (isFocus) {
+      setLineText(line.line.text);
+    }
+  }, [isFocus]);
+
   if (isFocus) {
     return <Normal value={line.line.text} />;
   }
@@ -79,9 +88,15 @@ export const Char: React.FC = ({ children }) => {
   const [width, setWidth] = React.useState(0);
 
   // console.log({ width });
-  // React.useEffect(() => {
-  //   console.log(JSON.stringify(a.current.getBoundingClientRect()));
-  // }, []);
+  React.useEffect(() => {
+    // console.log(JSON.stringify(a.current.getBoundingClientRect()));
+    // const s = window.getComputedStyle(a.current).fontFamily;
+    // console.log(s);
+  }, []);
 
-  return <span ref={a}>{children}</span>;
+  return (
+    <x.span ref={a} fontSize='base' fontFamily='mono'>
+      {children}
+    </x.span>
+  );
 };
