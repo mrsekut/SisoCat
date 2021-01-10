@@ -1,3 +1,4 @@
+import { ResNote } from 'app/models/Note';
 import { UserM, NoteM, ProjectM, NotesM } from './types';
 
 // -------------------------------------------------------------------------------------
@@ -7,6 +8,26 @@ import { UserM, NoteM, ProjectM, NotesM } from './types';
 const user1: UserM = {
   id: 'user1',
   name: 'mrsekut',
+};
+
+// -------------------------------------------------------------------------------------
+// Res Node
+// -------------------------------------------------------------------------------------
+
+export const note0: ResNote = {
+  id: 'note1',
+  author: user1,
+  title: '[Json]の正規化',
+  created: 1608260148,
+  updated: 1608260148,
+  lines: [
+    '[Json]の正規化',
+    '\t[json]は[正規化]するのが良い',
+    '\t正規化は[** よいこと]ばかり',
+    '\t[CUE]も良い感じらしい',
+  ],
+  references: [],
+  referenced: [],
 };
 
 // -------------------------------------------------------------------------------------

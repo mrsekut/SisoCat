@@ -1,9 +1,5 @@
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
-import {
-  useFont,
-  useFontSize,
-  useLineHeight,
-} from '@xstyled/styled-components';
+import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
 
 // px単位のposition
@@ -22,7 +18,7 @@ type CursorM = {
   isFocus: true;
   pos: Pos;
   pxPos: PxPos;
-  lineText: string; // Cursorが乗っている行のtext
+  lineText: string; // Cursorが乗っている行のtext. NOTE: あまり良くないかも知れない(その行が編集された時にここも更新しないといけない)
 };
 // | {
 //     isFocus: false;

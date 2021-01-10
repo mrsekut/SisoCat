@@ -1,23 +1,26 @@
 import React, { useEffect, useRef } from 'react';
-import { BlokNodeM, LineNodeM, NodeM, NotationM } from '../../utils/types';
+import { BlokNodeM, NotationM } from '../../utils/types';
 import { x } from '@xstyled/styled-components';
 import { useRecoilValue } from 'recoil';
 import { cursorS, useCursor } from 'app/models/Cursor';
+import { parse } from 'app/models/Note';
 
 type Props = {
-  node: NodeM;
+  line: string;
+  index: number;
 };
 
-export const Node: React.FC<Props> = ({ node }) => {
+// FIXME: Componentの構造がおかしい(blockとの対応がおかしい)
+export const Node: React.FC<Props> = ({ line, index }) => {
   const cursor = useRecoilValue(cursorS);
 
-  if (node.type === 'block') {
-    return <Block block={node} />;
-  }
+  // if (node.type === 'block') {
+  //   return <Block block={node} />;
+  // }
 
   return (
     <>
-      <Line line={node} isFocus={node.line.lineIndex === cursor.pos.ln} />
+      <Line line={line} index={index} isFocus={index === cursor.pos.ln} />
       <br />
     </>
   );
@@ -30,24 +33,26 @@ const Block: React.FC<{ block: BlokNodeM }> = ({ block }) => {
 
 // FIXME: move
 const Line: React.FC<{
-  line: LineNodeM;
+  line: string;
+  index: number;
   isFocus: boolean;
-}> = ({ line, isFocus }) => {
+}> = ({ line, index, isFocus }) => {
   const { setLineText } = useCursor();
+  const node = parse(line, index);
 
   useEffect(() => {
     if (isFocus) {
-      setLineText(line.line.text);
+      setLineText(node.line.text);
     }
   }, [isFocus]);
 
   if (isFocus) {
-    return <Normal value={line.line.text} />;
+    return <Normal value={node.line.text} />;
   }
 
   return (
     <>
-      {line.line.nodes.map(node => (
+      {node.line.nodes.map(node => (
         <Notation notation={node} />
       ))}
     </>
