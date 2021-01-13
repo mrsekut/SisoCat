@@ -38,18 +38,18 @@ const Line: React.FC<{
   isFocus: boolean;
 }> = ({ line, index, isFocus }) => {
   const { setLineText } = useCursor();
-  const node = parse(line, index);
 
   useEffect(() => {
     if (isFocus) {
-      setLineText(node.line.text);
+      setLineText(line);
     }
   }, [isFocus]);
 
   if (isFocus) {
-    return <Normal value={node.line.text} />;
+    return <Normal value={line} />;
   }
 
+  const node = parse(line, index);
   return (
     <>
       {node.line.nodes.map(node => (

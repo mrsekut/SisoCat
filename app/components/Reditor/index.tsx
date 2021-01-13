@@ -12,7 +12,8 @@ type Props = {
 
 export const Reditor: React.FC<Props> = ({ text }) => {
   const keys = useCursorKeymap();
-  useHotKeyMapping(keys);
+  const { remove } = useNote();
+  useHotKeyMapping({ ...keys, remove });
 
   return (
     <x.div bg='gray-200' position='relative'>

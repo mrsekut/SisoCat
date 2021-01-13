@@ -1,6 +1,7 @@
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
+import { decN, sum } from 'app/components/Reditor/utils/functions';
 
 // px単位のposition
 type PxPos = { top: number; left: number };
@@ -63,6 +64,12 @@ export const useCursorKeymap = () => {
   // FIXME:
   // const lineHeight = useLineHeight('snug');
   const lineHeight = 24;
+
+  console.log(cursor.pos);
+  console.log(cursor.pxPos);
+  console.log(cursor.lineText);
+
+  //  FIXME: useCallback
 
   /**
    * Keys
@@ -146,10 +153,6 @@ export const useCursorKeymap = () => {
 // -------------------------------------------------------------------------------------
 // Utils
 // -------------------------------------------------------------------------------------
-
-const decN = (n1: number, n2: number) => Math.max(n1 - n2, 0);
-
-const sum = (ns: number[]) => ns.reduce((acc, cur) => acc + cur, 0);
 
 export const getTextWidths = (text: string, font: string): number[] => {
   if (typeof window != 'undefined') {
