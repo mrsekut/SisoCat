@@ -155,6 +155,7 @@ export const useCursorKeymap = () => {
 // Utils
 // -------------------------------------------------------------------------------------
 
+// FIXME: indentがある場合の、サイズ調整
 export const getTextWidths = (text: string, font: string): number[] => {
   if (typeof window != 'undefined') {
     const canvas = document.createElement('canvas');
