@@ -100,6 +100,7 @@ const notation = anyOf<string, NotationM>([strong, italic, link, normal]);
 
 export const notations = P.manyTill(notation, P.eof());
 
+// FIXME: `[`が閉じていないとバグる
 export const lineParser = (
   text: string,
   id: LineId,

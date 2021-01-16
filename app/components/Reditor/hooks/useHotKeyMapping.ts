@@ -1,7 +1,6 @@
 import { useHotkeys } from 'react-hotkeys-hook';
 
-type Key = 'up' | 'right' | 'down' | 'left' | 'begin' | 'end';
-type KeyWithDeps = 'remove';
+type Key = 'up' | 'right' | 'down' | 'left' | 'begin' | 'end' | 'remove';
 
 export type DepsHotkey = {
   fn: () => void;
@@ -9,27 +8,28 @@ export type DepsHotkey = {
 };
 
 type Args = {
-  [key in Key]: () => void;
+  [key in Key]: DepsHotkey;
 };
 
-type WithDeps = {
-  [key in KeyWithDeps]: DepsHotkey;
-};
-
-export const useHotKeyMapping = (
-  { up, right, down, left, begin, end }: Args,
-  { remove }: WithDeps,
-) => {
+export const useHotKeyMapping = ({
+  up,
+  right,
+  down,
+  left,
+  begin,
+  end,
+  remove,
+}: Args) => {
   /**
    * key mappings
    */
-  useHotkeys('up', up);
-  useHotkeys('right', right);
-  useHotkeys('down', down);
-  useHotkeys('left', left);
+  useHotkeys('up', up.fn, {}, [...up.deps]);
+  useHotkeys('right', right.fn, {}, [...right.deps]);
+  useHotkeys('down', down.fn, {}, [...down.deps]);
+  useHotkeys('left', left.fn, {}, [...left.deps]);
 
   useHotkeys('backspace', remove.fn, {}, [...remove.deps]);
 
-  useHotkeys('ctrl+a', begin);
-  useHotkeys('ctrl+e', end); // FIXME: 効いていない
+  useHotkeys('ctrl+a', begin.fn, {}, [...begin.deps]);
+  useHotkeys('ctrl+e', end.fn, {}, [...end.deps]); // FIXME: 効いていない
 };

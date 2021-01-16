@@ -59,7 +59,7 @@ export const useNoteOp = () => {
   const remove = () => {
     const { ln, col } = cursor.pos;
     removeChar(ln, col);
-    left();
+    left.fn();
   };
 
   return { note, remove: { fn: remove, deps: [cursor] } };
@@ -73,6 +73,9 @@ export const useCursorKeymap = () => {
 
   const fontSize = useFontSize('base');
   const font = useFont('mono');
+
+  const textWidths = getTextWidths(cursor.lineText, `${fontSize} ${font}`);
+  const textLength = cursor.lineText.length;
 
   // FIXME:
   // const lineHeight = useLineHeight('snug');
@@ -95,9 +98,6 @@ export const useCursorKeymap = () => {
 
   const right = () => {
     setCursor(cur => {
-      // FIXME: これ、いいのか？
-      const textWidths = getTextWidths(cur.lineText, `${fontSize} ${font}`);
-      const textLength = cur.lineText.length;
       if (cur.pos.col === textLength) {
         return cur;
       }
@@ -118,13 +118,12 @@ export const useCursorKeymap = () => {
   };
 
   const left = () => {
-    setCursor(cur => {
-      const textWidths = getTextWidths(cur.lineText, `${fontSize} ${font}`);
-      return produce(cur, c => {
+    setCursor(cur =>
+      produce(cur, c => {
         c.pos.col = decN(cur.pos.col, 1);
         c.pxPos.left = decN(cur.pxPos.left, textWidths[decN(cur.pos.col, 1)]);
-      });
-    });
+      }),
+    );
   };
 
   const begin = () => {
@@ -137,24 +136,22 @@ export const useCursorKeymap = () => {
   };
 
   const end = () => {
-    setCursor(cur => {
-      const textWidths = getTextWidths(cur.lineText, `${fontSize} ${font}`);
-      const textLength = cur.lineText.length;
-      return produce(cur, c => {
+    setCursor(cur =>
+      produce(cur, c => {
         c.pos.col = textLength;
         c.pxPos.left = sum(textWidths);
-      });
-    });
+      }),
+    );
   };
 
   return {
-    up,
-    right,
-    down,
-    left,
+    up: { fn: up, deps: [] },
+    right: { fn: right, deps: [cursor] },
+    down: { fn: down, deps: [] },
+    left: { fn: left, deps: [cursor] },
 
-    begin,
-    end,
+    begin: { fn: begin, deps: [] },
+    end: { fn: end, deps: [cursor] },
   };
 };
 
