@@ -4,6 +4,7 @@ import { x } from '@xstyled/styled-components';
 import { useRecoilValue } from 'recoil';
 import { cursorS, useNoteOp } from 'app/models/Cursor';
 import { parse } from 'app/models/Note';
+import { range } from 'app/components/Reditor/utils/functions';
 
 type Props = {
   line: string;
@@ -45,17 +46,50 @@ const Line: React.FC<{
     }
   }, [isFocus]);
 
+  const node = parse(line, index);
+
   if (isFocus) {
-    return <Normal value={line} />;
+    return (
+      <>
+        {/* <Indent level={node.line.indent} /> */}
+        <Normal value={line} />
+      </>
+    );
   }
 
-  const node = parse(line, index);
   return (
     <>
+      {/* <Indent level={node.line.indent} /> */}
       {node.line.nodes.map(node => (
         <Notation notation={node} />
       ))}
     </>
+  );
+};
+
+// FIXME:
+const Indent: React.FC<{ level: number }> = ({ level }) => {
+  return (
+    <span>
+      {/* {range(level - 1).map(_ => (
+        <Char>&nbsp;</Char>
+      ))} */}
+      {/* <x.span w='1.5em'>
+        <x.span
+          display='inline-block'
+          w='5px'
+          h='5px'
+          borderRadius='full'
+          backgroundColor='black'
+        ></x.span>
+        <x.span
+          display='inline-block'
+          w='6px'
+          h='6px'
+          borderRadius='full'
+        ></x.span>
+      </x.span> */}
+    </span>
   );
 };
 
@@ -79,8 +113,8 @@ const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
 const Normal: React.FC<{ value: string }> = ({ value }) => {
   return (
     <span>
-      {[...value].map((char, index) => (
-        <Char key={index}>{char}</Char>
+      {[...value].map(char => (
+        <Char>{char}</Char>
       ))}
     </span>
   );

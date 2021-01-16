@@ -22,9 +22,9 @@ export const note0: ResNote = {
   updated: 1608260148,
   lines: [
     '[Json]の正規化',
-    '\t[json]は[正規化]するのが良い',
-    '\t正規化は[** よいこと]ばかり',
-    '\t[CUE]も良い感じらしい',
+    '[json]は[正規化]するのが良い',
+    '正規化は[** よいこと]ばかり',
+    '[CUE]も良い感じらしい',
   ],
   references: [],
   referenced: [],
