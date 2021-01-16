@@ -2,7 +2,7 @@ import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Cursor } from './components/Cursor';
 import { Node } from './components/Node';
-import { useCursorKeymap } from 'app/models/Cursor';
+import { useCursorKeymap, useNoteOp } from 'app/models/Cursor';
 import { useHotKeyMapping } from './hooks/useHotKeyMapping';
 import { useNote } from 'app/models/Note';
 
@@ -12,7 +12,7 @@ type Props = {
 
 export const Reditor: React.FC<Props> = ({ text }) => {
   const keys = useCursorKeymap();
-  const { remove } = useNote();
+  const { remove } = useNoteOp();
   useHotKeyMapping({ ...keys, remove });
 
   return (

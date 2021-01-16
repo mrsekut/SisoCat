@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { BlokNodeM, NotationM } from '../../utils/types';
 import { x } from '@xstyled/styled-components';
 import { useRecoilValue } from 'recoil';
-import { cursorS, useCursor } from 'app/models/Cursor';
+import { cursorS, useNoteOp } from 'app/models/Cursor';
 import { parse } from 'app/models/Note';
 
 type Props = {
@@ -37,7 +37,7 @@ const Line: React.FC<{
   index: number;
   isFocus: boolean;
 }> = ({ line, index, isFocus }) => {
-  const { setLineText } = useCursor();
+  const { setLineText } = useNoteOp();
 
   useEffect(() => {
     if (isFocus) {

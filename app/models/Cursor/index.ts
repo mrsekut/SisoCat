@@ -1,7 +1,9 @@
-import { atom, useRecoilState, useSetRecoilState } from 'recoil';
+import { atom, useRecoilState } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
 import { decN, sum } from 'app/components/Reditor/utils/functions';
+import { useNote } from '../Note';
+import { useEffect } from 'react';
 
 // px単位のposition
 type PxPos = { top: number; left: number };
@@ -43,16 +45,43 @@ export const cursorS = atom<CursorM>({
 // Hooks
 // -------------------------------------------------------------------------------------
 
-export const useCursor = () => {
-  const setCursor = useSetRecoilState(cursorS);
+/**
+ * useCursorKeymapとuseNoteの接続
+ * e.g. カーソル位置の文字削除、文字入力
+ */
+export const useNoteOp = () => {
+  const { note, removeChar } = useNote();
+  const { left } = useCursorKeymap();
+  const [cursor, setCursor] = useRecoilState(cursorS);
+  console.log({ note });
 
+  // cursorが指しているlnのline
+  const line = note?.lines[cursor.pos.ln];
+  // console.log({ line });
+
+  useEffect(() => {
+    if (line != null) setLineText(line);
+  }, [line]);
+
+  // cursorSの初期化と、noteの更新をsubscribeする
   const setLineText = (text: string) => {
     setCursor(cur => ({ ...cur, lineText: text }));
   };
 
-  return { setLineText };
+  // 一文字消し、cursorS、noteSの内容を更新
+  const remove = () => {
+    const { ln, col } = cursor.pos;
+    console.log({ ln, col, line });
+    removeChar(ln, col);
+    left();
+  };
+
+  return { note, remove, setLineText };
 };
 
+/**
+ * ノートの内容には依存しないカーソルの操作, 移動
+ */
 export const useCursorKeymap = () => {
   const [cursor, setCursor] = useRecoilState(cursorS);
   const textLength = cursor.lineText.length;
@@ -64,6 +93,8 @@ export const useCursorKeymap = () => {
   // FIXME:
   // const lineHeight = useLineHeight('snug');
   const lineHeight = 24;
+
+  // FIXME: viewとズレている
 
   console.log(cursor.pos);
   console.log(cursor.pxPos);
