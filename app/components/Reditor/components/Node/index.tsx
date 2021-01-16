@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { BlokNodeM, NotationM } from '../../utils/types';
 import { x } from '@xstyled/styled-components';
-import { useRecoilValue } from 'recoil';
-import { cursorS, useNoteOp } from 'app/models/Cursor';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { cursorS } from 'app/models/Cursor';
 import { parse } from 'app/models/Note';
-import { range } from 'app/components/Reditor/utils/functions';
 
 type Props = {
   line: string;
@@ -38,11 +37,11 @@ const Line: React.FC<{
   index: number;
   isFocus: boolean;
 }> = ({ line, index, isFocus }) => {
-  const { setLineText } = useNoteOp();
+  const setLineText = useSetRecoilState(cursorS);
 
   useEffect(() => {
     if (isFocus) {
-      setLineText(line);
+      setLineText(cur => ({ ...cur, lineText: line }));
     }
   }, [isFocus]);
 

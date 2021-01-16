@@ -33,7 +33,6 @@ export const noteS = atom<ResNote | null>({
  * ノートの内容の操作
  * カーソルの位置などには依存しない
  * NoteのModelのようなイメージ
- * FIXME: 再描画されすぎ
  */
 export const useNote = () => {
   const [note, setNote] = useRecoilState(noteS);
@@ -57,12 +56,8 @@ export const useNote = () => {
 
   const removeChar = (ln: number, col: number) => {
     const line = note?.lines[ln] ?? '';
-    const deleted = deleteNthChar(line, col);
-    console.log({ deleted });
-    if (deleted !== '') {
-      // FIXME: この分岐は本来は不要. debugのためにif文を書いている
-      updateLine(ln, deleted);
-    }
+    const deleted = deleteNthChar(line, col - 1);
+    updateLine(ln, deleted);
   };
 
   return { note, setNote, removeChar };

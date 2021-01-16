@@ -3,7 +3,6 @@ import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
 import { decN, sum } from 'app/components/Reditor/utils/functions';
 import { useNote } from '../Note';
-import { useEffect } from 'react';
 
 // px単位のposition
 type PxPos = { top: number; left: number };
@@ -53,30 +52,17 @@ export const useNoteOp = () => {
   const { note, removeChar } = useNote();
   const { left } = useCursorKeymap();
   const [cursor, setCursor] = useRecoilState(cursorS);
-  console.log({ note });
 
   // cursorが指しているlnのline
   const line = note?.lines[cursor.pos.ln];
-  // console.log({ line });
 
-  useEffect(() => {
-    if (line != null) setLineText(line);
-  }, [line]);
-
-  // cursorSの初期化と、noteの更新をsubscribeする
-  const setLineText = (text: string) => {
-    setCursor(cur => ({ ...cur, lineText: text }));
-  };
-
-  // 一文字消し、cursorS、noteSの内容を更新
   const remove = () => {
     const { ln, col } = cursor.pos;
-    console.log({ ln, col, line });
     removeChar(ln, col);
     left();
   };
 
-  return { note, remove, setLineText };
+  return { note, remove: { fn: remove, deps: [cursor] } };
 };
 
 /**
@@ -91,12 +77,6 @@ export const useCursorKeymap = () => {
   // FIXME:
   // const lineHeight = useLineHeight('snug');
   const lineHeight = 24;
-
-  // FIXME: viewとズレている
-
-  console.log(cursor.pos);
-  console.log(cursor.pxPos);
-  console.log({ lineText: cursor.lineText });
 
   //  FIXME: useCallback
 
@@ -157,12 +137,14 @@ export const useCursorKeymap = () => {
   };
 
   const end = () => {
-    setCursor(cur =>
-      produce(cur, c => {
+    setCursor(cur => {
+      const textWidths = getTextWidths(cur.lineText, `${fontSize} ${font}`);
+      const textLength = cur.lineText.length;
+      return produce(cur, c => {
         c.pos.col = textLength;
         c.pxPos.left = sum(textWidths);
-      }),
-    );
+      });
+    });
   };
 
   return {
