@@ -31,7 +31,7 @@ const cursorInit: CursorM = {
   isFocus: true,
   pos: { ln: 0, col: 0 },
   pxPos: { top: 0, left: 0 },
-  lineText: '[TypeScript]は、 [/ すごい]です',
+  lineText: '',
 };
 
 export const cursorS = atom<CursorM>({
@@ -55,11 +55,9 @@ export const useCursor = () => {
 
 export const useCursorKeymap = () => {
   const [cursor, setCursor] = useRecoilState(cursorS);
-  const textLength = cursor.lineText.length;
 
   const fontSize = useFontSize('base');
   const font = useFont('mono');
-  const textWidths = getTextWidths(cursor.lineText, `${fontSize} ${font}`);
 
   // FIXME:
   // const lineHeight = useLineHeight('snug');
@@ -67,7 +65,7 @@ export const useCursorKeymap = () => {
 
   console.log(cursor.pos);
   console.log(cursor.pxPos);
-  console.log(cursor.lineText);
+  console.log({ lineText: cursor.lineText });
 
   //  FIXME: useCallback
 
@@ -86,10 +84,12 @@ export const useCursorKeymap = () => {
 
   const right = () => {
     setCursor(cur => {
+      // FIXME: これ、いいのか？
+      const textWidths = getTextWidths(cur.lineText, `${fontSize} ${font}`);
+      const textLength = cur.lineText.length;
       if (cur.pos.col === textLength) {
         return cur;
       }
-
       return produce(cur, c => {
         c.pos.col = cur.pos.col + 1;
         c.pxPos.left = cur.pxPos.left + textWidths[cur.pos.col];
@@ -107,12 +107,13 @@ export const useCursorKeymap = () => {
   };
 
   const left = () => {
-    setCursor(cur =>
-      produce(cur, c => {
+    setCursor(cur => {
+      const textWidths = getTextWidths(cur.lineText, `${fontSize} ${font}`);
+      return produce(cur, c => {
         c.pos.col = decN(cur.pos.col, 1);
         c.pxPos.left = decN(cur.pxPos.left, textWidths[decN(cur.pos.col, 1)]);
-      }),
-    );
+      });
+    });
   };
 
   const begin = () => {
