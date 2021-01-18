@@ -23,13 +23,13 @@ export const useHotKeyMapping = ({
   /**
    * key mappings
    */
-  useHotkeys('up', up.fn, {}, [...up.deps]);
-  useHotkeys('right', right.fn, {}, [...right.deps]);
-  useHotkeys('down', down.fn, {}, [...down.deps]);
-  useHotkeys('left', left.fn, {}, [...left.deps]);
+  useHotkeys('up', up.fn, {}, up.deps);
+  useHotkeys('right', right.fn, {}, right.deps);
+  useHotkeys('down', down.fn, {}, down.deps);
+  useHotkeys('left', left.fn, {}, left.deps);
 
-  useHotkeys('backspace', remove.fn, {}, [...remove.deps]);
+  useHotkeys('backspace', remove.fn, {}, remove.deps);
 
-  useHotkeys('ctrl+a', begin.fn, {}, [...begin.deps]);
-  useHotkeys('ctrl+e', end.fn, {}, [...end.deps]); // FIXME: 効いていない
+  useHotkeys('ctrl+a', begin.fn, {}, begin.deps);
+  useHotkeys('ctrl+e', end.fn, {}, end.deps); // FIXME: 効いていない
 };
