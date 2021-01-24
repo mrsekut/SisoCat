@@ -1,139 +1,79 @@
-import assert from 'assert';
-
-import * as E from 'fp-ts/Either';
-import * as C from 'parser-ts/lib/char';
-import { run } from 'parser-ts/lib/code-frame';
-
+import * as bnb from 'bread-n-butter';
 import {
-  normal,
-  link,
-  strong,
-  notations,
-  italic,
   brackets,
-  zenkaku,
-  stringWithSpaces,
-  indent,
+  indents,
+  italic,
   lineParser,
+  link,
+  normal,
+  notation,
+  notations,
+  strong,
 } from 'app/components/Reditor/utils/parsers/parser';
-import {
-  ItalicN,
-  LineM,
-  LinkN,
-  NormalN,
-  NotationM,
-  StrongN,
-} from 'app/components/Reditor/utils/types';
 
 describe('Util Parsers', () => {
   it('brackets', () => {
-    const parser = brackets(C.char('a'));
-    const parsed = run(parser, '[a]');
-    assert(E.isRight(parsed));
-    const expected = 'a';
-    assert.deepStrictEqual(parsed.right, expected);
+    const parser = brackets(bnb.text('a'));
+    ok(parser, '[a]', 'a');
   });
 
-  it('zenkaku', () => {
-    const parsed = run(C.many(zenkaku), 'あ亜');
-    assert(E.isRight(parsed));
-  });
-
-  it('stringWithSpaces', () => {
-    const parsed = run(stringWithSpaces, 'あいai　 ');
-    assert(E.isRight(parsed));
-  });
-
-  it('indent', () => {
-    const parsed = run(indent, '\t 　');
-    assert(E.isRight(parsed));
+  it('indents', () => {
+    ok(indents, '\t 　', 3);
   });
 });
 
 describe('Notation Parsers', () => {
   it('normal', () => {
-    const parsed = run(normal, 'hoge');
-    assert(E.isRight(parsed));
-    const expected: NormalN = {
-      type: 'normal',
-      value: 'hoge',
-    };
-    assert.deepStrictEqual(parsed.right, expected);
+    ok(normal, 'hoge', { type: 'normal', value: 'hoge' });
   });
 
   describe('link', () => {
     it('word', () => {
-      const parsed = run(link, '[hoge]');
-      assert(E.isRight(parsed));
-      const expected: LinkN = {
-        type: 'link',
-        references: [],
-        value: 'hoge',
-      };
-      assert.deepStrictEqual(parsed.right, expected);
+      ok(link, '[hoge]', { type: 'link', references: [], value: 'hoge' });
     });
 
     it('multi words', () => {
-      const parsed = run(link, '[hoge hoge]');
-      assert(E.isRight(parsed));
-      const expected: LinkN = {
+      ok(link, '[hoge hoge]', {
         type: 'link',
         references: [],
         value: 'hoge hoge',
-      };
-      assert.deepStrictEqual(parsed.right, expected);
+      });
     });
   });
 
   it('strong', () => {
-    const parsed = run(strong, '[** hoge]');
-    assert(E.isRight(parsed));
-    const expected: StrongN = {
-      type: 'strong',
-      value: 'hoge',
-      level: 2,
-    };
-    assert.deepStrictEqual(parsed.right, expected);
+    ok(strong, '[** hoge]', { type: 'strong', value: 'hoge', level: 2 });
   });
 
   it('italic', () => {
-    const parsed = run(italic, '[/ hoge]');
-    assert(E.isRight(parsed));
-    const expected: ItalicN = {
-      type: 'italic',
-      value: 'hoge',
-    };
-    assert.deepStrictEqual(parsed.right, expected);
+    ok(italic, '[/ hoge]', { type: 'italic', value: 'hoge' });
+  });
+
+  it('notation', () => {
+    ok(notation, '[** hoge]', { type: 'strong', value: 'hoge', level: 2 });
+    ok(notation, '[**hoge]', { type: 'link', references: [], value: '**hoge' });
   });
 });
 
 describe('Line Parsers', () => {
   it('notations', () => {
-    const parsed = run(notations, '[TypeScript]は、 [*** すごい]');
-    assert(E.isRight(parsed));
-    const expected: NotationM[] = [
+    ok(notations, '[TypeScript]は、 [*** すごい]', [
       { type: 'link', references: [], value: 'TypeScript' },
       { type: 'normal', value: 'は、 ' },
       { type: 'strong', level: 3, value: 'すごい' },
-    ];
-    assert.deepStrictEqual(parsed.right, expected);
+    ]);
   });
 
   it('notations', () => {
-    const parsed = run(notations, '[TypeScript]は ');
-    assert(E.isRight(parsed));
-    const expected: NotationM[] = [
+    ok(notations, '[TypeScript]は ', [
       { type: 'link', references: [], value: 'TypeScript' },
       { type: 'normal', value: 'は ' },
-    ];
-    assert.deepStrictEqual(parsed.right, expected);
+    ]);
   });
 
   it('notations', () => {
     const text = '\t\t 　[TypeScript]は、 [*** すごい]';
-    const parsed = run(lineParser(text, 'line2', 3), text);
-    assert(E.isRight(parsed));
-    const expected: LineM = {
+    ok(lineParser(text, 'line2', 3), text, {
       id: 'line2',
       lineIndex: 3,
       indent: 4,
@@ -143,7 +83,13 @@ describe('Line Parsers', () => {
         { type: 'normal', value: 'は、 ' },
         { type: 'strong', level: 3, value: 'すごい' },
       ],
-    };
-    assert.deepStrictEqual(parsed.right, expected);
+    });
   });
 });
+
+function ok<A>(parser: bnb.Parser<A>, input: string, expected: A): void {
+  expect(parser.parse(input)).toMatchObject({
+    type: 'ParseOK',
+    value: expected,
+  });
+}

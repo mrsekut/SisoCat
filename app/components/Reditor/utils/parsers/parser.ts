@@ -1,45 +1,25 @@
-import * as E from 'fp-ts/lib/Either';
-import { pipe } from 'fp-ts/lib/pipeable';
+import * as bnb from 'bread-n-butter';
 
-import * as P from 'parser-ts/lib/Parser';
-import * as C from 'parser-ts/lib/char';
-import { run } from 'parser-ts/lib/code-frame';
-import {
-  ItalicN,
-  LineId,
-  LineM,
-  LinkN,
-  NormalN,
-  NotationM,
-  StrongN,
-} from '../types';
+import { ItalicN, LineId, LineM, LinkN, NormalN, StrongN } from '../types';
 
 // -------------------------------------------------------------------------------------
 // util parsers
 // -------------------------------------------------------------------------------------
 
-export const anyOf = <S, T>(parsers: P.Parser<S, T>[]) =>
-  parsers.reduceRight((acc, cur) => P.either(cur, () => acc), P.fail());
+export const brackets = <T>(parser: bnb.Parser<T>) =>
+  parser.wrap(bnb.text('['), bnb.text(']'));
 
-export const zenkaku = P.expected(
-  P.sat((c: C.Char) => /[^x01-x7E]/.test(c.toLowerCase())),
-  'a zenkaku',
-);
+export const whitespace1 = bnb.match(/\s+/).repeat(1);
 
-const string = C.many1(C.alphanum);
+const asterisks = bnb
+  .text('*')
+  .repeat()
+  .map(as => as.length);
 
-const whitespace = C.many1(C.space);
-
-export const brackets = P.between(C.char('['), C.char(']'));
-
-const asterisks = P.many1(C.char('*'));
-
-export const stringWithSpaces = pipe(
-  P.many(anyOf([string, zenkaku, C.space])),
-  P.map(v => v.join('')),
-);
-
-export const indent = P.many(anyOf([C.space, C.char('　'), C.char('\t')]));
+export const indents = bnb
+  .match(/\s/)
+  .repeat()
+  .map(is => is.length);
 
 // -------------------------------------------------------------------------------------
 // utils
@@ -51,73 +31,45 @@ const max3 = (n: number) => Math.min(3, n) as 1 | 2 | 3;
 // notation parsers
 // -------------------------------------------------------------------------------------
 
-export const normal: P.Parser<string, NormalN> = pipe(
-  stringWithSpaces,
-  P.map(v => ({ type: 'normal' as const, value: v })),
+export const normal: bnb.Parser<NormalN> = bnb
+  .match(/[^[]+/)
+  .map(v => ({ type: 'normal', value: v }));
+
+export const strong: bnb.Parser<StrongN> = brackets(
+  bnb.all(asterisks, whitespace1, bnb.match(/[^\]]+/)).map(([as, _, v]) => ({
+    type: 'strong',
+    value: v,
+    level: max3(as),
+  })),
 );
 
-export const link: P.Parser<string, LinkN> = brackets(
-  pipe(
-    stringWithSpaces,
-    P.map(v => ({ type: 'link' as const, references: [], value: v })),
-  ),
+export const italic: bnb.Parser<ItalicN> = brackets(
+  bnb
+    .text('/')
+    .next(whitespace1)
+    .next(bnb.match(/[^\]]+/))
+    .map(v => ({ type: 'italic', value: v })),
 );
 
-export const strong: P.Parser<string, StrongN> = brackets(
-  pipe(
-    asterisks,
-    P.chain(a =>
-      pipe(
-        whitespace,
-        P.chain(() => stringWithSpaces),
-        P.map(v => ({
-          type: 'strong' as const,
-          value: v,
-          level: max3(a.length),
-        })),
-      ),
-    ),
-  ),
-);
-
-export const italic: P.Parser<string, ItalicN> = brackets(
-  pipe(
-    C.char('/'),
-    P.chain(() => whitespace),
-    P.chain(() => stringWithSpaces),
-    P.map(v => ({
-      type: 'italic' as const,
-      value: v,
-    })),
-  ),
-);
+export const link: bnb.Parser<LinkN> = brackets(bnb.match(/[^\]]+/)).map(v => ({
+  type: 'link',
+  references: [],
+  value: v,
+}));
 
 // -------------------------------------------------------------------------------------
 // line parsers
 // -------------------------------------------------------------------------------------
 
-const notation = anyOf<string, NotationM>([strong, italic, link, normal]);
+export const notation = bnb.choice(italic, strong, link);
 
-export const notations = P.manyTill(notation, P.eof());
+export const notations = bnb.choice(normal, notation).repeat();
 
-// FIXME: `[`が閉じていないとバグる
 export const lineParser = (
   text: string,
   id: LineId,
   index: number,
-): P.Parser<string, LineM> =>
-  pipe(
-    indent,
-    P.chain(idt =>
-      pipe(
-        notations,
-        P.map(v => ({
-          id,
-          lineIndex: index,
-          text: text,
-          nodes: v,
-          indent: idt.length,
-        })),
-      ),
-    ),
-  );
+): bnb.Parser<LineM> =>
+  bnb
+    .all(indents, notations)
+    .map(([is, v]) => ({ id, lineIndex: index, text, nodes: v, indent: is }));

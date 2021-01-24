@@ -7,8 +7,6 @@ import {
 } from 'app/components/Reditor/utils/types';
 import { useEffect } from 'react';
 import { atom, useRecoilState } from 'recoil';
-import * as E from 'fp-ts/lib/Either';
-import { run } from 'parser-ts/lib/code-frame';
 import { lineParser } from 'app/components/Reditor/utils/parsers/parser';
 import produce from 'immer';
 import { deleteNthChar } from 'app/components/Reditor/utils/functions';
@@ -65,12 +63,12 @@ export const useNote = () => {
 
 // FIXME: move
 export const parse = (text: string, index: number): LineNodeM => {
-  const result = run(
-    lineParser(text, `line${index}` as LineId, index),
+  const result = lineParser(text, `line${index}` as LineId, index).tryParse(
     `${text}`,
   );
-  if (E.isRight(result)) {
-    return { type: 'line', line: result.right };
-  }
+  // if (E.isRight(result)) {
+  return { type: 'line', line: result };
+  // }
+  console.error('parser error');
   throw Error('parse error');
 };
