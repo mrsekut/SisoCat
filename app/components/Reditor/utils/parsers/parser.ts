@@ -21,6 +21,8 @@ export const indents = bnb
   .repeat()
   .map(is => is.length);
 
+const brLWithoutBrR = bnb.match(/\[(?!(.*\]))/);
+
 // -------------------------------------------------------------------------------------
 // utils
 // -------------------------------------------------------------------------------------
@@ -33,6 +35,9 @@ const max3 = (n: number) => Math.min(3, n) as 1 | 2 | 3;
 
 export const normal: bnb.Parser<NormalN> = bnb
   .match(/[^[]+/)
+  .or(brLWithoutBrR)
+  .repeat(1)
+  .map(cs => cs.join(''))
   .map(v => ({ type: 'normal', value: v }));
 
 export const strong: bnb.Parser<StrongN> = brackets(
@@ -63,7 +68,7 @@ export const link: bnb.Parser<LinkN> = brackets(bnb.match(/[^\]]+/)).map(v => ({
 
 export const notation = bnb.choice(italic, strong, link);
 
-export const notations = bnb.choice(normal, notation).repeat();
+export const notations = bnb.choice(notation, normal).repeat();
 
 export const lineParser = (
   text: string,

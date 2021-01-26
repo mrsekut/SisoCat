@@ -43,19 +43,32 @@ describe('Notation Parsers', () => {
 
   it('strong', () => {
     ok(strong, '[** hoge]', { type: 'strong', value: 'hoge', level: 2 });
+    ok(strong, '[** hog[[[e]', { type: 'strong', value: 'hog[[[e', level: 2 });
   });
 
   it('italic', () => {
     ok(italic, '[/ hoge]', { type: 'italic', value: 'hoge' });
   });
+});
 
-  it('notation', () => {
+describe('Notation Parsers', () => {
+  it('strong or normal', () => {
     ok(notation, '[** hoge]', { type: 'strong', value: 'hoge', level: 2 });
     ok(notation, '[**hoge]', { type: 'link', references: [], value: '**hoge' });
   });
 });
 
-describe('Line Parsers', () => {
+describe('Notations Parsers', () => {
+  it('normal', () => {
+    ok(notations, '[hoge', [{ type: 'normal', value: '[hoge' }]);
+    ok(notations, 'hoge[hoge', [{ type: 'normal', value: 'hoge[hoge' }]);
+    ok(notations, 'hoge[ho[[ss]ge', [
+      { type: 'normal', value: 'hoge' },
+      { type: 'link', value: 'ho[[ss', references: [] },
+      { type: 'normal', value: 'ge' },
+    ]);
+  });
+
   it('notations', () => {
     ok(notations, '[TypeScript]は、 [*** すごい]', [
       { type: 'link', references: [], value: 'TypeScript' },
@@ -70,7 +83,9 @@ describe('Line Parsers', () => {
       { type: 'normal', value: 'は ' },
     ]);
   });
+});
 
+describe('Line Parsers', () => {
   it('notations', () => {
     const text = '\t\t 　[TypeScript]は、 [*** すごい]';
     ok(lineParser(text, 'line2', 3), text, {
