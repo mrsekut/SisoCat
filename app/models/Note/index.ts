@@ -9,7 +9,10 @@ import { useEffect } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { lineParser } from 'app/components/Reditor/utils/parsers/parser';
 import produce from 'immer';
-import { deleteNthChar } from 'app/components/Reditor/utils/functions';
+import {
+  deleteNthChar,
+  insertNthChar,
+} from 'app/components/Reditor/utils/functions';
 
 export type ResNote = {
   readonly id: NoteId;
@@ -48,8 +51,10 @@ export const useNote = () => {
     });
   };
 
-  const insertValue = (ln: number, col: number) => (value: string) => {
-    console.log('insert');
+  const insertChar = (ln: number, col: number, value: string) => {
+    const line = note?.lines[ln] ?? '';
+    const inserted = insertNthChar(line, col, value);
+    updateLine(ln, inserted);
   };
 
   const removeChar = (ln: number, col: number) => {
@@ -58,7 +63,7 @@ export const useNote = () => {
     updateLine(ln, deleted);
   };
 
-  return { note, setNote, removeChar };
+  return { note, setNote, removeChar, insertChar };
 };
 
 // FIXME: move
@@ -66,9 +71,6 @@ export const parse = (text: string, index: number): LineNodeM => {
   const result = lineParser(text, `line${index}` as LineId, index).tryParse(
     `${text}`,
   );
-  // if (E.isRight(result)) {
+
   return { type: 'line', line: result };
-  // }
-  console.error('parser error');
-  throw Error('parse error');
 };

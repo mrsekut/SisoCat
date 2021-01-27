@@ -8,12 +8,12 @@ import { useNote } from 'app/models/Note';
 
 export const Reditor: React.FC = () => {
   const keys = useCursorKeymap();
-  const { remove } = useNoteOp();
-  useHotKeyMapping({ ...keys, remove });
+  const { remove, insert } = useNoteOp();
+  const { keyMapping } = useHotKeyMapping({ ...keys, remove, insert });
 
   return (
     <x.div bg='gray-200' position='relative'>
-      <Cursor />
+      <Cursor onKeyDown={keyMapping} />
       <TextLines />
     </x.div>
   );

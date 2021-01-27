@@ -1,9 +1,15 @@
-import { useHotkeys } from 'react-hotkeys-hook';
-
-type Key = 'up' | 'right' | 'down' | 'left' | 'begin' | 'end' | 'remove';
+type Key =
+  | 'up'
+  | 'right'
+  | 'down'
+  | 'left'
+  | 'begin'
+  | 'end'
+  | 'insert'
+  | 'remove';
 
 export type DepsHotkey = {
-  fn: () => void;
+  fn: (v?: any) => void; // FIXME: type
   deps: any[];
 };
 
@@ -18,18 +24,60 @@ export const useHotKeyMapping = ({
   left,
   begin,
   end,
+  insert,
   remove,
 }: Args) => {
-  /**
-   * key mappings
-   */
-  useHotkeys('up', up.fn, {}, up.deps);
-  useHotkeys('right', right.fn, {}, right.deps);
-  useHotkeys('down', down.fn, {}, down.deps);
-  useHotkeys('left', left.fn, {}, left.deps);
+  const keyMapping = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const key = e.nativeEvent.key;
 
-  useHotkeys('backspace', remove.fn, {}, remove.deps);
+    if (e.ctrlKey) {
+      switch (key) {
+        case 'a':
+          begin.fn();
+          break;
+        case 'e':
+          // FIXME: 効いていない
+          end.fn();
+          break;
+        default:
+          break;
+      }
+      return;
+    }
 
-  useHotkeys('ctrl+a', begin.fn, {}, begin.deps);
-  useHotkeys('ctrl+e', end.fn, {}, end.deps); // FIXME: 効いていない
+    if (e.altKey) {
+      return;
+    }
+
+    if (e.shiftKey) {
+      return;
+    }
+
+    switch (key) {
+      case 'ArrowUp':
+        up.fn();
+        break;
+      case 'ArrowRight':
+        right.fn();
+        break;
+      case 'ArrowDown':
+        down.fn();
+        break;
+      case 'ArrowLeft':
+        left.fn();
+        break;
+
+      case 'Backspace':
+        remove.fn();
+        break;
+      default:
+        insert.fn(key);
+        break;
+    }
+
+    e.preventDefault();
+    e.nativeEvent.stopImmediatePropagation();
+  };
+
+  return { keyMapping };
 };

@@ -49,20 +49,30 @@ export const cursorS = atom<CursorM>({
  * e.g. カーソル位置の文字削除、文字入力
  */
 export const useNoteOp = () => {
-  const { note, removeChar } = useNote();
-  const { left } = useCursorKeymap();
+  const { note, removeChar, insertChar } = useNote();
+  const { left, right } = useCursorKeymap();
   const [cursor, setCursor] = useRecoilState(cursorS);
+  const { ln, col } = cursor.pos;
 
   // cursorが指しているlnのline
   const line = note?.lines[cursor.pos.ln];
 
   const remove = () => {
-    const { ln, col } = cursor.pos;
     removeChar(ln, col);
     left.fn();
   };
 
-  return { note, remove: { fn: remove, deps: [cursor] } };
+  const insert = (value: string) => {
+    insertChar(ln, col, value);
+    right.fn();
+  };
+
+  // FIXME: fnのinterfaceを修正する(depsが不要になった)
+  return {
+    note,
+    remove: { fn: remove, deps: [cursor] },
+    insert: { fn: insert, deps: [cursor] },
+  };
 };
 
 /**
