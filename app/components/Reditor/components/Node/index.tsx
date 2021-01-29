@@ -39,6 +39,7 @@ const Line: React.FC<{
 }> = ({ line, index, isFocus }) => {
   const setLineText = useSetRecoilState(cursorS);
 
+  // FIXME:
   useEffect(() => {
     if (isFocus) {
       setLineText(cur => {

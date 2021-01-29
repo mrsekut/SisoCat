@@ -1,14 +1,16 @@
-type Key =
-  | 'up'
-  | 'right'
-  | 'down'
-  | 'left'
-  | 'begin'
-  | 'end'
-  | 'insert'
-  | 'remove';
+type Key = 'up' | 'right' | 'down' | 'left' | 'begin' | 'end' | 'remove';
 
 type Args = Record<Key, (v?: any) => void>;
+
+const isMacOS = () => navigator.userAgent.indexOf('Mac OS X') > -1;
+
+const command = (e: React.KeyboardEvent<HTMLTextAreaElement>) => (
+  key: string,
+) =>
+  (!isMacOS() ? e.ctrlKey && !e.metaKey : e.metaKey && !e.ctrlKey) &&
+  e.key == key &&
+  !e.altKey &&
+  !e.shiftKey;
 
 export const useHotKeyMapping = ({
   up,
@@ -17,11 +19,20 @@ export const useHotKeyMapping = ({
   left,
   begin,
   end,
-  insert,
   remove,
 }: Args) => {
   const keyMapping = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const key = e.nativeEvent.key;
+    const cmd = command(e);
+
+    if (cmd('z')) {
+      console.log('undo');
+      return;
+    }
+
+    if (key.length == 1) {
+      return;
+    }
 
     if (e.ctrlKey) {
       switch (key) {
@@ -59,8 +70,8 @@ export const useHotKeyMapping = ({
       case 'Backspace':
         remove();
         break;
+
       default:
-        insert(key);
         break;
     }
 

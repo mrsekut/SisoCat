@@ -8,8 +8,8 @@ import { useNote } from 'app/models/Note';
 
 export const Reditor: React.FC = () => {
   const keys = useCursorKeymap();
-  const { remove, insert } = useNoteOp();
-  const { keyMapping } = useHotKeyMapping({ ...keys, remove, insert });
+  const { remove } = useNoteOp();
+  const { keyMapping } = useHotKeyMapping({ ...keys, remove });
 
   const [textareaRef, onFocus] = useFocus();
 
