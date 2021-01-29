@@ -8,14 +8,7 @@ type Key =
   | 'insert'
   | 'remove';
 
-export type DepsHotkey = {
-  fn: (v?: any) => void; // FIXME: type
-  deps: any[];
-};
-
-type Args = {
-  [key in Key]: DepsHotkey;
-};
+type Args = Record<Key, (v?: any) => void>;
 
 export const useHotKeyMapping = ({
   up,
@@ -33,11 +26,11 @@ export const useHotKeyMapping = ({
     if (e.ctrlKey) {
       switch (key) {
         case 'a':
-          begin.fn();
+          begin();
           break;
         case 'e':
           // FIXME: 効いていない
-          end.fn();
+          end();
           break;
         default:
           break;
@@ -49,29 +42,25 @@ export const useHotKeyMapping = ({
       return;
     }
 
-    if (e.shiftKey) {
-      return;
-    }
-
     switch (key) {
       case 'ArrowUp':
-        up.fn();
+        up();
         break;
       case 'ArrowRight':
-        right.fn();
+        right();
         break;
       case 'ArrowDown':
-        down.fn();
+        down();
         break;
       case 'ArrowLeft':
-        left.fn();
+        left();
         break;
 
       case 'Backspace':
-        remove.fn();
+        remove();
         break;
       default:
-        insert.fn(key);
+        insert(key);
         break;
     }
 

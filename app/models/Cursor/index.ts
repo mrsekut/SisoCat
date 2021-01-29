@@ -54,25 +54,17 @@ export const useNoteOp = () => {
   const [cursor, setCursor] = useRecoilState(cursorS);
   const { ln, col } = cursor.pos;
 
-  // cursorが指しているlnのline
-  const line = note?.lines[cursor.pos.ln];
-
   const remove = () => {
     removeChar(ln, col);
-    left.fn();
+    left();
   };
 
   const insert = (value: string) => {
     insertChar(ln, col, value);
-    right.fn();
+    right();
   };
 
-  // FIXME: fnのinterfaceを修正する(depsが不要になった)
-  return {
-    note,
-    remove: { fn: remove, deps: [cursor] },
-    insert: { fn: insert, deps: [cursor] },
-  };
+  return { note, remove, insert };
 };
 
 /**
@@ -154,15 +146,7 @@ export const useCursorKeymap = () => {
     );
   };
 
-  return {
-    up: { fn: up, deps: [] },
-    right: { fn: right, deps: [cursor] },
-    down: { fn: down, deps: [] },
-    left: { fn: left, deps: [cursor] },
-
-    begin: { fn: begin, deps: [] },
-    end: { fn: end, deps: [cursor] },
-  };
+  return { up, right, down, left, begin, end };
 };
 
 /**
