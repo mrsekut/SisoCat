@@ -20,7 +20,7 @@ export const Node: React.FC<Props> = ({ line, index }) => {
 
   return (
     <>
-      <Line line={line} index={index} isFocus={index === cursor.pos.ln} />
+      <Line line={line} index={index} isFocus={index === cursor.pos?.ln} />
       <br />
     </>
   );
@@ -41,7 +41,10 @@ const Line: React.FC<{
 
   useEffect(() => {
     if (isFocus) {
-      setLineText(cur => ({ ...cur, lineText: line }));
+      setLineText(cur => {
+        if (!cur.isFocus) return cur;
+        return { ...cur, lineText: line };
+      });
     }
   }, [isFocus]);
 

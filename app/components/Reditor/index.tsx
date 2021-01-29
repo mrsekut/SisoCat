@@ -2,7 +2,7 @@ import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Cursor } from './components/Cursor';
 import { Node } from './components/Node';
-import { useCursorKeymap, useNoteOp } from 'app/models/Cursor';
+import { useCursorKeymap, useFocus, useNoteOp } from 'app/models/Cursor';
 import { useHotKeyMapping } from './hooks/useHotKeyMapping';
 import { useNote } from 'app/models/Note';
 
@@ -11,9 +11,11 @@ export const Reditor: React.FC = () => {
   const { remove, insert } = useNoteOp();
   const { keyMapping } = useHotKeyMapping({ ...keys, remove, insert });
 
+  const [textareaRef, onFocus] = useFocus();
+
   return (
-    <x.div bg='gray-200' position='relative'>
-      <Cursor onKeyDown={keyMapping} />
+    <x.div bg='gray-200' position='relative' onClick={onFocus}>
+      <Cursor onKeyDown={keyMapping} textareaRef={textareaRef} />
       <TextLines />
     </x.div>
   );

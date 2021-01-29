@@ -34,6 +34,7 @@ export const noteS = atom<ResNote | null>({
  * ノートの内容の操作
  * カーソルの位置などには依存しない
  * NoteのModelのようなイメージ
+ * UIには関与しない
  */
 export const useNote = () => {
   const [note, setNote] = useRecoilState(noteS);

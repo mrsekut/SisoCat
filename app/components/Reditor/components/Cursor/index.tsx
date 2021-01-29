@@ -1,18 +1,21 @@
-import React, { KeyboardEventHandler } from 'react';
+import React, { KeyboardEventHandler, RefObject } from 'react';
 import styled, { x } from '@xstyled/styled-components';
 import { cursorS } from 'app/models/Cursor';
 import { useRecoilValue } from 'recoil';
 
 type Props = {
   onKeyDown: KeyboardEventHandler;
+  textareaRef: RefObject<HTMLTextAreaElement>;
 };
 
-export const Cursor: React.FC<Props> = ({ onKeyDown }) => {
+export const Cursor: React.FC<Props> = ({ onKeyDown, textareaRef }) => {
   const { pxPos } = useRecoilValue(cursorS);
+
+  if (pxPos == null) return null;
   return (
     <x.div position='absolute' top={pxPos.top} left={pxPos.left} h={'1em'}>
       <Carret />
-      <Textarea onKeyDown={onKeyDown} />
+      <Textarea ref={textareaRef} onKeyDown={onKeyDown} />
     </x.div>
   );
 };
@@ -29,7 +32,7 @@ const Carret = () => (
 );
 
 // FIXME: 日本語を入力したいなら必要
-const Textarea = styled.button`
+const Textarea = styled.textarea`
   top: 10px;
   left: 10px;
   width: 21px;

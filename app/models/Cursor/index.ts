@@ -3,6 +3,7 @@ import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
 import { decN, sum } from 'app/components/Reditor/utils/functions';
 import { useNote } from '../Note';
+import { MutableRefObject, useRef } from 'react';
 
 // px単位のposition
 type PxPos = { top: number; left: number };
@@ -16,23 +17,22 @@ type Pos = {
   col: number; // 0始まり. 0文字目の左, 1文字目の左,..
 };
 
-type CursorM = {
-  isFocus: true;
-  pos: Pos;
-  pxPos: PxPos;
-  lineText: string; // Cursorが乗っている行のtext. NOTE: あまり良くないかも知れない(その行が編集された時にここも更新しないといけない)
-};
-// | {
-//     isFocus: false;
-//   };
+type CursorM =
+  | {
+      isFocus: true;
+      pos: Pos;
+      pxPos: PxPos;
+      lineText: string; // Cursorが乗っている行のtext. NOTE: あまり良くないかも知れない(その行が編集された時にここも更新しないといけない)
+    }
+  | {
+      isFocus: false;
+      pos?: undefined;
+      pxPos?: undefined;
+      lineText?: undefined;
+    };
 
 const cursorInit: CursorM = {
-  // isFocus: false,
-
-  isFocus: true,
-  pos: { ln: 0, col: 0 },
-  pxPos: { top: 0, left: 0 },
-  lineText: '',
+  isFocus: false,
 };
 
 export const cursorS = atom<CursorM>({
@@ -51,20 +51,41 @@ export const cursorS = atom<CursorM>({
 export const useNoteOp = () => {
   const { note, removeChar, insertChar } = useNote();
   const { left, right } = useCursorKeymap();
-  const [cursor, setCursor] = useRecoilState(cursorS);
-  const { ln, col } = cursor.pos;
+  const [cursor] = useRecoilState(cursorS);
 
   const remove = () => {
-    removeChar(ln, col);
+    if (cursor.pos == null) return;
+    removeChar(cursor.pos.ln, cursor.pos.col);
     left();
   };
 
   const insert = (value: string) => {
-    insertChar(ln, col, value);
+    if (cursor.pos == null) return;
+    insertChar(cursor.pos.ln, cursor.pos.col, value);
     right();
   };
 
   return { note, remove, insert };
+};
+
+export const useFocus = (): [
+  MutableRefObject<HTMLTextAreaElement | null>,
+  () => void,
+] => {
+  const [, setCursor] = useRecoilState(cursorS);
+  const ref = useRef<HTMLTextAreaElement | null>(null);
+  const onFocus = () => {
+    ref.current?.focus();
+    // FIXME: pos
+    setCursor({
+      isFocus: true,
+      pos: { ln: 0, col: 0 },
+      pxPos: { top: 0, left: 0 },
+      lineText: '',
+    });
+  };
+
+  return [ref, onFocus];
 };
 
 /**
@@ -76,8 +97,11 @@ export const useCursorKeymap = () => {
   const fontSize = useFontSize('base');
   const font = useFont('mono');
 
-  const textWidths = getTextWidths(cursor.lineText, `${fontSize} ${font}`);
-  const textLength = cursor.lineText.length;
+  const textWidths = getTextWidths(
+    cursor.lineText ?? '',
+    `${fontSize} ${font}`,
+  );
+  const textLength = cursor.lineText?.length ?? 0;
 
   // FIXME:
   // const lineHeight = useLineHeight('snug');
@@ -90,16 +114,18 @@ export const useCursorKeymap = () => {
    * =====================
    */
   const up = () => {
-    setCursor(cur =>
-      produce(cur, c => {
+    setCursor(cur => {
+      if (!cur.isFocus) return cur;
+      return produce(cur, c => {
         c.pos.ln = decN(cur.pos.ln, 1);
         c.pxPos.top = decN(cur.pxPos.top, lineHeight);
-      }),
-    );
+      });
+    });
   };
 
   const right = () => {
     setCursor(cur => {
+      if (!cur.isFocus) return cur;
       if (cur.pos.col === textLength) {
         return cur;
       }
@@ -111,39 +137,43 @@ export const useCursorKeymap = () => {
   };
 
   const down = () => {
-    setCursor(cur =>
-      produce(cur, c => {
+    setCursor(cur => {
+      if (!cur.isFocus) return cur;
+      return produce(cur, c => {
         c.pos.ln = cur.pos.ln + 1;
         c.pxPos.top = cur.pxPos.top + lineHeight;
-      }),
-    );
+      });
+    });
   };
 
   const left = () => {
-    setCursor(cur =>
-      produce(cur, c => {
+    setCursor(cur => {
+      if (!cur.isFocus) return cur;
+      return produce(cur, c => {
         c.pos.col = decN(cur.pos.col, 1);
         c.pxPos.left = decN(cur.pxPos.left, textWidths[decN(cur.pos.col, 1)]);
-      }),
-    );
+      });
+    });
   };
 
   const begin = () => {
-    setCursor(cur =>
-      produce(cur, c => {
+    setCursor(cur => {
+      if (!cur.isFocus) return cur;
+      return produce(cur, c => {
         c.pos.col = 0;
         c.pxPos.left = 0;
-      }),
-    );
+      });
+    });
   };
 
   const end = () => {
-    setCursor(cur =>
-      produce(cur, c => {
+    setCursor(cur => {
+      if (!cur.isFocus) return cur;
+      return produce(cur, c => {
         c.pos.col = textLength;
         c.pxPos.left = sum(textWidths);
-      }),
-    );
+      });
+    });
   };
 
   return { up, right, down, left, begin, end };

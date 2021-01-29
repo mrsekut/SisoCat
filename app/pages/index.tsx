@@ -7,7 +7,7 @@ const Home: BlitzPage = () => {
   return (
     <x.div className='container'>
       <x.main>
-        <Reditor text='私は[Haskell]が好きです' />
+        <Reditor />
       </x.main>
     </x.div>
   );
