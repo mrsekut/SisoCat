@@ -39,6 +39,10 @@ describe('Notation Parsers', () => {
         value: 'hoge hoge',
       });
     });
+
+    it('empty', () => {
+      ok(link, '[]', { type: 'link', references: [], value: '' });
+    });
   });
 
   it('strong', () => {

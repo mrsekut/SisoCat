@@ -56,7 +56,7 @@ export const italic: bnb.Parser<ItalicN> = brackets(
     .map(v => ({ type: 'italic', value: v })),
 );
 
-export const link: bnb.Parser<LinkN> = brackets(bnb.match(/[^\]]+/)).map(v => ({
+export const link: bnb.Parser<LinkN> = brackets(bnb.match(/[^\]]*/)).map(v => ({
   type: 'link',
   references: [],
   value: v,
