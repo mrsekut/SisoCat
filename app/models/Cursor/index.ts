@@ -1,9 +1,9 @@
 import { atom, useRecoilState } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
-import { decN, sum } from 'app/components/Reditor/utils/functions';
 import { useNote } from '../Note';
 import { MutableRefObject, useRef } from 'react';
+import { decN, sum } from 'app/utils/functions';
 
 // px単位のposition
 type PxPos = { top: number; left: number };

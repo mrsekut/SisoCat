@@ -9,10 +9,7 @@ import { useEffect } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { lineParser } from 'app/components/Reditor/utils/parsers/parser';
 import produce from 'immer';
-import {
-  deleteNthChar,
-  insertNthChar,
-} from 'app/components/Reditor/utils/functions';
+import { deleteNthChar, insertNthChar } from 'app/utils/functions';
 
 export type ResNote = {
   readonly id: NoteId;

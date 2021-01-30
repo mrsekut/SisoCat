@@ -1,4 +1,3 @@
-// FIXME: このファイル自体の置き場所がおかしい
 export const deleteNthChar = (str: string, n: number) =>
   str.slice(0, n) + str.slice(n + 1);
 
