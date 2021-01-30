@@ -35,15 +35,14 @@
     "arrowParens": "avoid"
   },
   "dependencies": {
-    "@prisma/cli": "~2.12",
-    "@prisma/client": "~2.12",
+    "@prisma/client": "2.14.0",
     "@xstyled/styled-components": "2.0.0",
-    "blitz": "0.27.1",
+    "blitz": "canary",
     "bread-n-butter": "0.6.0",
     "immer": "8.0.0",
-    "react": "0.0.0-experimental-4ead6b530",
-    "react-dom": "0.0.0-experimental-4ead6b530",
-    "react-error-boundary": "2.3.2",
+    "react": "0.0.0-experimental-3310209d0",
+    "react-dom": "0.0.0-experimental-3310209d0",
+    "react-error-boundary": "3.1.0",
     "react-hook-form": "6.13.1",
     "recoil": "0.1.2",
     "secure-password": "4.0.0",
@@ -52,6 +51,7 @@
     "zod": "1.11.11"
   },
   "devDependencies": {
+    "@prisma/cli": "2.14.0",
     "@testing-library/jest-dom": "5.11.6",
     "@testing-library/react": "11.2.2",
     "@testing-library/react-hooks": "3.7.0",

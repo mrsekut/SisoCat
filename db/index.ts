@@ -8,10 +8,7 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   // Ensure the prisma instance is re-used during hot-reloading
   // Otherwise, a new client will be created on every reload
-
-  // @ts-ignore
   globalThis['prisma'] = globalThis['prisma'] || new PrismaClient();
-  // @ts-ignore
   prisma = globalThis['prisma'];
 }
 
