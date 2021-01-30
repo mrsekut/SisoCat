@@ -10,7 +10,7 @@ export const Reditor: React.FC = () => {
   const { remove } = useNoteOp();
   const { keyMapping } = useHotKeyMapping({ ...keys, remove });
 
-  const [textareaRef, onFocus] = useFocus();
+  const { ref: textareaRef, onFocus } = useFocus();
 
   return (
     <x.div bg='gray-200' position='relative' onClick={onFocus}>

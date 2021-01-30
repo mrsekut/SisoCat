@@ -1,9 +1,10 @@
-import { atom, useRecoilState } from 'recoil';
+import { atom, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
-import { useNote } from '../Note';
-import { MutableRefObject, useRef } from 'react';
+import { noteS, useNote } from '../Note';
+import { useRef } from 'react';
 import { decN, sum } from 'app/utils/functions';
+import { noteStyle } from 'app/utils/style';
 
 // px単位のposition
 type PxPos = { top: number; left: number };
@@ -45,6 +46,9 @@ export const cursorS = atom<CursorM>({
 // -------------------------------------------------------------------------------------
 
 /**
+ * useNoteOp
+ * =====================
+ *
  * useCursorKeymapとuseNoteの接続
  * e.g. カーソル位置の文字削除、文字入力
  */
@@ -68,27 +72,57 @@ export const useNoteOp = () => {
   return { note, remove, insert };
 };
 
-export const useFocus = (): [
-  MutableRefObject<HTMLTextAreaElement | null>,
-  () => void,
-] => {
+/**
+ * useFocus
+ * =====================
+ *
+ */
+
+export const useFocus = () => {
   const [, setCursor] = useRecoilState(cursorS);
+  const note = useRecoilValue(noteS);
   const ref = useRef<HTMLTextAreaElement | null>(null);
-  const onFocus = () => {
+
+  const calcCoordinate = (
+    x: number,
+    y: number,
+  ): { ln: number; col: number } => {
+    // FIXME: col
+    return {
+      ln: Math.floor(y / noteStyle.lineHeight),
+      col: 0,
+    };
+  };
+
+  const onFocus = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     ref.current?.focus();
-    // FIXME: pos
+    const pos = calcCoordinate(e.clientX, e.clientY);
+    const line = note?.lines[pos.ln];
+
     setCursor({
       isFocus: true,
-      pos: { ln: 0, col: 0 },
-      pxPos: { top: 0, left: 0 },
-      lineText: '',
+      pos,
+      pxPos: {
+        top: pos.ln * noteStyle.lineHeight,
+        left: 0, // FIXME:
+      },
+      lineText: line ?? '',
     });
   };
 
-  return [ref, onFocus];
+  const setLineText = (line: string) => {
+    setCursor(cur => {
+      if (!cur.isFocus) return cur;
+      return { ...cur, lineText: line };
+    });
+  };
+
+  return { ref, onFocus, setLineText };
 };
 
 /**
+ * useCursorKeymapuseFocus
+ * =====================
  * ノートの内容には依存しないカーソルの操作, 移動
  */
 export const useCursorKeymap = () => {
@@ -103,9 +137,7 @@ export const useCursorKeymap = () => {
   );
   const textLength = cursor.lineText?.length ?? 0;
 
-  // FIXME:
-  // const lineHeight = useLineHeight('snug');
-  const lineHeight = 24;
+  const lineHeight = noteStyle.lineHeight;
 
   //  FIXME: useCallback
 

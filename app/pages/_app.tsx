@@ -9,11 +9,8 @@ import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { RecoilRoot } from 'recoil';
 import { queryCache } from 'react-query';
 import LoginForm from 'app/auth/components/LoginForm';
-import { defaultTheme, ThemeProvider } from '@xstyled/styled-components';
-
-const theme = {
-  ...defaultTheme,
-};
+import { ThemeProvider } from '@xstyled/styled-components';
+import { theme } from 'app/utils/style';
 
 export default function App({ Component, pageProps }: AppProps) {
   const getLayout = Component.getLayout || (page => page);

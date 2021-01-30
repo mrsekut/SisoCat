@@ -2,6 +2,7 @@ import React, { KeyboardEventHandler, RefObject, useState } from 'react';
 import styled, { x } from '@xstyled/styled-components';
 import { cursorS, useCursorKeymap, useNoteOp } from 'app/models/Cursor';
 import { useRecoilValue } from 'recoil';
+import { noteStyle } from 'app/utils/style';
 
 type Props = {
   onKeyDown: KeyboardEventHandler;
@@ -62,7 +63,7 @@ const Carret = () => (
     h='1.5em'
     w={1.5}
     fontSize='sm'
-    lineHeight='snug'
+    lineHeight={noteStyle.lineHeight}
     bg='red-500'
     display='block'
   />

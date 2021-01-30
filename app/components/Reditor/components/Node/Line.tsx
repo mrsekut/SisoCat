@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NotationM } from '../../utils/types';
 import { x } from '@xstyled/styled-components';
-import { useSetRecoilState } from 'recoil';
-import { cursorS } from 'app/models/Cursor';
+import { useFocus } from 'app/models/Cursor';
 import { parse } from 'app/models/Note';
 
 type Props = {
@@ -12,15 +11,11 @@ type Props = {
 };
 
 export const Line: React.FC<Props> = ({ line, index, isFocus }) => {
-  const setLineText = useSetRecoilState(cursorS);
+  const { setLineText } = useFocus();
 
-  // FIXME:
   useEffect(() => {
     if (isFocus) {
-      setLineText(cur => {
-        if (!cur.isFocus) return cur;
-        return { ...cur, lineText: line };
-      });
+      setLineText(line);
     }
   }, [isFocus]);
 
