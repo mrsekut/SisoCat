@@ -1,18 +1,22 @@
 import { PrismaClient } from '@prisma/client';
 export * from '@prisma/client';
 
-let prisma: PrismaClient;
+const prismaClientPropertyName = `__prevent-name-collision__prisma`;
+type GlobalThisWithPrismaClient = typeof globalThis & {
+  [prismaClientPropertyName]: PrismaClient;
+};
 
-if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient();
-} else {
-  // Ensure the prisma instance is re-used during hot-reloading
-  // Otherwise, a new client will be created on every reload
-
-  // @ts-ignore
-  globalThis['prisma'] = globalThis['prisma'] || new PrismaClient();
-  // @ts-ignore
-  prisma = globalThis['prisma'];
-}
+const getPrismaClient = () => {
+  if (process.env.NODE_ENV === `production`) {
+    return new PrismaClient();
+  } else {
+    const newGlobalThis = globalThis as GlobalThisWithPrismaClient;
+    if (!newGlobalThis[prismaClientPropertyName]) {
+      newGlobalThis[prismaClientPropertyName] = new PrismaClient();
+    }
+    return newGlobalThis[prismaClientPropertyName];
+  }
+};
+const prisma = getPrismaClient();
 
 export default prisma;
