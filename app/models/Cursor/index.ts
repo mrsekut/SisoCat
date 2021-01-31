@@ -1,7 +1,7 @@
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
-import { Line, noteS, useNote } from '../Note';
+import { Line, lineInit, noteS, useNote } from '../Note';
 import { useRef } from 'react';
 import { decN, sum } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
@@ -45,8 +45,8 @@ export const lineS = selector({
   key: 'lineS',
   get: ({ get }) => {
     const cursor = get(cursorS);
-    if (!cursor.isFocus) return undefined;
-    return get(noteS)?.lines[cursor.pos.ln];
+    if (!cursor.isFocus) return lineInit;
+    return get(noteS)?.lines[cursor.pos.ln] ?? lineInit;
   },
 });
 
@@ -85,9 +85,7 @@ export const useNoteOp = () => {
 export const useFocus = () => {
   const [, setCursor] = useRecoilState(cursorS);
   const ref = useRef<HTMLTextAreaElement | null>(null);
-
-  const line = useRecoilValue(lineS)?.value ?? '';
-  const { textWidths } = useTextWidths();
+  const line = useRecoilValue(lineS);
 
   const calcCoordinate = (
     x: number,
@@ -112,7 +110,7 @@ export const useFocus = () => {
         top: pos.ln * noteStyle.lineHeight,
         left: 0, // FIXME:
       },
-      line: { value: line, widths: textWidths(line) },
+      line,
     });
   };
 
@@ -125,7 +123,6 @@ export const useFocus = () => {
 export const useCursorKeymap = () => {
   const [cursor, setCursor] = useRecoilState(cursorS);
   const note = useRecoilValue(noteS);
-  const { textWidths } = useTextWidths();
 
   const textLength = cursor.line?.value?.length ?? 0;
 
@@ -143,11 +140,14 @@ export const useCursorKeymap = () => {
 
       return produce(cur, c => {
         const ln = decN(cur.pos.ln, 1);
-        const line = note?.lines[ln].value ?? '';
+        const nextLine = note?.lines[ln] ?? lineInit;
+        const { col, left } = cursorUpDown(cur.pxPos.left, nextLine.widths);
 
         c.pos.ln = ln;
-        c.pxPos.top = decN(cur.pxPos.top, lineHeight); // FIXME:
-        c.line = { value: line, widths: textWidths(line) };
+        c.pos.col = col;
+        c.pxPos.top = decN(cur.pxPos.top, lineHeight);
+        c.pxPos.left = left;
+        c.line = nextLine;
       });
     });
   };
@@ -170,11 +170,14 @@ export const useCursorKeymap = () => {
       if (!cur.isFocus) return cur;
       return produce(cur, c => {
         const ln = cur.pos.ln + 1;
-        const line = note?.lines[ln].value ?? '';
+        const nextLine = note?.lines[ln] ?? lineInit;
+        const { col, left } = cursorUpDown(cur.pxPos.left, nextLine.widths);
 
         c.pos.ln = ln;
-        c.pxPos.top = cur.pxPos.top + lineHeight; // FIXME:
-        c.line = { value: line, widths: textWidths(line) };
+        c.pos.col = col;
+        c.pxPos.top = cur.pxPos.top + lineHeight;
+        c.pxPos.left = left;
+        c.line = nextLine;
       });
     });
   };
@@ -242,4 +245,14 @@ export const getTextWidths = (text: string, font: string): number[] => {
   }
 
   return [];
+};
+
+// cursorを上下に移動した時の、cursorの位置を決定する
+export const cursorUpDown = (
+  curLeft: number,
+  nextLineWidths: number[],
+): { col: number; left: number } => {
+  const ws = nextLineWidths.map((sum => (value: number) => (sum += value))(0));
+  const idx = ws.findIndex(w => curLeft < w);
+  return { col: idx, left: ws[idx - 1] ?? 0 };
 };

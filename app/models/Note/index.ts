@@ -28,6 +28,11 @@ export type Line = {
   widths: number[];
 };
 
+export const lineInit: Line = {
+  value: '',
+  widths: [],
+};
+
 export const noteS = atom<ResNote | null>({
   key: 'noteS',
   default: null,
