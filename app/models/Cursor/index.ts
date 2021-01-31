@@ -254,5 +254,7 @@ export const cursorUpDown = (
 ): { col: number; left: number } => {
   const ws = nextLineWidths.map((sum => (value: number) => (sum += value))(0));
   const idx = ws.findIndex(w => curLeft < w);
-  return { col: idx, left: ws[idx - 1] ?? 0 };
+  return ws[idx] - curLeft <= nextLineWidths[idx] / 2
+    ? { col: idx + 1, left: ws[idx] }
+    : { col: idx, left: ws[idx - 1] ?? 0 };
 };
