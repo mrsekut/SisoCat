@@ -1,7 +1,7 @@
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
-import { noteS, useNote } from '../Note';
+import { Line, noteS, useNote } from '../Note';
 import { useRef } from 'react';
 import { decN, sum } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
@@ -23,15 +23,13 @@ type CursorM =
       isFocus: true;
       pos: Pos;
       pxPos: PxPos;
-      lineText: string; // Cursorが乗っている行のtext. NOTE: あまり良くないかも知れない(その行が編集された時にここも更新しないといけない)
-      textWidths: number[];
+      line: Line; // on the cursor
     }
   | {
       isFocus: false;
       pos?: undefined;
       pxPos?: undefined;
-      lineText?: undefined;
-      textWidths?: undefined;
+      line?: undefined;
     };
 
 const cursorInit: CursorM = {
@@ -88,7 +86,7 @@ export const useFocus = () => {
   const [, setCursor] = useRecoilState(cursorS);
   const ref = useRef<HTMLTextAreaElement | null>(null);
 
-  const line = useRecoilValue(lineS);
+  const line = useRecoilValue(lineS)?.value ?? '';
   const { textWidths } = useTextWidths();
 
   const calcCoordinate = (
@@ -102,6 +100,7 @@ export const useFocus = () => {
     };
   };
 
+  // initialize cusror
   const onFocus = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     ref.current?.focus();
     const pos = calcCoordinate(e.clientX, e.clientY);
@@ -113,8 +112,7 @@ export const useFocus = () => {
         top: pos.ln * noteStyle.lineHeight,
         left: 0, // FIXME:
       },
-      lineText: line ?? '',
-      textWidths: textWidths(line ?? ''),
+      line: { value: line, widths: textWidths(line) },
     });
   };
 
@@ -129,7 +127,7 @@ export const useCursorKeymap = () => {
   const note = useRecoilValue(noteS);
   const { textWidths } = useTextWidths();
 
-  const textLength = cursor.lineText?.length ?? 0;
+  const textLength = cursor.line?.value?.length ?? 0;
 
   const lineHeight = noteStyle.lineHeight;
 
@@ -145,12 +143,11 @@ export const useCursorKeymap = () => {
 
       return produce(cur, c => {
         const ln = decN(cur.pos.ln, 1);
-        const line = note?.lines[ln] ?? '';
+        const line = note?.lines[ln].value ?? '';
 
         c.pos.ln = ln;
-        c.pxPos.top = decN(cur.pxPos.top, lineHeight);
-        c.lineText = line;
-        c.textWidths = textWidths(line);
+        c.pxPos.top = decN(cur.pxPos.top, lineHeight); // FIXME:
+        c.line = { value: line, widths: textWidths(line) };
       });
     });
   };
@@ -163,7 +160,7 @@ export const useCursorKeymap = () => {
       }
       return produce(cur, c => {
         c.pos.col = cur.pos.col + 1;
-        c.pxPos.left = cur.pxPos.left + cur.textWidths[cur.pos.col];
+        c.pxPos.left = cur.pxPos.left + cur.line.widths[cur.pos.col];
       });
     });
   };
@@ -173,12 +170,11 @@ export const useCursorKeymap = () => {
       if (!cur.isFocus) return cur;
       return produce(cur, c => {
         const ln = cur.pos.ln + 1;
-        const line = note?.lines[ln] ?? '';
+        const line = note?.lines[ln].value ?? '';
 
         c.pos.ln = ln;
-        c.pxPos.top = cur.pxPos.top + lineHeight;
-        c.lineText = line;
-        c.textWidths = textWidths(line);
+        c.pxPos.top = cur.pxPos.top + lineHeight; // FIXME:
+        c.line = { value: line, widths: textWidths(line) };
       });
     });
   };
@@ -190,7 +186,7 @@ export const useCursorKeymap = () => {
         c.pos.col = decN(cur.pos.col, 1);
         c.pxPos.left = decN(
           cur.pxPos.left,
-          cur.textWidths[decN(cur.pos.col, 1)],
+          cur.line.widths[decN(cur.pos.col, 1)],
         );
       });
     });
@@ -211,7 +207,7 @@ export const useCursorKeymap = () => {
       if (!cur.isFocus) return cur;
       return produce(cur, c => {
         c.pos.col = textLength;
-        c.pxPos.left = sum(cur.textWidths);
+        c.pxPos.left = sum(cur.line.widths);
       });
     });
   };
@@ -222,7 +218,7 @@ export const useCursorKeymap = () => {
 /**
  *
  */
-const useTextWidths = () => {
+export const useTextWidths = () => {
   const fontSize = useFontSize('base');
   const font = useFont('mono');
   const textWidths = (line: string) =>

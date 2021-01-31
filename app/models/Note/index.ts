@@ -10,6 +10,7 @@ import { atom, useRecoilState } from 'recoil';
 import { lineParser } from 'app/components/Reditor/utils/parsers/parser';
 import produce from 'immer';
 import { deleteNthChar, insertNthChar } from 'app/utils/functions';
+import { useTextWidths } from '../Cursor';
 
 export type ResNote = {
   readonly id: NoteId;
@@ -17,9 +18,14 @@ export type ResNote = {
   readonly title: string;
   readonly created: number;
   readonly updated: number;
-  readonly lines: string[];
+  readonly lines: Line[];
   readonly references: NoteId[];
   readonly referenced: NoteId[]; // NOTE: 必要？
+};
+
+export type Line = {
+  value: string;
+  widths: number[];
 };
 
 export const noteS = atom<ResNote | null>({
@@ -35,6 +41,7 @@ export const noteS = atom<ResNote | null>({
  */
 export const useNote = () => {
   const [note, setNote] = useRecoilState(noteS);
+  const { textWidths } = useTextWidths();
 
   useEffect(() => {
     setNote(note0);
@@ -44,19 +51,19 @@ export const useNote = () => {
     setNote(note => {
       if (note == null) return note;
       return produce(note, n => {
-        n.lines[ln] = line;
+        n.lines[ln] = { value: line, widths: textWidths(line) };
       });
     });
   };
 
   const insertChar = (ln: number, col: number, value: string) => {
-    const line = note?.lines[ln] ?? '';
+    const line = note?.lines[ln].value ?? '';
     const inserted = insertNthChar(line, col, value);
     updateLine(ln, inserted);
   };
 
   const removeChar = (ln: number, col: number) => {
-    const line = note?.lines[ln] ?? '';
+    const line = note?.lines[ln].value ?? '';
     const deleted = deleteNthChar(line, col - 1);
     updateLine(ln, deleted);
   };

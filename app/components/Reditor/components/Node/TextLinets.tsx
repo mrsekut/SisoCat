@@ -13,7 +13,7 @@ export const TextLines: React.FC = () => {
   return (
     <x.div>
       {note.lines.map((line, index) => (
-        <Node line={line} index={index} />
+        <Node line={line.value} index={index} />
       ))}
     </x.div>
   );
