@@ -1,4 +1,4 @@
-import { atom, useRecoilState, useRecoilValue } from 'recoil';
+import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
 import { noteS, useNote } from '../Note';
@@ -24,12 +24,14 @@ type CursorM =
       pos: Pos;
       pxPos: PxPos;
       lineText: string; // Cursorが乗っている行のtext. NOTE: あまり良くないかも知れない(その行が編集された時にここも更新しないといけない)
+      textWidths: number[];
     }
   | {
       isFocus: false;
       pos?: undefined;
       pxPos?: undefined;
       lineText?: undefined;
+      textWidths?: undefined;
     };
 
 const cursorInit: CursorM = {
@@ -41,14 +43,20 @@ export const cursorS = atom<CursorM>({
   default: cursorInit,
 });
 
+export const lineS = selector({
+  key: 'lineS',
+  get: ({ get }) => {
+    const cursor = get(cursorS);
+    if (!cursor.isFocus) return undefined;
+    return get(noteS)?.lines[cursor.pos.ln];
+  },
+});
+
 // -------------------------------------------------------------------------------------
 // Hooks
 // -------------------------------------------------------------------------------------
 
 /**
- * useNoteOp
- * =====================
- *
  * useCursorKeymapとuseNoteの接続
  * e.g. カーソル位置の文字削除、文字入力
  */
@@ -73,15 +81,15 @@ export const useNoteOp = () => {
 };
 
 /**
- * useFocus
- * =====================
  *
  */
 
 export const useFocus = () => {
   const [, setCursor] = useRecoilState(cursorS);
-  const note = useRecoilValue(noteS);
   const ref = useRef<HTMLTextAreaElement | null>(null);
+
+  const line = useRecoilValue(lineS);
+  const { textWidths } = useTextWidths();
 
   const calcCoordinate = (
     x: number,
@@ -97,7 +105,6 @@ export const useFocus = () => {
   const onFocus = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     ref.current?.focus();
     const pos = calcCoordinate(e.clientX, e.clientY);
-    const line = note?.lines[pos.ln];
 
     setCursor({
       isFocus: true,
@@ -107,34 +114,21 @@ export const useFocus = () => {
         left: 0, // FIXME:
       },
       lineText: line ?? '',
+      textWidths: textWidths(line ?? ''),
     });
   };
 
-  const setLineText = (line: string) => {
-    setCursor(cur => {
-      if (!cur.isFocus) return cur;
-      return { ...cur, lineText: line };
-    });
-  };
-
-  return { ref, onFocus, setLineText };
+  return { ref, onFocus };
 };
 
 /**
- * useCursorKeymapuseFocus
- * =====================
- * ノートの内容には依存しないカーソルの操作, 移動
+ * - カーソルの操作, 移動
  */
 export const useCursorKeymap = () => {
   const [cursor, setCursor] = useRecoilState(cursorS);
+  const note = useRecoilValue(noteS);
+  const { textWidths } = useTextWidths();
 
-  const fontSize = useFontSize('base');
-  const font = useFont('mono');
-
-  const textWidths = getTextWidths(
-    cursor.lineText ?? '',
-    `${fontSize} ${font}`,
-  );
   const textLength = cursor.lineText?.length ?? 0;
 
   const lineHeight = noteStyle.lineHeight;
@@ -148,9 +142,15 @@ export const useCursorKeymap = () => {
   const up = () => {
     setCursor(cur => {
       if (!cur.isFocus) return cur;
+
       return produce(cur, c => {
-        c.pos.ln = decN(cur.pos.ln, 1);
+        const ln = decN(cur.pos.ln, 1);
+        const line = note?.lines[ln] ?? '';
+
+        c.pos.ln = ln;
         c.pxPos.top = decN(cur.pxPos.top, lineHeight);
+        c.lineText = line;
+        c.textWidths = textWidths(line);
       });
     });
   };
@@ -163,7 +163,7 @@ export const useCursorKeymap = () => {
       }
       return produce(cur, c => {
         c.pos.col = cur.pos.col + 1;
-        c.pxPos.left = cur.pxPos.left + textWidths[cur.pos.col];
+        c.pxPos.left = cur.pxPos.left + cur.textWidths[cur.pos.col];
       });
     });
   };
@@ -172,8 +172,13 @@ export const useCursorKeymap = () => {
     setCursor(cur => {
       if (!cur.isFocus) return cur;
       return produce(cur, c => {
-        c.pos.ln = cur.pos.ln + 1;
+        const ln = cur.pos.ln + 1;
+        const line = note?.lines[ln] ?? '';
+
+        c.pos.ln = ln;
         c.pxPos.top = cur.pxPos.top + lineHeight;
+        c.lineText = line;
+        c.textWidths = textWidths(line);
       });
     });
   };
@@ -183,7 +188,10 @@ export const useCursorKeymap = () => {
       if (!cur.isFocus) return cur;
       return produce(cur, c => {
         c.pos.col = decN(cur.pos.col, 1);
-        c.pxPos.left = decN(cur.pxPos.left, textWidths[decN(cur.pos.col, 1)]);
+        c.pxPos.left = decN(
+          cur.pxPos.left,
+          cur.textWidths[decN(cur.pos.col, 1)],
+        );
       });
     });
   };
@@ -203,7 +211,7 @@ export const useCursorKeymap = () => {
       if (!cur.isFocus) return cur;
       return produce(cur, c => {
         c.pos.col = textLength;
-        c.pxPos.left = sum(textWidths);
+        c.pxPos.left = sum(cur.textWidths);
       });
     });
   };
@@ -212,10 +220,15 @@ export const useCursorKeymap = () => {
 };
 
 /**
- * TODO:
- *  - Focusの判定,CursorMのコメントアウトの解除
- *  - クリックした箇所へ移動
+ *
  */
+const useTextWidths = () => {
+  const fontSize = useFontSize('base');
+  const font = useFont('mono');
+  const textWidths = (line: string) =>
+    getTextWidths(line ?? '', `${fontSize} ${font}`);
+  return { textWidths };
+};
 
 // -------------------------------------------------------------------------------------
 // Utils
@@ -223,7 +236,7 @@ export const useCursorKeymap = () => {
 
 // FIXME: indentがある場合の、サイズ調整
 export const getTextWidths = (text: string, font: string): number[] => {
-  if (typeof window != 'undefined') {
+  if (window != null) {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     if (context != null) {

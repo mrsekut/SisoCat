@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NotationM } from '../../utils/types';
 import { x } from '@xstyled/styled-components';
-import { useFocus } from 'app/models/Cursor';
 import { parse } from 'app/models/Note';
 
 type Props = {
@@ -11,14 +10,6 @@ type Props = {
 };
 
 export const Line: React.FC<Props> = ({ line, index, isFocus }) => {
-  const { setLineText } = useFocus();
-
-  useEffect(() => {
-    if (isFocus) {
-      setLineText(line);
-    }
-  }, [isFocus]);
-
   const node = parse(line, index);
 
   if (isFocus) {
