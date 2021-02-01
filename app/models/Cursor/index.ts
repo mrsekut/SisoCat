@@ -6,6 +6,10 @@ import { useRef } from 'react';
 import { decN, sum } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 
+// -------------------------------------------------------------------------------------
+// Types
+// -------------------------------------------------------------------------------------
+
 // px単位のposition
 type PxPos = { top: number; left: number };
 
@@ -18,29 +22,54 @@ type Pos = {
   col: number; // 0始まり. 0文字目の左, 1文字目の左,..
 };
 
-type CursorM =
-  | {
-      isFocus: true;
-      pos: Pos;
-      pxPos: PxPos;
-      line: Line; // on the cursor
-    }
-  | {
-      isFocus: false;
-      pos?: undefined;
-      pxPos?: undefined;
-      line?: undefined;
-    };
+type CursorFocus = {
+  isFocus: true;
+  pos: Pos;
+  pxPos: PxPos;
+  line: Line; // on the cursor
+};
 
-const cursorInit: CursorM = {
+type CursorNotFocus = {
+  isFocus: false;
+  pos?: undefined;
+  pxPos?: undefined;
+  line?: undefined;
+};
+
+type _CursorM = Exclude<CursorFocus, 'line'> | Exclude<CursorNotFocus, 'lien'>;
+
+type CursorM = CursorFocus | CursorNotFocus;
+
+// -------------------------------------------------------------------------------------
+// States
+// -------------------------------------------------------------------------------------
+
+const cursorInit: _CursorM = {
   isFocus: false,
 };
 
-export const cursorS = atom<CursorM>({
-  key: 'cursorS',
+const _cursorS = atom<_CursorM>({
+  key: '_cursorS',
   default: cursorInit,
 });
 
+export const cursorS = selector<CursorM>({
+  key: 'cursorS',
+  get: ({ get }) => {
+    const cursor = get(_cursorS);
+    if (!cursor.isFocus) {
+      return cursor;
+    }
+
+    return {
+      ...cursor,
+      line: get(noteS)?.lines[cursor.pos.ln] ?? lineInit,
+    };
+  },
+  set: ({ set }, newValue) => set(_cursorS, newValue),
+});
+
+// DEPRECATED:
 export const lineS = selector({
   key: 'lineS',
   get: ({ get }) => {
@@ -147,7 +176,6 @@ export const useCursorKeymap = () => {
         c.pos.col = col;
         c.pxPos.top = decN(cur.pxPos.top, lineHeight);
         c.pxPos.left = left;
-        c.line = nextLine;
       });
     });
   };
@@ -177,7 +205,6 @@ export const useCursorKeymap = () => {
         c.pos.col = col;
         c.pxPos.top = cur.pxPos.top + lineHeight;
         c.pxPos.left = left;
-        c.line = nextLine;
       });
     });
   };
