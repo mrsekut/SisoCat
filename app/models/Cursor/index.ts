@@ -101,7 +101,7 @@ export const useNoteOp = () => {
   const insert = (value: string) => {
     if (cursor.pos == null) return;
     insertChar(cursor.pos.ln, cursor.pos.col, value);
-    right();
+    right(1);
   };
 
   return { note, remove, insert };
@@ -180,10 +180,10 @@ export const useCursorKeymap = () => {
     });
   };
 
-  const right = () => {
+  const right = (upperLimit = 0) => {
     setCursor(cur => {
       if (!cur.isFocus) return cur;
-      if (cur.pos.col === textLength) {
+      if (cur.pos.col === textLength + upperLimit) {
         return cur;
       }
       return produce(cur, c => {
@@ -279,9 +279,16 @@ export const cursorUpDown = (
   curLeft: number,
   nextLineWidths: number[],
 ): { col: number; left: number } => {
-  const ws = nextLineWidths.map((sum => (value: number) => (sum += value))(0));
-  const idx = ws.findIndex(w => curLeft < w);
-  return ws[idx] - curLeft <= nextLineWidths[idx] / 2
-    ? { col: idx + 1, left: ws[idx] }
-    : { col: idx, left: ws[idx - 1] ?? 0 };
+  const cumSum = nextLineWidths.map(
+    (sum => (value: number) => (sum += value))(0),
+  );
+  const idx = cumSum.findIndex(w => curLeft < w);
+
+  if (idx === -1) {
+    return { col: cumSum.length, left: cumSum[cumSum.length - 1] };
+  }
+
+  return cumSum[idx] - curLeft <= nextLineWidths[idx] / 2
+    ? { col: idx + 1, left: cumSum[idx] }
+    : { col: idx, left: cumSum[idx - 1] ?? 0 };
 };
