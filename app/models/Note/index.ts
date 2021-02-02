@@ -9,7 +9,11 @@ import { useEffect } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { lineParser } from 'app/components/Reditor/utils/parsers/parser';
 import produce from 'immer';
-import { deleteNthChar, insertNthChar } from 'app/utils/functions';
+import {
+  deleteNthChar,
+  insertNthChar,
+  sliceWithRest,
+} from 'app/utils/functions';
 import { useTextWidths } from '../Cursor';
 
 export type ResNote = {
@@ -61,6 +65,21 @@ export const useNote = () => {
     });
   };
 
+  const newLine = (ln: number, col: number) => {
+    const line = note?.lines[ln].value ?? '';
+    const [half, rest] = sliceWithRest(line, col);
+    setNote(note => {
+      if (note == null) return note;
+      return produce(note, n => {
+        n.lines = n.lines
+          .slice(0, ln)
+          .concat([{ value: half, widths: textWidths(half) }])
+          .concat([{ value: rest, widths: textWidths(rest) }])
+          .concat(n.lines.slice(ln + 1));
+      });
+    });
+  };
+
   const insertChar = (ln: number, col: number, value: string) => {
     const line = note?.lines[ln].value ?? '';
     const inserted = insertNthChar(line, col, value);
@@ -73,7 +92,7 @@ export const useNote = () => {
     updateLine(ln, deleted);
   };
 
-  return { note, setNote, removeChar, insertChar };
+  return { note, setNote, removeChar, insertChar, newLine };
 };
 
 // FIXME: move

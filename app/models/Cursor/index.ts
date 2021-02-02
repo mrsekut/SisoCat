@@ -88,23 +88,34 @@ export const lineS = selector({
  * e.g. カーソル位置の文字削除、文字入力
  */
 export const useNoteOp = () => {
-  const { note, removeChar, insertChar } = useNote();
-  const { left, right } = useCursorKeymap();
+  const note = useNote();
+  const { left, right, down } = useCursorKeymap();
   const [cursor] = useRecoilState(cursorS);
+
+  const newLine = () => {
+    if (cursor.pos == null) return;
+    note.newLine(cursor.pos.ln, cursor.pos.col);
+    down(true);
+  };
 
   const remove = () => {
     if (cursor.pos == null) return;
-    removeChar(cursor.pos.ln, cursor.pos.col);
+    note.removeChar(cursor.pos.ln, cursor.pos.col);
     left();
   };
 
   const insert = (value: string) => {
     if (cursor.pos == null) return;
-    insertChar(cursor.pos.ln, cursor.pos.col, value);
+    note.insertChar(cursor.pos.ln, cursor.pos.col, value);
     right(1);
   };
 
-  return { note, remove, insert };
+  return {
+    note: note.note,
+    newLine,
+    remove,
+    insert,
+  };
 };
 
 /**
@@ -193,13 +204,17 @@ export const useCursorKeymap = () => {
     });
   };
 
-  const down = () => {
+  const down = (isNewLine = false) => {
     setCursor(cur => {
       if (!cur.isFocus) return cur;
       return produce(cur, c => {
         const ln = cur.pos.ln + 1;
         const nextLine = note?.lines[ln] ?? lineInit;
-        const { col, left } = cursorUpDown(cur.pxPos.left, nextLine.widths);
+        const { col, left } = cursorUpDown(
+          cur.pxPos.left,
+          nextLine.widths,
+          isNewLine,
+        );
 
         c.pos.ln = ln;
         c.pos.col = col;
@@ -278,7 +293,16 @@ export const getTextWidths = (text: string, font: string): number[] => {
 export const cursorUpDown = (
   curLeft: number,
   nextLineWidths: number[],
+  isNewLine = false,
 ): { col: number; left: number } => {
+  if (isNewLine) {
+    return { col: 0, left: 0 };
+  }
+
+  if (nextLineWidths.length === 0) {
+    return { col: 0, left: 0 };
+  }
+
   const cumSum = nextLineWidths.map(
     (sum => (value: number) => (sum += value))(0),
   );

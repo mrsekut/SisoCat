@@ -1,4 +1,12 @@
-type Key = 'up' | 'right' | 'down' | 'left' | 'begin' | 'end' | 'remove';
+type Key =
+  | 'up'
+  | 'right'
+  | 'down'
+  | 'left'
+  | 'begin'
+  | 'end'
+  | 'remove'
+  | 'newLine';
 
 type Args = Record<Key, (v?: any) => void>;
 
@@ -20,6 +28,7 @@ export const useHotKeyMapping = ({
   begin,
   end,
   remove,
+  newLine,
 }: Args) => {
   const keyMapping = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const key = e.nativeEvent.key;
@@ -63,6 +72,9 @@ export const useHotKeyMapping = ({
         break;
       case 'Backspace':
         remove();
+        break;
+      case 'Enter':
+        newLine();
         break;
       default:
         break;

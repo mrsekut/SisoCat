@@ -7,8 +7,8 @@ import { TextLines } from './components/Node/TextLinets';
 
 export const Reditor: React.FC = () => {
   const keys = useCursorKeymap();
-  const { remove } = useNoteOp();
-  const { keyMapping } = useHotKeyMapping({ ...keys, remove });
+  const { remove, newLine } = useNoteOp();
+  const { keyMapping } = useHotKeyMapping({ ...keys, remove, newLine });
 
   const { ref: textareaRef, onFocus } = useFocus();
 

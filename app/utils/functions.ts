@@ -17,3 +17,16 @@ export const range = (n1: number, n2?: number) => {
   const end = n2;
   return [...Array(end - start + 1)].map((_, i) => start + i);
 };
+
+/**
+ * 配列をn番目で分割して両方返す
+ * ex. sliceWithRest([0,1,2,3,4,5], 2) // -> [[0,1], [2,3,4,5]]
+ */
+type Arr<T> = T[] | string;
+export function sliceWithRest<T>(array: T[], n: number): [T[], T[]];
+export function sliceWithRest(array: string, n: number): [string, string];
+export function sliceWithRest<T>(array: Arr<T>, n: number): [Arr<T>, Arr<T>] {
+  const half = array.slice(0, n);
+  const rest = array.slice(n);
+  return [half, rest];
+}

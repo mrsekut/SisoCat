@@ -30,4 +30,25 @@ describe('cursorUpDown', () => {
     const widths = [10, 10];
     expect(cursorUpDown(curLeft, widths)).toMatchObject({ col: 2, left: 20 });
   });
+
+  it('FIXME:', () => {
+    const curLeft = 0;
+    const widths = [10, 10];
+    expect(cursorUpDown(curLeft, widths)).toMatchObject({ col: 0, left: 0 });
+  });
+
+  it('FIXME:', () => {
+    const curLeft = 50;
+    const widths = [10, 10];
+    expect(cursorUpDown(curLeft, widths, true)).toMatchObject({
+      col: 0,
+      left: 0,
+    });
+  });
+
+  it('FIXME:', () => {
+    const curLeft = 10;
+    const widths: number[] = [];
+    expect(cursorUpDown(curLeft, widths)).toMatchObject({ col: 0, left: 0 });
+  });
 });
