@@ -30,17 +30,12 @@ export const useHotKeyMapping = ({
       return;
     }
 
-    if (key.length == 1) {
-      return;
-    }
-
     if (e.ctrlKey) {
       switch (key) {
         case 'a':
           begin();
           break;
         case 'e':
-          // FIXME: 効いていない
           end();
           break;
         default:
@@ -66,13 +61,15 @@ export const useHotKeyMapping = ({
       case 'ArrowLeft':
         left();
         break;
-
       case 'Backspace':
         remove();
         break;
-
       default:
         break;
+    }
+
+    if (key.length == 1) {
+      return;
     }
 
     e.preventDefault();
