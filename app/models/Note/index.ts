@@ -16,6 +16,16 @@ import {
 } from 'app/utils/functions';
 import { useTextWidths } from '../Cursor';
 
+export type ResNote0 = {
+  readonly id: NoteId;
+  readonly author: UserM;
+  readonly title: string;
+  readonly created: number;
+  readonly updated: number;
+  readonly lines: string;
+  readonly references: NoteId[];
+};
+
 export type ResNote = {
   readonly id: NoteId;
   readonly author: UserM;

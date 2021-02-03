@@ -36,3 +36,13 @@ model Session {
   publicData         String?
   privateData        String?
 }
+
+model Note {
+  id         Int      @default(autoincrement()) @id
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  auther     User
+  title      String
+  lines      String
+  references Note[]
+}
