@@ -1,10 +1,10 @@
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
-import { Line, lineInit, noteS, useNote } from '../Note';
 import { useRef } from 'react';
 import { decN, sum } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
+import { Line, noteS, lineInit, useNote } from '../notes';
 
 // -------------------------------------------------------------------------------------
 // Types

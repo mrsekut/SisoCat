@@ -1,4 +1,4 @@
-import { ResNote } from 'app/models/Note';
+import { ResNote } from 'app/models/notes';
 import { UserM, NoteM, ProjectM, NotesM } from './types';
 
 // -------------------------------------------------------------------------------------

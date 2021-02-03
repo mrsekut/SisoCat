@@ -12,6 +12,7 @@ export const Reditor: React.FC = () => {
   const { remove, newLine } = useNoteOp();
   const { keyMapping } = useHotKeyMapping({ ...keys, remove, newLine });
   const [note] = useQuery(getNote, { where: { id: 1 } });
+  console.log(note);
 
   const { ref: textareaRef, onFocus } = useFocus();
 

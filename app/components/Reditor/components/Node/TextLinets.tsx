@@ -1,7 +1,7 @@
 import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Node } from '.';
-import { useNote } from 'app/models/Note';
+import { useNote } from 'app/models/notes';
 
 export const TextLines: React.FC = () => {
   const { note } = useNote();
