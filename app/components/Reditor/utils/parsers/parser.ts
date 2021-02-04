@@ -1,6 +1,12 @@
+import {
+  NormalN,
+  StrongN,
+  ItalicN,
+  LinkN,
+  LineId,
+  LineM,
+} from 'app/models/notes/typings/note';
 import * as bnb from 'bread-n-butter';
-
-import { ItalicN, LineId, LineM, LinkN, NormalN, StrongN } from '../types';
 
 // -------------------------------------------------------------------------------------
 // util parsers

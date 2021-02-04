@@ -4,7 +4,8 @@ import produce from 'immer';
 import { useRef } from 'react';
 import { decN, sum } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
-import { Line, noteS, lineInit, useNote } from '../notes';
+import { noteS, lineInit, useNote } from '../notes';
+import { Line } from '../notes/typings/note';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -268,6 +269,7 @@ export const useTextWidths = () => {
   const font = useFont('mono');
   const textWidths = (line: string) =>
     getTextWidths(line ?? '', `${fontSize} ${font}`);
+
   return { textWidths };
 };
 

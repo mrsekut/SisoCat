@@ -1,8 +1,8 @@
 import React from 'react';
-import { BlokNodeM } from '../../utils/types';
 import { useRecoilValue } from 'recoil';
 import { cursorS } from 'app/models/Cursor';
 import { Line } from './Line';
+import { BlokNodeM } from 'app/models/notes/typings/note';
 
 type Props = {
   line: string;

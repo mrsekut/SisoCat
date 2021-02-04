@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { NotationM } from '../../utils/types';
 import { x } from '@xstyled/styled-components';
 import { parse } from 'app/models/notes';
+import { NotationM } from 'app/models/notes/typings/note';
 
 type Props = {
   line: string;

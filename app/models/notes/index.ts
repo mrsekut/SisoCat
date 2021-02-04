@@ -1,10 +1,4 @@
 import { note0 } from 'app/components/Reditor/utils/dummy';
-import {
-  LineId,
-  LineNodeM,
-  NoteId,
-  UserM,
-} from 'app/components/Reditor/utils/types';
 import { useEffect } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { lineParser } from 'app/components/Reditor/utils/parsers/parser';
@@ -15,39 +9,15 @@ import {
   sliceWithRest,
 } from 'app/utils/functions';
 import { useTextWidths } from '../Cursor';
-
-export type ResNote0 = {
-  readonly id: NoteId;
-  readonly author: UserM;
-  readonly title: string;
-  readonly created: number;
-  readonly updated: number;
-  readonly lines: string;
-  readonly references: NoteId[];
-};
-
-export type ResNote = {
-  readonly id: NoteId;
-  readonly author: UserM;
-  readonly title: string;
-  readonly created: number;
-  readonly updated: number;
-  readonly lines: Line[];
-  readonly references: NoteId[];
-  readonly referenced: NoteId[]; // NOTE: 必要？
-};
-
-export type Line = {
-  value: string;
-  widths: number[];
-};
+import { NoteM } from './typings';
+import { Line, LineNodeM, LineId } from './typings/note';
 
 export const lineInit: Line = {
   value: '',
   widths: [],
 };
 
-export const noteS = atom<ResNote | null>({
+export const noteS = atom<NoteM | null>({
   key: 'noteS',
   default: null,
 });

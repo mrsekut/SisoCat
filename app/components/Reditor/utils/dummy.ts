@@ -1,5 +1,11 @@
-import { ResNote } from 'app/models/notes';
-import { UserM, NoteM, ProjectM, NotesM } from './types';
+import { NoteM } from 'app/models/notes/typings';
+import {
+  UserM,
+  NotePM,
+  ProjectM,
+  NotesPM,
+  NoteId,
+} from 'app/models/notes/typings/note';
 
 // -------------------------------------------------------------------------------------
 // User
@@ -14,12 +20,12 @@ const user1: UserM = {
 // Res Node
 // -------------------------------------------------------------------------------------
 
-export const note0: ResNote = {
-  id: 'note1',
+export const note0: NoteM = {
+  id: 1,
   author: user1,
   title: '[Json]の正規化',
-  created: 1608260148,
-  updated: 1608260148,
+  createdAt: new Date(),
+  updatedAt: new Date(),
   lines: [
     {
       value: '[Json]の正規化',
@@ -100,19 +106,18 @@ export const note0: ResNote = {
     },
   ],
   references: [],
-  referenced: [],
 };
 
 // -------------------------------------------------------------------------------------
 // Node
 // -------------------------------------------------------------------------------------
 
-export const note1: NoteM = {
-  id: 'note1',
+export const note1: NotePM = {
+  id: 1,
   author: user1,
   title: '[Json]の正規化',
-  created: 1608260148,
-  updated: 1608260148,
+  createdAt: new Date(),
+  updatedAt: new Date(),
   nodes: [
     {
       type: 'line',
@@ -125,7 +130,7 @@ export const note1: NoteM = {
           {
             type: 'link',
             value: 'Json',
-            references: ['note2'],
+            references: [2],
           },
           {
             type: 'normal',
@@ -174,16 +179,15 @@ export const note1: NoteM = {
     },
   ],
   references: [],
-  referenced: [],
 };
 
 // 記事: Json
-export const note2: NoteM = {
-  id: 'note2',
+export const note2: NotePM = {
+  id: 2,
   author: user1,
   title: 'Json',
-  created: 1608260148,
-  updated: 1608260148,
+  createdAt: new Date(),
+  updatedAt: new Date(),
   nodes: [
     {
       type: 'line',
@@ -207,7 +211,6 @@ export const note2: NoteM = {
     },
   ],
   references: [],
-  referenced: [],
 };
 
 // -------------------------------------------------------------------------------------
@@ -218,13 +221,13 @@ const project: ProjectM = {
   id: 'project1',
   name: 'mrsekut-p',
   author: user1,
-  notes: ['note1', 'note2'],
+  notes: [1, 2],
 };
 
-export const notes: NotesM = {
+export const notes: NotesPM = {
   byId: {
-    note1: note1,
-    note2: note2,
+    1: note1,
+    2: note2,
   },
-  allIds: ['note1', 'note2'],
+  allIds: [1, 2],
 };

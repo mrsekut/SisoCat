@@ -1,3 +1,5 @@
+import { NoteInfo } from '.';
+
 export type UserM = {
   id: UserId;
   name: string;
@@ -5,7 +7,7 @@ export type UserM = {
 
 export type ProjectId = `project${number}`;
 export type UserId = `user${number}`;
-export type NoteId = `note${number}`;
+export type NoteId = number;
 export type LineId = `line${number}`;
 
 // -------------------------------------------------------------------------------------
@@ -31,16 +33,15 @@ export type ProjectM = {
 // Notes Model
 // -------------------------------------------------------------------------------------
 
-export type NotesM = Normalize<NoteId, NoteM>;
-export type NoteM = {
-  readonly id: NoteId;
-  readonly author: UserM;
-  readonly title: string;
-  readonly created: number;
-  readonly updated: number;
+export type NotesPM = Normalize<NoteId, NotePM>;
+
+export type NotePM = NoteInfo & {
   readonly nodes: NodeM[];
-  readonly references: NoteId[];
-  readonly referenced: NoteId[]; // NOTE: 必要？
+};
+
+export type Line = {
+  value: string;
+  widths: number[];
 };
 
 // -------------------------------------------------------------------------------------
