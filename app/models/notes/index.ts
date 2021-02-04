@@ -28,12 +28,12 @@ export const noteS = atom<NoteM | null>({
  * NoteのModelのようなイメージ
  * UIには関与しない
  */
-export const useNote = () => {
+export const useNote = (init?: NoteM) => {
   const [note, setNote] = useRecoilState(noteS);
   const { textWidths } = useTextWidths();
 
   useEffect(() => {
-    setNote(note0);
+    if (init != null) setNote(init);
   }, []);
 
   const updateLine = (ln: number, line: string) => {
