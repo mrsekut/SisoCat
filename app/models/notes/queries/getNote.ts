@@ -1,7 +1,7 @@
 import { Ctx, NotFoundError } from 'blitz';
 import db, { Prisma } from 'db';
 
-type GetNoteInput = Pick<Prisma.FindFirstNoteArgs, 'where'>;
+type GetNoteInput = Pick<Prisma.NoteFindFirstArgs, 'where'>;
 
 export default async function getNote({ where }: GetNoteInput, ctx: Ctx) {
   ctx.session.authorize();

@@ -2,7 +2,7 @@ import { Ctx } from 'blitz';
 import db, { Prisma } from 'db';
 
 type GetNotesInput = Pick<
-  Prisma.FindManyNoteArgs,
+  Prisma.NoteFindFirstArgs,
   'where' | 'orderBy' | 'skip' | 'take'
 >;
 
