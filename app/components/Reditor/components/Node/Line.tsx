@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { parse } from 'app/models/notes';
 import { NotationM } from 'app/models/notes/typings/note';
+import { Indents } from './Indents';
 
 type Props = {
   line: string;
@@ -15,7 +16,7 @@ export const Line: React.FC<Props> = ({ line, index, isFocus }) => {
   if (isFocus) {
     return (
       <>
-        {/* <Indent level={node.line.indent} /> */}
+        <Indents level={node.line.indent} />
         <Normal value={line} />
       </>
     );
@@ -23,37 +24,11 @@ export const Line: React.FC<Props> = ({ line, index, isFocus }) => {
 
   return (
     <>
-      {/* <Indent level={node.line.indent} /> */}
+      <Indents level={node.line.indent} />
       {node.line.nodes.map(node => (
         <Notation notation={node} />
       ))}
     </>
-  );
-};
-
-// FIXME:
-const Indent: React.FC<{ level: number }> = ({ level }) => {
-  return (
-    <span>
-      {/* {range(level - 1).map(_ => (
-        <Char>&nbsp;</Char>
-      ))} */}
-      {/* <x.span w='1.5em'>
-        <x.span
-          display='inline-block'
-          w='5px'
-          h='5px'
-          borderRadius='full'
-          backgroundColor='black'
-        ></x.span>
-        <x.span
-          display='inline-block'
-          w='6px'
-          h='6px'
-          borderRadius='full'
-        ></x.span>
-      </x.span> */}
-    </span>
   );
 };
 
@@ -86,19 +61,8 @@ const Normal: React.FC<{ value: string }> = ({ value }) => {
 
 // FIXME: move
 export const Char: React.FC = ({ children }) => {
-  const a = useRef(null);
-
-  const [width, setWidth] = useState(0);
-
-  // console.log({ width });
-  useEffect(() => {
-    // console.log(JSON.stringify(a.current.getBoundingClientRect()));
-    // const s = window.getComputedStyle(a.current).fontFamily;
-    // console.log(s);
-  }, []);
-
   return (
-    <x.span ref={a} fontSize='base' fontFamily='mono' lineHeight='snug'>
+    <x.span fontSize='base' fontFamily='mono' lineHeight='snug'>
       {children}
     </x.span>
   );

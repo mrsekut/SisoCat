@@ -5,6 +5,7 @@ type Key =
   | 'left'
   | 'begin'
   | 'end'
+  | 'insert'
   | 'remove'
   | 'newLine';
 
@@ -29,6 +30,7 @@ export const useHotKeyMapping = ({
   end,
   remove,
   newLine,
+  insert,
 }: Args) => {
   const keyMapping = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const key = e.nativeEvent.key;
@@ -76,11 +78,14 @@ export const useHotKeyMapping = ({
       case 'Enter':
         newLine();
         break;
+      case 'Tab':
+        insert('\t');
+        break;
       default:
         break;
     }
 
-    if (key.length == 1) {
+    if (key.length === 1) {
       return;
     }
 
