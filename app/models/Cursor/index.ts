@@ -6,7 +6,6 @@ import { decN, sum } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import { noteS, lineInit, useNote } from '../notes';
 import { Line } from '../notes/typings/note';
-import { NoteM } from '../notes/typings';
 
 // -------------------------------------------------------------------------------------
 // Types

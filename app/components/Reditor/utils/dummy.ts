@@ -4,7 +4,6 @@ import {
   NotePM,
   ProjectM,
   NotesPM,
-  NoteId,
 } from 'app/models/notes/typings/note';
 
 // -------------------------------------------------------------------------------------

@@ -1,4 +1,3 @@
-import { note0 } from 'app/components/Reditor/utils/dummy';
 import { useEffect } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { lineParser } from 'app/components/Reditor/utils/parsers/parser';

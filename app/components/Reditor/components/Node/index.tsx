@@ -2,7 +2,6 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { cursorS } from 'app/models/Cursor';
 import { Line } from './Line';
-import { BlokNodeM } from 'app/models/notes/typings/note';
 
 type Props = {
   line: string;
@@ -23,9 +22,4 @@ export const Node: React.FC<Props> = ({ line, index }) => {
       <br />
     </>
   );
-};
-
-// FIXME: move
-const Block: React.FC<{ block: BlokNodeM }> = ({ block }) => {
-  return null;
 };
