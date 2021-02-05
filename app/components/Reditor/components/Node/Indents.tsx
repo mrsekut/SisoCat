@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@xstyled/styled-components';
 import { range } from 'app/utils/functions';
+import { textStyle } from '../../utils/settings';
 
 type Props = {
   level: number;
@@ -16,14 +17,14 @@ export const Indents: React.FC<Props> = ({ level }) => {
       {range(level - 1).map(_ => (
         <Space />
       ))}
-      <Indent />
+      <Dot />
     </>
   );
 };
 
 const Space = styled.span`
   position: relative;
-  padding-left: 16px;
+  padding-left: ${textStyle.fontSize}px;
   :before {
     content: '';
     position: absolute;
@@ -34,9 +35,9 @@ const Space = styled.span`
   }
 `;
 
-const Indent = styled.span`
+const Dot = styled.span`
   position: relative;
-  padding-left: 16px;
+  padding-left: ${textStyle.fontSize}px;
   :before {
     content: '';
     position: absolute;

@@ -29,9 +29,11 @@ export const indents = bnb
 
 const brLWithoutBrR = bnb.match(/\[(?!(.*\]))/);
 
-// -------------------------------------------------------------------------------------
-// utils
-// -------------------------------------------------------------------------------------
+const any = bnb.match(/./);
+
+export const textWithIndents = bnb
+  .all(indents, any.repeat())
+  .map(([level, value]) => ({ level, value }));
 
 const max3 = (n: number) => Math.min(3, n) as 1 | 2 | 3;
 

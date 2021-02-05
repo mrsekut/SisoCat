@@ -2,10 +2,15 @@ import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
 import { useRef } from 'react';
-import { decN, sum } from 'app/utils/functions';
+import { decN, range, sum } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import { noteS, lineInit, useNote } from '../notes';
 import { Line } from '../notes/typings/note';
+import {
+  textWithIndents,
+  indents,
+} from 'app/components/Reditor/utils/parsers/parser';
+import { textStyle } from 'app/components/Reditor/utils/settings';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -277,14 +282,18 @@ export const useTextWidths = () => {
 // Utils
 // -------------------------------------------------------------------------------------
 
-// FIXME: indentがある場合の、サイズ調整
 export const getTextWidths = (text: string, font: string): number[] => {
   if (window != null) {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
+
     if (context != null) {
+      const { value, level } = textWithIndents.tryParse(text);
       context.font = font;
-      return [...text].map(t => context.measureText(t).width);
+
+      const indents = range(level).map(_ => textStyle.fontSize);
+      const widths = [...value].map(t => context.measureText(t).width);
+      return indents.concat(widths);
     }
   }
 
