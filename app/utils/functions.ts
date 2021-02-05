@@ -7,6 +7,8 @@ export const insertNthChar = (str: string, n: number, c: string) =>
 export const decN = (n1: number, n2: number) => Math.max(n1 - n2, 0);
 
 export const sum = (ns: number[]) => ns.reduce((acc, cur) => acc + cur, 0);
+export const cumSum = (arr: number[], nth: number) =>
+  sum(arr.slice(0, nth + 1));
 
 export const range = (n1: number, n2?: number) => {
   if (n2 == null) {

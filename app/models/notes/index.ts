@@ -22,10 +22,10 @@ export const noteS = atom<NoteM | null>({
 });
 
 /**
- * ノートの内容の操作
- * カーソルの位置などには依存しない
- * NoteのModelのようなイメージ
- * UIには関与しない
+ * Note's Model
+ *
+ * - ノートの内容の操作
+ * - UIには関与しない
  */
 export const useNote = (init?: NoteM) => {
   const [note, setNote] = useRecoilState(noteS);
@@ -66,12 +66,39 @@ export const useNote = (init?: NoteM) => {
   };
 
   const removeChar = (ln: number, col: number) => {
+    if (col === 0) {
+      removeLine(ln);
+      return;
+    }
+
     const line = note?.lines[ln].value ?? '';
     const deleted = deleteNthChar(line, col - 1);
     updateLine(ln, deleted);
   };
 
+  const removeLine = (ln: number) => {
+    setNote(note => {
+      if (note == null) return note;
+      return produce(note, n => {
+        const l1 = note.lines[ln - 1];
+        const l2 = note.lines[ln];
+
+        n.lines = note.lines
+          .slice(0, ln - 1)
+          .concat([mergeLine(l1, l2)])
+          .concat(note.lines.slice(ln + 1));
+      });
+    });
+  };
+
   return { note, setNote, removeChar, insertChar, newLine };
+};
+
+const mergeLine = (l1: Line, l2: Line): Line => {
+  return {
+    value: l1.value.concat(l2.value),
+    widths: l1.widths.concat(l2.widths),
+  };
 };
 
 // FIXME: move

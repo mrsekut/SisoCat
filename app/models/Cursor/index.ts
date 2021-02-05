@@ -2,14 +2,11 @@ import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import produce from 'immer';
 import { useRef } from 'react';
-import { decN, range, sum } from 'app/utils/functions';
+import { cumSum, decN, range, sum } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import { noteS, lineInit, useNote } from '../notes';
 import { Line } from '../notes/typings/note';
-import {
-  textWithIndents,
-  indents,
-} from 'app/components/Reditor/utils/parsers/parser';
+import { textWithIndents } from 'app/components/Reditor/utils/parsers/parser';
 import { textStyle } from 'app/components/Reditor/utils/settings';
 
 // -------------------------------------------------------------------------------------
@@ -95,7 +92,7 @@ export const lineS = selector({
  */
 export const useNoteOp = () => {
   const note = useNote();
-  const { left, right, down } = useCursorKeymap();
+  const { left, right, down, move } = useCursorKeymap();
   const [cursor] = useRecoilState(cursorS);
 
   const newLine = () => {
@@ -107,7 +104,13 @@ export const useNoteOp = () => {
   const remove = () => {
     if (cursor.pos == null) return;
     note.removeChar(cursor.pos.ln, cursor.pos.col);
-    left();
+    if (cursor.pos.col === 0) {
+      const lines = note.note?.lines ?? [];
+      const prevLine = lines[cursor.pos.ln - 1];
+      move(cursor.pos.ln - 1, prevLine.value.length);
+    } else {
+      left();
+    }
   };
 
   const insert = (value: string) => {
@@ -180,6 +183,20 @@ export const useCursorKeymap = () => {
    * Keys
    * =====================
    */
+  // FIXME: moveを使えばもう少し簡潔に書けるのでは？
+  const move = (ln: number, col: number) => {
+    setCursor(cur => {
+      if (!cur.isFocus) return cur;
+      return produce(cur, c => {
+        const nextLine = note?.lines[ln] ?? lineInit;
+        c.pos.ln = ln;
+        c.pos.col = col;
+        c.pxPos.top = ln * lineHeight;
+        c.pxPos.left = cumSum(nextLine.widths, col);
+      });
+    });
+  };
+
   const up = () => {
     setCursor(cur => {
       if (!cur.isFocus) return cur;
@@ -263,7 +280,7 @@ export const useCursorKeymap = () => {
     });
   };
 
-  return { up, right, down, left, begin, end };
+  return { move, up, right, down, left, begin, end };
 };
 
 /**
@@ -283,7 +300,7 @@ export const useTextWidths = () => {
 // -------------------------------------------------------------------------------------
 
 export const getTextWidths = (text: string, font: string): number[] => {
-  if (window != null) {
+  if (typeof window !== 'undefined') {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
@@ -314,6 +331,7 @@ export const cursorUpDown = (
     return { col: 0, left: 0 };
   }
 
+  // FIXME: use cumsum
   const cumSum = nextLineWidths.map(
     (sum => (value: number) => (sum += value))(0),
   );
