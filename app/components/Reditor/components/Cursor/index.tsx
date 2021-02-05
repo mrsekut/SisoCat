@@ -1,8 +1,9 @@
 import React, { KeyboardEventHandler, RefObject, useState } from 'react';
 import styled, { x } from '@xstyled/styled-components';
-import { cursorS, useCursorKeymap, useNoteOp } from 'app/models/Cursor';
+import { cursorS, useNoteOp } from 'app/models/Cursor';
 import { useRecoilValue } from 'recoil';
 import { noteStyle } from 'app/utils/style';
+import { useCursorKeymap } from 'app/models/Cursor/hooks/useCursorKeymap';
 
 type Props = {
   onKeyDown: KeyboardEventHandler;

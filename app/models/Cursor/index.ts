@@ -1,13 +1,13 @@
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
-import produce from 'immer';
 import { useRef } from 'react';
-import { cumSum, decN, range, sum } from 'app/utils/functions';
+import { cumSumList, range } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import { noteS, lineInit, useNote } from '../notes';
 import { Line } from '../notes/typings/note';
 import { textWithIndents } from 'app/components/Reditor/utils/parsers/parser';
 import { textStyle } from 'app/components/Reditor/utils/settings';
+import { useCursorKeymap } from './hooks/useCursorKeymap';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -107,7 +107,7 @@ export const useNoteOp = () => {
     if (cursor.pos.col === 0) {
       const lines = note.note?.lines ?? [];
       const prevLine = lines[cursor.pos.ln - 1];
-      move(cursor.pos.ln - 1, prevLine.value.length);
+      move(prevLine.value.length, cursor.pos.ln - 1);
     } else {
       left();
     }
@@ -167,123 +167,6 @@ export const useFocus = () => {
 };
 
 /**
- * - カーソルの操作, 移動
- */
-export const useCursorKeymap = () => {
-  const [cursor, setCursor] = useRecoilState(cursorS);
-  const note = useRecoilValue(noteS);
-
-  const textLength = cursor.line?.value?.length ?? 0;
-
-  const lineHeight = noteStyle.lineHeight;
-
-  //  FIXME: useCallback
-
-  /**
-   * Keys
-   * =====================
-   */
-  // FIXME: moveを使えばもう少し簡潔に書けるのでは？
-  const move = (ln: number, col: number) => {
-    setCursor(cur => {
-      if (!cur.isFocus) return cur;
-      return produce(cur, c => {
-        const nextLine = note?.lines[ln] ?? lineInit;
-        c.pos.ln = ln;
-        c.pos.col = col;
-        c.pxPos.top = ln * lineHeight;
-        c.pxPos.left = cumSum(nextLine.widths, col);
-      });
-    });
-  };
-
-  const up = () => {
-    setCursor(cur => {
-      if (!cur.isFocus) return cur;
-
-      return produce(cur, c => {
-        const ln = decN(cur.pos.ln, 1);
-        const nextLine = note?.lines[ln] ?? lineInit;
-        const { col, left } = cursorUpDown(cur.pxPos.left, nextLine.widths);
-
-        c.pos.ln = ln;
-        c.pos.col = col;
-        c.pxPos.top = decN(cur.pxPos.top, lineHeight);
-        c.pxPos.left = left;
-      });
-    });
-  };
-
-  const right = (upperLimit = 0) => {
-    setCursor(cur => {
-      if (!cur.isFocus) return cur;
-      if (cur.pos.col === textLength + upperLimit) {
-        return cur;
-      }
-      return produce(cur, c => {
-        c.pos.col = cur.pos.col + 1;
-        c.pxPos.left = cur.pxPos.left + cur.line.widths[cur.pos.col];
-      });
-    });
-  };
-
-  const down = (isNewLine = false) => {
-    setCursor(cur => {
-      if (!cur.isFocus) return cur;
-      return produce(cur, c => {
-        const ln = cur.pos.ln + 1;
-        const nextLine = note?.lines[ln] ?? lineInit;
-        const { col, left } = cursorUpDown(
-          cur.pxPos.left,
-          nextLine.widths,
-          isNewLine,
-        );
-
-        c.pos.ln = ln;
-        c.pos.col = col;
-        c.pxPos.top = cur.pxPos.top + lineHeight;
-        c.pxPos.left = left;
-      });
-    });
-  };
-
-  const left = () => {
-    setCursor(cur => {
-      if (!cur.isFocus) return cur;
-      return produce(cur, c => {
-        c.pos.col = decN(cur.pos.col, 1);
-        c.pxPos.left = decN(
-          cur.pxPos.left,
-          cur.line.widths[decN(cur.pos.col, 1)],
-        );
-      });
-    });
-  };
-
-  const begin = () => {
-    setCursor(cur => {
-      if (!cur.isFocus) return cur;
-      return produce(cur, c => {
-        c.pos.col = 0;
-        c.pxPos.left = 0;
-      });
-    });
-  };
-
-  const end = () => {
-    setCursor(cur => {
-      if (!cur.isFocus) return cur;
-      return produce(cur, c => {
-        c.pos.col = textLength;
-        c.pxPos.left = sum(cur.line.widths);
-      });
-    });
-  };
-
-  return { move, up, right, down, left, begin, end };
-};
-
-/**
  *
  */
 export const useTextWidths = () => {
@@ -331,17 +214,14 @@ export const cursorUpDown = (
     return { col: 0, left: 0 };
   }
 
-  // FIXME: use cumsum
-  const cumSum = nextLineWidths.map(
-    (sum => (value: number) => (sum += value))(0),
-  );
-  const idx = cumSum.findIndex(w => curLeft < w);
+  const csl = cumSumList(nextLineWidths);
+  const idx = csl.findIndex(w => curLeft < w);
 
   if (idx === -1) {
-    return { col: cumSum.length, left: cumSum[cumSum.length - 1] };
+    return { col: csl.length, left: csl[csl.length - 1] };
   }
 
-  return cumSum[idx] - curLeft <= nextLineWidths[idx] / 2
-    ? { col: idx + 1, left: cumSum[idx] }
-    : { col: idx, left: cumSum[idx - 1] ?? 0 };
+  return csl[idx] - curLeft <= nextLineWidths[idx] / 2
+    ? { col: idx + 1, left: csl[idx] }
+    : { col: idx, left: csl[idx - 1] ?? 0 };
 };

@@ -1,11 +1,12 @@
 import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Cursor } from './components/Cursor';
-import { useCursorKeymap, useFocus, useNoteOp } from 'app/models/Cursor';
+import { useFocus, useNoteOp } from 'app/models/Cursor';
 import { useHotKeyMapping } from './hooks/useHotKeyMapping';
 import { TextLines } from './components/Node/TextLinets';
 import { useGetNote } from 'app/models/notes/hooks/useGetNote';
 import { useNote } from 'app/models/notes';
+import { useCursorKeymap } from 'app/models/Cursor/hooks/useCursorKeymap';
 
 export const Reditor: React.FC = () => {
   const keys = useCursorKeymap();
