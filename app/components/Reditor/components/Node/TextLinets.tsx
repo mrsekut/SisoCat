@@ -23,7 +23,7 @@ export const TextLines: React.FC<Props> = ({ note }) => {
 
 const Block: React.FC<{ block: BlockM }> = ({ block }) => {
   return (
-    <x.div>
+    <x.div bg='gray-200' mb='5'>
       {block.lines.map((line, index) => (
         <Node line={line.value} index={index} />
       ))}

@@ -8,7 +8,7 @@ import {
   sliceWithRest,
 } from 'app/utils/functions';
 import { useTextWidths } from '../Cursor';
-import { Line, NoteM } from './typings';
+import { BlockM, Line, NoteM } from './typings';
 import { LineNodeM, LineId } from './typings/note';
 
 export const lineInit: Line = {
@@ -27,71 +27,127 @@ export const noteS = atom<NoteM | null>({
  * - ノートの内容の操作
  * - UIには関与しない
  */
+// FIXME: clean
 export const useNote = (init?: NoteM) => {
   const [note, setNote] = useRecoilState(noteS);
   const { textWidths } = useTextWidths();
+  const {
+    insertChar: bInsertChar,
+    removeChar: bRemoveChar,
+    newLine: bNewLine,
+  } = useBlock(textWidths); // FIXME:
 
   useEffect(() => {
     if (init != null) setNote(init);
   }, []);
 
-  const updateLine = (ln: number, line: string) => {
+  const newLine = (blockIdx: number, ln: number, col: number) => {
+    if (note == null) return;
+    const block = note.blocks[blockIdx];
     setNote(note => {
       if (note == null) return note;
       return produce(note, n => {
-        n.lines[ln] = { value: line, widths: textWidths(line) };
+        n.blocks[blockIdx] = bNewLine(block, ln, col);
       });
     });
   };
 
-  const newLine = (ln: number, col: number) => {
-    const line = note?.lines[ln].value ?? '';
-    const [half, rest] = sliceWithRest(line, col);
+  const insertChar = (
+    blockIdx: number,
+    ln: number,
+    col: number,
+    value: string,
+  ) => {
+    if (note == null) return;
+    const block = note.blocks[blockIdx];
     setNote(note => {
       if (note == null) return note;
       return produce(note, n => {
-        n.lines = n.lines
-          .slice(0, ln)
-          .concat([{ value: half, widths: textWidths(half) }])
-          .concat([{ value: rest, widths: textWidths(rest) }])
-          .concat(n.lines.slice(ln + 1));
+        n.blocks[blockIdx] = bInsertChar(block, ln, col, value);
       });
     });
   };
 
-  const insertChar = (ln: number, col: number, value: string) => {
-    const line = note?.lines[ln].value ?? '';
-    const inserted = insertNthChar(line, col, value);
-    updateLine(ln, inserted);
-  };
-
-  const removeChar = (ln: number, col: number) => {
-    if (col === 0) {
-      removeLine(ln);
-      return;
-    }
-
-    const line = note?.lines[ln].value ?? '';
-    const deleted = deleteNthChar(line, col - 1);
-    updateLine(ln, deleted);
-  };
-
-  const removeLine = (ln: number) => {
+  const removeChar = (blockIdx: number, ln: number, col: number) => {
+    if (note == null) return;
+    const block = note.blocks[blockIdx];
     setNote(note => {
       if (note == null) return note;
       return produce(note, n => {
-        const l1 = note.lines[ln - 1];
-        const l2 = note.lines[ln];
-
-        n.lines = note.lines
-          .slice(0, ln - 1)
-          .concat([mergeLine(l1, l2)])
-          .concat(note.lines.slice(ln + 1));
+        n.blocks[blockIdx] = bRemoveChar(block, ln, col);
       });
     });
   };
 
   return { note, setNote, removeChar, insertChar, newLine };
+};
+
+export const blockS = atom<BlockM | null>({
+  key: 'blockS',
+  default: null,
+});
+
+// FIXME: clean
+// hooksですらない
+// BlockのModel
+// Block内で完結する操作
+// useNote内で使用される
+const useBlock = (textWidths: (line: string) => number[]) => {
+  const _updateLine = (block: BlockM, ln: number, line: string) => {
+    if (block == null) return block;
+    return produce(block, n => {
+      n.lines[ln] = { value: line, widths: textWidths(line) };
+    });
+  };
+
+  const newLine = (block: BlockM, ln: number, col: number) => {
+    const line = block?.lines[ln].value ?? '';
+    const [half, rest] = sliceWithRest(line, col);
+    if (block == null) return block;
+    return produce(block, n => {
+      n.lines = n.lines
+        .slice(0, ln)
+        .concat([{ value: half, widths: textWidths(half) }])
+        .concat([{ value: rest, widths: textWidths(rest) }])
+        .concat(n.lines.slice(ln + 1));
+    });
+  };
+
+  const insertChar = (
+    block: BlockM,
+    ln: number,
+    col: number,
+    value: string,
+  ) => {
+    const line = block?.lines[ln].value ?? '';
+    const inserted = insertNthChar(line, col, value);
+    return _updateLine(block, ln, inserted);
+  };
+
+  const removeChar = (block: BlockM, ln: number, col: number) => {
+    if (col === 0) {
+      return _removeLine(block, ln);
+    }
+
+    const line = block?.lines[ln].value ?? '';
+    const deleted = deleteNthChar(line, col - 1);
+    return _updateLine(block, ln, deleted);
+  };
+
+  const _removeLine = (block: BlockM, ln: number) => {
+    if (block == null) return block;
+    return produce(block, n => {
+      const l1 = block.lines[ln - 1];
+      const l2 = block.lines[ln];
+
+      n.lines = block.lines
+        .slice(0, ln - 1)
+        .concat([mergeLine(l1, l2)])
+        .concat(block.lines.slice(ln + 1));
+    });
+  };
+
+  return { removeChar, insertChar, newLine };
 };
 
 const mergeLine = (l1: Line, l2: Line): Line => {

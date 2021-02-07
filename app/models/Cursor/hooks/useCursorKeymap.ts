@@ -48,7 +48,7 @@ export const useCursorKeymap = () => {
   const up = () => {
     if (!cursor.isFocus) return;
     const ln = decN(cursor.pos.ln, 1);
-    const nextLine = note?.lines[ln] ?? lineInit;
+    const nextLine = note?.blocks[cursor.blcokIdx].lines[ln] ?? lineInit; // FIXME: block跨いだ時
     const { col } = cursorUpDown(cursor.pxPos.left, nextLine.widths);
 
     move(col, ln);
@@ -62,7 +62,7 @@ export const useCursorKeymap = () => {
   const down = (isNewLine = false) => {
     if (!cursor.isFocus) return;
     const ln = cursor.pos.ln + 1;
-    const nextLine = note?.lines[ln] ?? lineInit;
+    const nextLine = note?.blocks[cursor.blcokIdx].lines[ln] ?? lineInit; // FIXME: block跨いだ時
     const { col } = cursorUpDown(cursor.pxPos.left, nextLine.widths, isNewLine);
     move(col, ln);
   };

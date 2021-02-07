@@ -17,7 +17,7 @@ export const Reditor: React.FC = () => {
   const { ref: textareaRef, onFocus } = useFocus();
 
   return (
-    <x.div bg='gray-200' position='relative' onClick={onFocus}>
+    <x.div bg='gray-100' position='relative' onClick={onFocus}>
       <Cursor onKeyDown={keyMapping} textareaRef={textareaRef} />
       {note != null && <TextLines note={note} />}
     </x.div>
