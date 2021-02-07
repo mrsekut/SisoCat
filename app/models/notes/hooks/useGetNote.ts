@@ -1,6 +1,6 @@
-import { note0 } from 'app/components/Reditor/utils/dummy';
+import { note0 } from 'app/components/Reditor/utils/dummies/response';
 import { useTextWidths } from 'app/models/Cursor';
-import { NoteM } from '../typings';
+import { BlockM, NoteM } from '../typings';
 
 export const useGetNote = (noteId: number): NoteM => {
   const note = note0;
@@ -8,9 +8,20 @@ export const useGetNote = (noteId: number): NoteM => {
   // const [user] = useQuery(getUser, { where: { id: note.userId } });
   const { textWidths } = useTextWidths();
 
-  const lines = note.lines
-    .split('\n')
-    .map(line => ({ value: line, widths: textWidths(line) }));
+  const blocks: BlockM[] = note.blocks.map(b => ({
+    id: b.id,
+    author: {
+      id: 'user1',
+      name: 'mrsekut',
+    },
+    title: 'hoge',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    references: [],
+    lines: b.lines
+      .split('\n')
+      .map(line => ({ value: line, widths: textWidths(line) })),
+  }));
 
   return {
     ...note,
@@ -18,7 +29,7 @@ export const useGetNote = (noteId: number): NoteM => {
       id: 'user1',
       name: 'mrsekut',
     },
-    lines,
+    blocks,
     references: [],
   };
 };

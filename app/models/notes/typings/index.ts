@@ -1,4 +1,4 @@
-import { NoteId, UserM, Line } from './note';
+import { NoteId, UserM } from './note';
 
 export type NoteInfo = {
   readonly id: NoteId;
@@ -10,5 +10,14 @@ export type NoteInfo = {
 };
 
 export type NoteM = NoteInfo & {
+  readonly blocks: BlockM[];
+};
+
+export type BlockM = NoteInfo & {
   readonly lines: Line[];
+};
+
+export type Line = {
+  value: string;
+  widths: number[];
 };

@@ -1,9 +1,9 @@
-import { Note } from '@prisma/client';
 import {
-  UserM,
+  BlockPM,
   NotePM,
-  ProjectM,
   NotesPM,
+  ProjectM,
+  UserM,
 } from 'app/models/notes/typings/note';
 
 // -------------------------------------------------------------------------------------
@@ -16,33 +16,16 @@ const user1: UserM = {
 };
 
 // -------------------------------------------------------------------------------------
-// Res Node
+// Block
 // -------------------------------------------------------------------------------------
 
-export const note0: Note = {
-  id: 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  title: '[Json]の正規化',
-  lines:
-    '[Json]の正規化\n\
-\t[json]は[正規化]するのが良い\n\
-\t正規化は[** よいこと]ばかり\n\
-[CUE]も良い感じらしい',
-  noteId: null,
-  userId: 1,
-};
-
-// -------------------------------------------------------------------------------------
-// Node
-// -------------------------------------------------------------------------------------
-
-export const note1: NotePM = {
+const block1: BlockPM = {
   id: 1,
   author: user1,
   title: '[Json]の正規化',
   createdAt: new Date(),
   updatedAt: new Date(),
+  references: [],
   nodes: [
     {
       type: 'line',
@@ -52,15 +35,8 @@ export const note1: NotePM = {
         text: '[Json]の正規化',
         indent: 0,
         nodes: [
-          {
-            type: 'link',
-            value: 'Json',
-            references: [2],
-          },
-          {
-            type: 'normal',
-            value: 'の正規化',
-          },
+          { type: 'link', value: 'Json', references: [2] },
+          { type: 'normal', value: 'の正規化' },
         ],
       },
     },
@@ -89,13 +65,24 @@ export const note1: NotePM = {
         nodes: [{ type: 'normal', value: '\t正規化はよいことばかり' }],
       },
     },
+  ],
+};
+
+const block2: BlockPM = {
+  id: 2,
+  author: user1,
+  title: '[CUE]も良い感じらしい',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  references: [],
+  nodes: [
     {
       type: 'line',
       line: {
         id: 'line13',
-        indent: 1,
+        indent: 0,
         lineIndex: 4,
-        text: '\t[CUE]も良い感じらしい',
+        text: '[CUE]も良い感じらしい',
         nodes: [
           { type: 'link', value: 'CUE', references: [] },
           { type: 'normal', value: 'も良い感じらしい' },
@@ -103,16 +90,15 @@ export const note1: NotePM = {
       },
     },
   ],
-  references: [],
 };
 
-// 記事: Json
-export const note2: NotePM = {
-  id: 2,
+const block3: BlockPM = {
+  id: 3,
   author: user1,
-  title: 'Json',
+  title: '[Json]の正規化',
   createdAt: new Date(),
   updatedAt: new Date(),
+  references: [],
   nodes: [
     {
       type: 'line',
@@ -135,6 +121,30 @@ export const note2: NotePM = {
       },
     },
   ],
+};
+
+// -------------------------------------------------------------------------------------
+// Node
+// -------------------------------------------------------------------------------------
+
+export const note1: NotePM = {
+  id: 1,
+  author: user1,
+  title: '[Json]の正規化',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  blocks: [block1, block2],
+  references: [],
+};
+
+// 記事: Json
+export const note2: NotePM = {
+  id: 2,
+  author: user1,
+  title: 'Json',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  blocks: [block3],
   references: [],
 };
 

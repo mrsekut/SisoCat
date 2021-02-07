@@ -4,10 +4,10 @@ import { useRef } from 'react';
 import { cumSumList, range } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import { noteS, lineInit, useNote } from '../notes';
-import { Line } from '../notes/typings/note';
 import { textWithIndents } from 'app/components/Reditor/utils/parsers/parser';
 import { textStyle } from 'app/components/Reditor/utils/settings';
 import { useCursorKeymap } from './hooks/useCursorKeymap';
+import { Line } from '../notes/typings';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -27,6 +27,7 @@ type Pos = {
 
 type CursorFocus = {
   isFocus: true;
+  blcokIdx: number;
   pos: Pos;
   pxPos: PxPos;
   line: Line; // on the cursor
@@ -34,12 +35,13 @@ type CursorFocus = {
 
 type CursorNotFocus = {
   isFocus: false;
+  blcokIdx?: undefined;
   pos?: undefined;
   pxPos?: undefined;
   line?: undefined;
 };
 
-type _CursorM = Exclude<CursorFocus, 'line'> | Exclude<CursorNotFocus, 'lien'>;
+type _CursorM = Exclude<CursorFocus, 'line'> | Exclude<CursorNotFocus, 'line'>;
 
 type CursorM = CursorFocus | CursorNotFocus;
 
@@ -66,19 +68,20 @@ export const cursorS = selector<CursorM>({
 
     return {
       ...cursor,
-      line: get(noteS)?.lines[cursor.pos.ln] ?? lineInit,
+      line:
+        get(noteS)?.blocks[cursor.blcokIdx].lines[cursor.pos.ln] ?? lineInit,
     };
   },
   set: ({ set }, newValue) => set(_cursorS, newValue),
 });
 
 // DEPRECATED:
-export const lineS = selector({
+const lineS = selector({
   key: 'lineS',
   get: ({ get }) => {
     const cursor = get(cursorS);
     if (!cursor.isFocus) return lineInit;
-    return get(noteS)?.lines[cursor.pos.ln] ?? lineInit;
+    return get(noteS)?.blocks[cursor.blcokIdx].lines[cursor.pos.ln] ?? lineInit;
   },
 });
 
@@ -93,19 +96,20 @@ export const lineS = selector({
 export const useNoteOp = () => {
   const note = useNote();
   const { left, right, down, move } = useCursorKeymap();
+  // FIXME: clean vars, useRecoilValue
   const [cursor] = useRecoilState(cursorS);
 
   const newLine = () => {
     if (cursor.pos == null) return;
-    note.newLine(cursor.pos.ln, cursor.pos.col);
+    note.newLine(cursor.blcokIdx, cursor.pos.ln, cursor.pos.col);
     down(true);
   };
 
   const remove = () => {
     if (cursor.pos == null) return;
-    note.removeChar(cursor.pos.ln, cursor.pos.col);
+    note.removeChar(cursor.blcokIdx, cursor.pos.ln, cursor.pos.col);
     if (cursor.pos.col === 0) {
-      const lines = note.note?.lines ?? [];
+      const lines = note.note?.blocks[cursor.blcokIdx].lines ?? [];
       const prevLine = lines[cursor.pos.ln - 1];
       move(prevLine.value.length, cursor.pos.ln - 1);
     } else {
@@ -115,7 +119,7 @@ export const useNoteOp = () => {
 
   const insert = (value: string) => {
     if (cursor.pos == null) return;
-    note.insertChar(cursor.pos.ln, cursor.pos.col, value);
+    note.insertChar(cursor.blcokIdx, cursor.pos.ln, cursor.pos.col, value);
     right(value.length);
   };
 
@@ -154,6 +158,7 @@ export const useFocus = () => {
 
     setCursor({
       isFocus: true,
+      blcokIdx: 0, // FIXME:
       pos,
       pxPos: {
         top: pos.ln * noteStyle.lineHeight,
