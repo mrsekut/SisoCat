@@ -4,10 +4,10 @@ import { useRef } from 'react';
 import { cumSumList, range } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import { noteS, lineInit, useNote } from '../notes';
-import { Line } from '../notes/typings/note';
 import { textWithIndents } from 'app/components/Reditor/utils/parsers/parser';
 import { textStyle } from 'app/components/Reditor/utils/settings';
 import { useCursorKeymap } from './hooks/useCursorKeymap';
+import { Line } from '../notes/typings';
 
 // -------------------------------------------------------------------------------------
 // Types

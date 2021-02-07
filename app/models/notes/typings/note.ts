@@ -36,30 +36,29 @@ export type ProjectM = {
 export type NotesPM = Normalize<NoteId, NotePM>;
 
 export type NotePM = NoteInfo & {
-  readonly nodes: NodeM[];
+  readonly blocks: BlockPM[];
 };
 
-export type Line = {
-  value: string;
-  widths: number[];
+export type BlockPM = NoteInfo & {
+  readonly nodes: NodeM[];
 };
 
 // -------------------------------------------------------------------------------------
 // Node Model
 // -------------------------------------------------------------------------------------
 
-export type NodeM = BlokNodeM | LineNodeM;
+export type NodeM = BoxNodeM | LineNodeM;
 
-// BlockNode
-type BlockType = BlockM['type'];
+// BoXNode
+type BoxType = BoxM['type'];
 
-export type BlokNodeM = {
-  readonly type: 'block';
-  readonly block: BlockM;
+export type BoxNodeM = {
+  readonly type: 'box';
+  readonly block: BoxM;
   readonly lines: LineNodeM[];
 };
 
-type BlockM =
+type BoxM =
   | {
       readonly type: 'code';
       readonly extension: ExtensionType;
@@ -105,7 +104,6 @@ export type NotationM =
   | LinkN
   | StrongN
   | RedirectN
-  | ExpandN
   | ItalicN
   | TexN
   | CodeN
@@ -136,13 +134,6 @@ export type RedirectN = {
   readonly type: 'redirect';
   readonly value: string;
   readonly references: NoteId[];
-};
-
-// [> hoge]
-export type ExpandN = {
-  readonly type: 'expand';
-  readonly value: string;
-  readonly note: NoteId;
 };
 
 // [/ hoge]

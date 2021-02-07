@@ -8,8 +8,8 @@ import {
   sliceWithRest,
 } from 'app/utils/functions';
 import { useTextWidths } from '../Cursor';
-import { NoteM } from './typings';
-import { Line, LineNodeM, LineId } from './typings/note';
+import { Line, NoteM } from './typings';
+import { LineNodeM, LineId } from './typings/note';
 
 export const lineInit: Line = {
   value: '',

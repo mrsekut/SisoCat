@@ -12,8 +12,8 @@ type Props = {
 export const Node: React.FC<Props> = ({ line, index }) => {
   const cursor = useRecoilValue(cursorS);
 
-  // if (node.type === 'block') {
-  //   return <Block block={node} />;
+  // if (node.type === 'box') {
+  //   return <Box box={node} />;
   // }
 
   return (
