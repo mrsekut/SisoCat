@@ -11,6 +11,8 @@ export const sum = (ns: number[]) => ns.reduce((acc, cur) => acc + cur, 0);
 export const cumSumList = (ns: number[]) =>
   ns.map((sum => (value: number) => (sum += value))(0));
 
+export const cumSumList0 = (ns: number[]) => cumSumList([0, ...ns]);
+
 export const range = (n1: number, n2?: number) => {
   if (n2 == null) {
     return [...new Array(n1).keys()];

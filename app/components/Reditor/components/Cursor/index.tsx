@@ -29,7 +29,7 @@ const useA = () => {
     setValue(e.target.value);
     // FIXME: 「か」で「ka」の2文字分動いている
     // FIXME: カーソルは右に行くが、既存の文字が動いていない
-    right();
+    // right();
   };
 
   const onCompositionStart = () => {

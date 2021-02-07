@@ -116,7 +116,7 @@ export const useNoteOp = () => {
   const insert = (value: string) => {
     if (cursor.pos == null) return;
     note.insertChar(cursor.pos.ln, cursor.pos.col, value);
-    right(1);
+    right(value.length);
   };
 
   return {
