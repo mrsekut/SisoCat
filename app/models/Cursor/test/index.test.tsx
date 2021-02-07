@@ -4,48 +4,67 @@ import React, { useEffect } from 'react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { useCursorKeymap } from '../hooks/useCursorKeymap';
 
-describe('useCursorKeymap', () => {
-  const TestComponent: React.FC = ({ children }) => {
-    const setCursor = useSetRecoilState(cursorS);
-    useEffect(() => {
-      setCursor({
-        isFocus: true,
-        pos: { ln: 0, col: 0 },
-        pxPos: {
-          top: 0,
-          left: 0,
-        },
-        line: { value: 'あいうえお', widths: [16, 16, 16, 16, 16] },
-      });
-    }, []);
+// const TestComponent: React.FC = ({ children }) => {
+//   const setCursor = useSetRecoilState(cursorS);
+//   useEffect(() => {
+//     setCursor({
+//       isFocus: true,
+//       pos: { ln: 0, col: 0 },
+//       pxPos: {
+//         top: 0,
+//         left: 0,
+//       },
+//       line: { value: 'あいうえお', widths: [16, 16, 16, 16, 16] },
+//     });
+//   }, []);
 
-    return <>{children}</>;
-  };
+//   return <>{children}</>;
+// };
 
-  const { result } = renderHook(useCursorKeymap, {
-    wrapper: ({ children }) => (
-      <RecoilRoot>
-        <TestComponent>{children}</TestComponent>
-      </RecoilRoot>
-    ),
-  });
+// const Test: React.FC = ({ children }) => {
+//   return (
+//     <RecoilRoot>
+//       <TestComponent>{children}</TestComponent>
+//     </RecoilRoot>
+//   );
+// };
 
-  it('move', () => {
-    expect(result.current.cursor.pos).toMatchObject({
-      ln: 0,
-      col: 0,
-    });
+// describe('useCursorKeymap', () => {
+//   it('move', () => {
+//     const { result } = renderHook(useCursorKeymap, {
+//       wrapper: ({ children }) => <Test>{children}</Test>,
+//     });
+//     expect(result.current.cursor.pos).toMatchObject({
+//       ln: 0,
+//       col: 0,
+//     });
 
-    act(() => {
-      result.current.move(1, 1);
-    });
+//     act(() => {
+//       result.current.move(1, 1);
+//     });
 
-    expect(result.current.cursor.pos).toMatchObject({
-      ln: 1,
-      col: 1,
-    });
-  });
-});
+//     expect(result.current.cursor.pos).toMatchObject({
+//       ln: 1,
+//       col: 1,
+//     });
+//   });
+
+//   it('right', () => {
+//     const { result } = renderHook(useCursorKeymap, {
+//       wrapper: ({ children }) => <Test>{children}</Test>,
+//     });
+
+//     act(() => {
+//       result.current.move(0, 0);
+//       result.current.right();
+//     });
+
+//     expect(result.current.cursor.pos).toMatchObject({
+//       ln: 0,
+//       col: 1,
+//     });
+//   });
+// });
 
 describe('cursorUpDown', () => {
   it('10 or 20', () => {
