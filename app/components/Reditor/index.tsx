@@ -8,11 +8,15 @@ import { useGetNote } from 'app/models/notes/hooks/useGetNote';
 import { useNote } from 'app/models/notes';
 import { useCursorKeymap } from 'app/models/Cursor/hooks/useCursorKeymap';
 
-export const Reditor: React.FC = () => {
+type Props = {
+  noteId: number;
+};
+
+export const Reditor: React.FC<Props> = ({ noteId }) => {
   const keys = useCursorKeymap();
   const { remove, newLine, insert } = useNoteOp();
   const { keyMapping } = useHotKeyMapping({ ...keys, remove, newLine, insert });
-  const { note } = useNote(useGetNote(1));
+  const { note } = useNote(useGetNote(noteId));
 
   const { ref: textareaRef, onFocus } = useFocus();
 
