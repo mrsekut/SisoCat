@@ -2,6 +2,24 @@ import styled from '@xstyled/styled-components';
 import React, { useRef, useState } from 'react';
 
 export const Draggable: React.FC = ({ children }) => {
+  const { node, handleDown, handleMove, handleUp, pxPos } = useDrag();
+
+  return (
+    <Wrap
+      ref={node}
+      onMouseDown={handleDown}
+      onMouseMove={handleMove}
+      onMouseUp={handleUp}
+      onMouseLeave={handleUp}
+      top={pxPos.top}
+      left={pxPos.left}
+    >
+      {children}
+    </Wrap>
+  );
+};
+
+const useDrag = () => {
   const [isDrag, setIsDrag] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [pxPos, setPxPos] = useState({ top: 0, left: 0 });
@@ -33,19 +51,7 @@ export const Draggable: React.FC = ({ children }) => {
     setIsDrag(false);
   };
 
-  return (
-    <Wrap
-      ref={node}
-      onMouseDown={handleDown}
-      onMouseMove={handleMove}
-      onMouseUp={handleUp}
-      onMouseLeave={handleUp}
-      top={pxPos.top}
-      left={pxPos.left}
-    >
-      {children}
-    </Wrap>
-  );
+  return { node, handleDown, handleMove, handleUp, pxPos };
 };
 
 const Wrap = styled.div<{ top: number; left: number }>`
