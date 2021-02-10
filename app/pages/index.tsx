@@ -4,7 +4,6 @@ import { Reditor } from 'app/components/Reditor';
 import { x } from '@xstyled/styled-components';
 import React, { Suspense } from 'react';
 import { Draggable } from 'app/components/Draggable';
-import { Expand } from 'app/components/Expand';
 
 const Home: BlitzPage = () => {
   const noteIds = [1, 2];
@@ -14,9 +13,7 @@ const Home: BlitzPage = () => {
         <Suspense fallback='Loading...'>
           {noteIds.map(id => (
             <Draggable>
-              <Expand init={false}>
-                <Reditor noteId={id} />
-              </Expand>
+              <Reditor noteId={id} />
             </Draggable>
           ))}
         </Suspense>
