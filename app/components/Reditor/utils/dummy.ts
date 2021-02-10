@@ -1,10 +1,43 @@
 import { Note } from '@prisma/client';
-import {
-  UserM,
-  NotePM,
-  ProjectM,
-  NotesPM,
-} from 'app/models/notes/typings/note';
+import { UserM, NotePM } from 'app/models/notes/typings/note';
+
+// -------------------------------------------------------------------------------------
+// Texts
+// -------------------------------------------------------------------------------------
+
+const text1 = [
+  ['[Json]の正規化'],
+  ['\t[json]は[正規化]するのが良い'],
+  ['\t正規化は[** よいこと]ばかり'],
+  ['[CUE]も良い感じらしい'],
+];
+
+const text2 = [
+  ['他者に[依存]しない '],
+  [],
+  ['人間の[依存]をどう定義するか'],
+  ['　「依存」の言葉の定義が曖昧すぎる'],
+  ['　情報は他者に依存しまくっている'],
+  ['　依存の中にも好むものと好まないものがある'],
+  ['　うまく言語化できていないが、超利己的なものであることはわかる'],
+  [],
+  ['直感的に許容している依存'],
+  ['	他人が他人のために作ったライブラリ等の使用'],
+  ['	他人が他人のために書いた記事の閲覧'],
+  ['	[他人の自発的な行動による利益]の享受を許容しているのだな'],
+  ['	国というシステム  '],
+  ['		公共機関とか、学習機関とか'],
+  ['		本当はここも壊さないといけない'],
+  ['			思考を放棄しているので国のような弱者救済装置に頼ってしまっている'],
+  ['			国の存在が前提にある'],
+  ['			「でも日本に頼ってるじゃん」と言われるとぐうの音も出ない'],
+  [
+    '			極論、島を作って独りで生きていけるようなシステムを構築しなければ、依存は解決されない',
+  ],
+];
+
+const text2string = (text: string[][]) =>
+  text.reduce((acc, cur) => `${acc}\n${cur}`, '');
 
 // -------------------------------------------------------------------------------------
 // User
@@ -19,16 +52,22 @@ const user1: UserM = {
 // Res Node
 // -------------------------------------------------------------------------------------
 
-export const note0: Note = {
+export const note1: Note = {
   id: 1,
   createdAt: new Date(),
   updatedAt: new Date(),
   title: '[Json]の正規化',
-  lines:
-    '[Json]の正規化\n\
-\t[json]は[正規化]するのが良い\n\
-\t正規化は[** よいこと]ばかり\n\
-[CUE]も良い感じらしい',
+  lines: text2string(text1),
+  noteId: null,
+  userId: 1,
+};
+
+export const note2: Note = {
+  id: 2,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  title: '[Json]の正規化',
+  lines: text2string(text2),
   noteId: null,
   userId: 1,
 };
@@ -37,7 +76,7 @@ export const note0: Note = {
 // Node
 // -------------------------------------------------------------------------------------
 
-export const note1: NotePM = {
+export const notePM1: NotePM = {
   id: 1,
   author: user1,
   title: '[Json]の正規化',
@@ -107,7 +146,7 @@ export const note1: NotePM = {
 };
 
 // 記事: Json
-export const note2: NotePM = {
+export const notePM2: NotePM = {
   id: 2,
   author: user1,
   title: 'Json',
@@ -142,17 +181,17 @@ export const note2: NotePM = {
 // Project
 // -------------------------------------------------------------------------------------
 
-const project: ProjectM = {
-  id: 'project1',
-  name: 'mrsekut-p',
-  author: user1,
-  notes: [1, 2],
-};
+// const project: ProjectM = {
+//   id: 'project1',
+//   name: 'mrsekut-p',
+//   author: user1,
+//   notes: [1, 2],
+// };
 
-export const notes: NotesPM = {
-  byId: {
-    1: note1,
-    2: note2,
-  },
-  allIds: [1, 2],
-};
+// const notes: NotesPM = {
+//   byId: {
+//     1: notePM1,
+//     2: notePM2,
+//   },
+//   allIds: [1, 2],
+// };

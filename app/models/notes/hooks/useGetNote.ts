@@ -1,9 +1,9 @@
-import { note0 } from 'app/components/Reditor/utils/dummy';
+import { note1, note2 } from 'app/components/Reditor/utils/dummy';
 import { useTextWidths } from 'app/models/Cursor';
 import { NoteM } from '../typings';
 
 export const useGetNote = (noteId: number): NoteM => {
-  const note = note0;
+  const note = dummyNote(noteId);
   // const [note] = useQuery(getNote, { where: { id: 1 } });
   // const [user] = useQuery(getUser, { where: { id: note.userId } });
   const { textWidths } = useTextWidths();
@@ -21,4 +21,13 @@ export const useGetNote = (noteId: number): NoteM => {
     lines,
     references: [],
   };
+};
+
+const dummyNote = (noteId: number) => {
+  switch (noteId) {
+    case 2:
+      return note2;
+    default:
+      return note1;
+  }
 };
