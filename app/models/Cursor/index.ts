@@ -90,8 +90,8 @@ export const lineS = selector({
  * useCursorKeymapとuseNoteの接続
  * e.g. カーソル位置の文字削除、文字入力
  */
-export const useNoteOp = () => {
-  const note = useNote();
+export const useNoteOp = (noteId: number) => {
+  const note = useNote(noteId);
   const { left, right, down, move } = useCursorKeymap();
   const [cursor] = useRecoilState(cursorS);
 

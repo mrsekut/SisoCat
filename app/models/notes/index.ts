@@ -11,6 +11,45 @@ import { useTextWidths } from '../Cursor';
 import { NoteM } from './typings';
 import { Line, LineNodeM, LineId } from './typings/note';
 
+// -------------------------------------------------------------------------------------
+// Notes
+// -------------------------------------------------------------------------------------
+
+export const notesS = atom<Record<number, NoteM>>({
+  key: 'notesS',
+  default: {},
+});
+
+export const useNotes = (noteId: number, init?: NoteM) => {
+  const [notes, setNotes] = useRecoilState(notesS);
+
+  useEffect(() => {
+    if (init != null) {
+      setNotes(n => ({ ...n, [init.id]: init }));
+    }
+  }, []);
+
+  const setNote = (initialState: NoteM | ((note: NoteM) => NoteM)) => {
+    if (typeof initialState === 'function') {
+      setNotes(n => {
+        const note = notes[noteId];
+        return {
+          ...notes,
+          [note.id]: initialState(n[note.id]),
+        };
+      });
+    } else {
+      setNotes({ ...notes, [initialState.id]: initialState });
+    }
+  };
+
+  return { note: notes[noteId], setNote };
+};
+
+// -------------------------------------------------------------------------------------
+// Note
+// -------------------------------------------------------------------------------------
+
 export const lineInit: Line = {
   value: '',
   widths: [],
@@ -27,13 +66,9 @@ export const noteS = atom<NoteM | null>({
  * - ノートの内容の操作
  * - UIには関与しない
  */
-export const useNote = (init?: NoteM) => {
-  const [note, setNote] = useRecoilState(noteS);
+export const useNote = (noteId: number) => {
+  const { note, setNote } = useNotes(noteId);
   const { textWidths } = useTextWidths();
-
-  useEffect(() => {
-    if (init != null) setNote(init);
-  }, []);
 
   const updateLine = (ln: number, line: string) => {
     setNote(note => {

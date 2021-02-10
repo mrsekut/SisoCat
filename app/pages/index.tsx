@@ -7,7 +7,7 @@ import { Draggable } from 'app/components/Draggable';
 import { Expand } from 'app/components/Expand';
 
 const Home: BlitzPage = () => {
-  const noteIds = [1, 1, 1, 1];
+  const noteIds = [1, 2];
   return (
     <x.div className='container'>
       <x.main>

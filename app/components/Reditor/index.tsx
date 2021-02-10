@@ -5,7 +5,7 @@ import { useFocus, useNoteOp } from 'app/models/Cursor';
 import { useHotKeyMapping } from './hooks/useHotKeyMapping';
 import { TextLines } from './components/Node/TextLinets';
 import { useGetNote } from 'app/models/notes/hooks/useGetNote';
-import { useNote } from 'app/models/notes';
+import { useNotes } from 'app/models/notes';
 import { useCursorKeymap } from 'app/models/Cursor/hooks/useCursorKeymap';
 
 type Props = {
@@ -14,9 +14,11 @@ type Props = {
 
 export const Reditor: React.FC<Props> = ({ noteId }) => {
   const keys = useCursorKeymap();
-  const { remove, newLine, insert } = useNoteOp();
+  const { remove, newLine, insert } = useNoteOp(noteId);
   const { keyMapping } = useHotKeyMapping({ ...keys, remove, newLine, insert });
-  const { note } = useNote(useGetNote(noteId));
+
+  const resNote = useGetNote(noteId);
+  const { note } = useNotes(resNote.id, resNote);
 
   const { ref: textareaRef, onFocus } = useFocus();
 
