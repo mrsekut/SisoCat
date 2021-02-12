@@ -1,9 +1,8 @@
 import { BlitzPage } from 'blitz';
 import Layout from 'app/layouts/Layout';
-import { Reditor } from 'app/components/Reditor';
+import { Reditors } from 'app/components/Reditor';
 import { x } from '@xstyled/styled-components';
 import React, { Suspense } from 'react';
-import { Draggable } from 'app/components/Draggable';
 
 const Home: BlitzPage = () => {
   const noteIds = [1, 2];
@@ -11,11 +10,7 @@ const Home: BlitzPage = () => {
     <x.div className='container'>
       <x.main>
         <Suspense fallback='Loading...'>
-          {noteIds.map(id => (
-            <Draggable>
-              <Reditor noteId={id} />
-            </Draggable>
-          ))}
+          <Reditors noteIds={noteIds} />
         </Suspense>
       </x.main>
     </x.div>

@@ -10,6 +10,7 @@ describe('useCursorKeymap', () => {
     useEffect(() => {
       setCursor({
         isFocus: true,
+        noteId: 1,
         pos: { ln: 0, col: 0 },
         pxPos: {
           top: 0,

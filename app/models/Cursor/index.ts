@@ -1,10 +1,10 @@
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { cumSumList, range } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import { noteS, lineInit, useNote } from '../notes';
-import { Line } from '../notes/typings/note';
+import { Line, NoteId } from '../notes/typings/note';
 import { textWithIndents } from 'app/components/Reditor/utils/parsers/parser';
 import { textStyle } from 'app/components/Reditor/utils/settings';
 import { useCursorKeymap } from './hooks/useCursorKeymap';
@@ -29,6 +29,7 @@ type CursorFocus = {
   isFocus: true;
   pos: Pos;
   pxPos: PxPos;
+  noteId: number;
   line: Line; // on the cursor
 };
 
@@ -36,6 +37,7 @@ type CursorNotFocus = {
   isFocus: false;
   pos?: undefined;
   pxPos?: undefined;
+  noteId?: undefined;
   line?: undefined;
 };
 
@@ -132,7 +134,8 @@ export const useNoteOp = (noteId: number) => {
  */
 
 export const useFocus = () => {
-  const [, setCursor] = useRecoilState(cursorS);
+  const [cursor, setCursor] = useRecoilState(cursorS);
+  const [focusNoteId, setFocus] = useState<null | NoteId>(null);
   const ref = useRef<HTMLTextAreaElement | null>(null);
   const line = useRecoilValue(lineS);
 
@@ -148,12 +151,17 @@ export const useFocus = () => {
   };
 
   // initialize cusror
-  const onFocus = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const onFocus = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    noteId: NoteId,
+  ) => {
     ref.current?.focus();
     const pos = calcCoordinate(e.clientX, e.clientY);
+    setFocus(noteId); // FIXME: これいる？
 
     setCursor({
       isFocus: true,
+      noteId,
       pos,
       pxPos: {
         top: pos.ln * noteStyle.lineHeight,
@@ -163,7 +171,7 @@ export const useFocus = () => {
     });
   };
 
-  return { ref, onFocus };
+  return { focusNoteId, ref, onFocus };
 };
 
 /**

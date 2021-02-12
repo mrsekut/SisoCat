@@ -16,7 +16,7 @@ const useA = () => {
   const [value, setValue] = useState('');
   const { right } = useCursorKeymap();
   const [isComposing, setComposing] = useState(false);
-  const { insert } = useNoteOp();
+  const { insert } = useNoteOp(1); // FIXME: noteId
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     // hankaku
