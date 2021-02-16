@@ -63,7 +63,7 @@ export const Cursor: React.FC<Props> = ({ onKeyDown, textareaRef }) => {
 
   if (pxPos == null) return null;
   return (
-    <x.div position='absolute' top={pxPos.top} left={pxPos.left} h={'1em'}>
+    <x.div position='absolute' top={0} left={pxPos.left} h={'1em'}>
       <Carret />
       <Textarea
         ref={textareaRef}

@@ -3,7 +3,7 @@ import { useFont, useFontSize } from '@xstyled/styled-components';
 import { useRef, useState } from 'react';
 import { cumSumList, range } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
-import { noteS, lineInit, useNote } from '../notes';
+import { noteS, lineInit, useNote, notesS } from '../notes';
 import { Line, NoteId } from '../notes/typings/note';
 import { textWithIndents } from 'app/components/Reditor/utils/parsers/parser';
 import { textStyle } from 'app/components/Reditor/utils/settings';
@@ -65,10 +65,10 @@ export const cursorS = selector<CursorM>({
     if (!cursor.isFocus) {
       return cursor;
     }
-
+    const note = get(notesS)[cursor.noteId];
     return {
       ...cursor,
-      line: get(noteS)?.lines[cursor.pos.ln] ?? lineInit,
+      line: note.lines[cursor.pos.ln] ?? lineInit,
     };
   },
   set: ({ set }, newValue) => set(_cursorS, newValue),
@@ -94,7 +94,7 @@ export const lineS = selector({
  */
 export const useNoteOp = (noteId: number) => {
   const note = useNote(noteId);
-  const { left, right, down, move } = useCursorKeymap();
+  const { left, right, down, move, up } = useCursorKeymap();
   const [cursor] = useRecoilState(cursorS);
 
   const newLine = () => {
@@ -126,6 +126,11 @@ export const useNoteOp = (noteId: number) => {
     newLine,
     remove,
     insert,
+    up,
+    left,
+    right,
+    down,
+    move,
   };
 };
 
