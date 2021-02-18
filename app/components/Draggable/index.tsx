@@ -1,64 +1,101 @@
-import styled from '@xstyled/styled-components';
-import React, { useRef, useState } from 'react';
+import styled, { css } from '@xstyled/styled-components';
+import React, { useCallback, useEffect, useState } from 'react';
+
+// -------------------------------------------------------------------------------------
+// Types
+// -------------------------------------------------------------------------------------
+
+type Pos = { x: number; y: number };
+
+// -------------------------------------------------------------------------------------
+// Component
+// -------------------------------------------------------------------------------------
 
 export const Draggable: React.FC = ({ children }) => {
-  const { node, handleDown, handleMove, handleUp, pxPos } = useDrag();
+  const { handleMouseDown, isDragging, pos } = useDrag();
 
   return (
-    <Wrap
-      ref={node}
-      onMouseDown={handleDown}
-      onMouseMove={handleMove}
-      onMouseUp={handleUp}
-      onMouseLeave={handleUp}
-      top={pxPos.top}
-      left={pxPos.left}
-    >
+    <Wrap isDragging={isDragging} pos={pos}>
+      <Header onMouseDown={handleMouseDown}>title</Header>
       {children}
     </Wrap>
   );
 };
 
-const useDrag = () => {
-  const [isDrag, setIsDrag] = useState(false);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [pxPos, setPxPos] = useState({ top: 0, left: 0 });
-  const node = useRef<HTMLDivElement | null>(null);
+// -------------------------------------------------------------------------------------
+// Styles
+// -------------------------------------------------------------------------------------
 
-  const handleDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const item = node.current;
-    setIsDrag(true);
-
-    if (item == null) return;
-
-    setPos({
-      x: e.pageX - item.offsetLeft,
-      y: e.pageY - item.offsetTop,
-    });
-  };
-
-  const handleMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (isDrag) {
-      e.preventDefault();
-      setPxPos({
-        top: e.pageY - pos.y,
-        left: e.pageX - pos.x,
-      });
-    }
-  };
-
-  const handleUp = () => {
-    setIsDrag(false);
-  };
-
-  return { node, handleDown, handleMove, handleUp, pxPos };
-};
-
-const Wrap = styled.div<{ top: number; left: number }>`
+const Wrap = styled.div<{ isDragging: boolean; pos: Pos }>`
   padding: 3px;
   background-color: red;
-  cursor: move;
   position: absolute;
-  top: ${p => p.top}px;
-  left: ${p => p.left}px;
+  ${p => (p.isDragging ? IsDragging : IsNotDragging)};
+  transform: ${p => css`translate(${p.pos.x}px, ${p.pos.y}px)`};
 `;
+
+const IsDragging = css`
+  transition: none;
+  z-index: 2;
+  position: absolute;
+`;
+
+const IsNotDragging = css`
+  transition: transform 500ms;
+  z-index: 1;
+  position: relative;
+`;
+
+const Header = styled.div`
+  cursor: move;
+`;
+
+// -------------------------------------------------------------------------------------
+// Hooks
+// -------------------------------------------------------------------------------------
+
+const useDrag = (id = '0') => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [pos, setPos] = useState<Pos>({ x: 0, y: 0 });
+
+  const handleMouseDown = useCallback(
+    ({ clientX, clientY }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      setIsDragging(true);
+      setPos({
+        x: clientX,
+        y: clientY,
+      });
+    },
+    [],
+  );
+
+  const _handleMouseMove = useCallback(
+    ({ clientX, clientY }: MouseEvent) => {
+      setPos({
+        x: clientX,
+        y: clientY,
+      });
+    },
+    [id],
+  );
+
+  const _handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', _handleMouseMove);
+      window.addEventListener('mouseup', _handleMouseUp);
+    } else {
+      window.removeEventListener('mousemove', _handleMouseMove);
+      window.removeEventListener('mouseup', _handleMouseUp);
+    }
+  }, [isDragging, _handleMouseMove, _handleMouseUp]);
+
+  return {
+    handleMouseDown,
+    isDragging,
+    pos,
+  };
+};
