@@ -1,6 +1,6 @@
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { noteStyle } from 'app/utils/style';
 import { noteS, lineInit, useNote, notesS } from '../notes';
 import { Line, NoteId } from '../notes/typings/note';
@@ -140,7 +140,6 @@ export const useNoteOp = (noteId: number) => {
 
 export const useFocus = () => {
   const [, setCursor] = useRecoilState(cursorS);
-  const [focusNoteId, setFocus] = useState<null | NoteId>(null);
   const ref = useRef<HTMLTextAreaElement | null>(null);
   const line = useRecoilValue(lineS);
 
@@ -148,10 +147,9 @@ export const useFocus = () => {
     x: number,
     y: number,
   ): { ln: number; col: number } => {
-    // FIXME: col
     return {
       ln: Math.floor(y / noteStyle.lineHeight),
-      col: 0,
+      col: x,
     };
   };
 
@@ -161,8 +159,8 @@ export const useFocus = () => {
     noteId: NoteId,
   ) => {
     ref.current?.focus();
-    const pos = calcCoordinate(e.clientX, e.clientY);
-    setFocus(noteId); // FIXME: これいる？
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pos = calcCoordinate(e.clientX - rect.left, e.clientY - rect.top);
 
     setCursor({
       isFocus: true,
@@ -176,7 +174,7 @@ export const useFocus = () => {
     });
   };
 
-  return { focusNoteId, ref, onFocus };
+  return { ref, onFocus };
 };
 
 /**
