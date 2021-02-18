@@ -94,7 +94,7 @@ export const lineS = selector({
  */
 export const useNoteOp = (noteId: number) => {
   const note = useNote(noteId);
-  const { left, right, down, move, up } = useCursorKeymap();
+  const { left, right, down, move, up, begin, end } = useCursorKeymap();
   const [cursor] = useRecoilState(cursorS);
 
   const newLine = () => {
@@ -130,6 +130,8 @@ export const useNoteOp = (noteId: number) => {
     left,
     right,
     down,
+    begin,
+    end,
     move,
   };
 };

@@ -17,7 +17,7 @@ type Props = {
 export const FocusedLine: React.FC<Props> = ({ noteId, textareaRef }) => {
   const cursor = useRecoilValue(cursorS);
   const level = textWithIndents.tryParse(cursor.line?.value ?? '').level;
-  const { ...keys } = useNoteOp(noteId);
+  const keys = useNoteOp(noteId);
   const isFocus = noteId === cursor.noteId;
   const { keyMapping } = useHotKeyMapping(isFocus, keys);
 
