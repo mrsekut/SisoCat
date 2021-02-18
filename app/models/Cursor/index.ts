@@ -1,13 +1,11 @@
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import { useRef, useState } from 'react';
-import { cumSumList, range } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import { noteS, lineInit, useNote, notesS } from '../notes';
 import { Line, NoteId } from '../notes/typings/note';
-import { textWithIndents } from 'app/components/Reditor/utils/parsers/parser';
-import { textStyle } from 'app/components/Reditor/utils/settings';
 import { useCursorKeymap } from './hooks/useCursorKeymap';
+import { getTextWidths } from './utils';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -141,7 +139,7 @@ export const useNoteOp = (noteId: number) => {
  */
 
 export const useFocus = () => {
-  const [cursor, setCursor] = useRecoilState(cursorS);
+  const [, setCursor] = useRecoilState(cursorS);
   const [focusNoteId, setFocus] = useState<null | NoteId>(null);
   const ref = useRef<HTMLTextAreaElement | null>(null);
   const line = useRecoilValue(lineS);
@@ -191,52 +189,4 @@ export const useTextWidths = () => {
     getTextWidths(line ?? '', `${fontSize} ${font}`);
 
   return { textWidths };
-};
-
-// -------------------------------------------------------------------------------------
-// Utils
-// -------------------------------------------------------------------------------------
-
-export const getTextWidths = (text: string, font: string): number[] => {
-  if (typeof window !== 'undefined') {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-
-    if (context != null) {
-      const { value, level } = textWithIndents.tryParse(text);
-      context.font = font;
-
-      const indents = range(level).map(_ => textStyle.fontSize);
-      const widths = [...value].map(t => context.measureText(t).width);
-      return indents.concat(widths);
-    }
-  }
-
-  return [];
-};
-
-// cursorを上下に移動した時の、cursorの位置を決定する
-export const cursorUpDown = (
-  curLeft: number,
-  nextLineWidths: number[],
-  isNewLine = false,
-): { col: number; left: number } => {
-  if (isNewLine) {
-    return { col: 0, left: 0 };
-  }
-
-  if (nextLineWidths.length === 0) {
-    return { col: 0, left: 0 };
-  }
-
-  const csl = cumSumList(nextLineWidths);
-  const idx = csl.findIndex(w => curLeft < w);
-
-  if (idx === -1) {
-    return { col: csl.length, left: csl[csl.length - 1] };
-  }
-
-  return csl[idx] - curLeft <= nextLineWidths[idx] / 2
-    ? { col: idx + 1, left: csl[idx] }
-    : { col: idx, left: csl[idx - 1] ?? 0 };
 };

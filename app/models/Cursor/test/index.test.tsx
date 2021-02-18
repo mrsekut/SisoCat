@@ -1,8 +1,9 @@
 import { act, renderHook } from '@testing-library/react-hooks';
-import { cursorS, cursorUpDown } from 'app/models/Cursor';
+import { cursorS } from 'app/models/Cursor';
 import React, { useEffect } from 'react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { useCursorKeymap } from '../hooks/useCursorKeymap';
+import { cursorUpDown } from '../utils';
 
 describe('useCursorKeymap', () => {
   const TestComponent: React.FC = ({ children }) => {

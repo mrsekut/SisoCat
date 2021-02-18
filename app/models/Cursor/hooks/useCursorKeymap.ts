@@ -3,7 +3,8 @@ import { cumSumList0, decN } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import produce from 'immer';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { cursorS, cursorUpDown } from '..';
+import { cursorS } from '..';
+import { cursorUpDown } from '../utils';
 
 /**
  * - カーソルの操作, 移動
