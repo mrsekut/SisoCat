@@ -26,7 +26,11 @@ export const FocusedLine: React.FC<Props> = ({ noteId, textareaRef }) => {
       <Indents level={level} />
       <Normal value={cursor.line?.value ?? ''} />
 
-      <Cursor textareaRef={textareaRef} onKeyDown={keyMapping} />
+      <Cursor
+        noteId={noteId}
+        textareaRef={textareaRef}
+        onKeyDown={keyMapping}
+      />
     </Span>
   );
 };
