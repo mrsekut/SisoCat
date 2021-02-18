@@ -1,5 +1,5 @@
 import styled, { css } from '@xstyled/styled-components';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -12,11 +12,13 @@ type Pos = { x: number; y: number };
 // -------------------------------------------------------------------------------------
 
 export const Draggable: React.FC = ({ children }) => {
-  const { handleMouseDown, isDragging, pos } = useDrag();
+  const { handleMouseDown, isDragging, pos, ref } = useDrag();
 
   return (
     <Wrap isDragging={isDragging} pos={pos}>
-      <Header onMouseDown={handleMouseDown}>title</Header>
+      <Header onMouseDown={handleMouseDown} ref={ref}>
+        title
+      </Header>
       {children}
     </Wrap>
   );
@@ -57,26 +59,31 @@ const Header = styled.div`
 const useDrag = (id = '0') => {
   const [isDragging, setIsDragging] = useState(false);
   const [pos, setPos] = useState<Pos>({ x: 0, y: 0 });
+  const [origin, setOrigin] = useState<Pos>({ x: 0, y: 0 });
+  const ref = useRef<HTMLDivElement | null>(null);
 
   const handleMouseDown = useCallback(
-    ({ clientX, clientY }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      const item = ref.current;
       setIsDragging(true);
-      setPos({
-        x: clientX,
-        y: clientY,
+      if (item == null) return;
+      setOrigin({
+        x: e.pageX - item.offsetLeft,
+        y: e.pageY - item.offsetTop,
       });
     },
-    [],
+    [ref.current],
   );
 
   const _handleMouseMove = useCallback(
-    ({ clientX, clientY }: MouseEvent) => {
+    (e: MouseEvent) => {
+      // FIXME: 動き始めにカクつく
       setPos({
-        x: clientX,
-        y: clientY,
+        x: e.clientX - origin.x,
+        y: e.clientY - origin.y,
       });
     },
-    [id],
+    [id, origin],
   );
 
   const _handleMouseUp = useCallback(() => {
@@ -97,5 +104,6 @@ const useDrag = (id = '0') => {
     handleMouseDown,
     isDragging,
     pos,
+    ref,
   };
 };
