@@ -7,20 +7,10 @@ import { Indents } from './Indents';
 type Props = {
   line: string;
   index: number;
-  isFocus: boolean;
 };
 
-export const Line: React.FC<Props> = ({ line, index, isFocus }) => {
+export const Line: React.FC<Props> = ({ line, index }) => {
   const node = parse(line, index);
-
-  if (isFocus) {
-    return (
-      <>
-        <Indents level={node.line.indent} />
-        <Normal value={line} />
-      </>
-    );
-  }
 
   return (
     <>
@@ -49,7 +39,7 @@ const Notation: React.FC<{ notation: NotationM }> = ({ notation }) => {
 };
 
 // FIXME: move
-const Normal: React.FC<{ value: string }> = ({ value }) => {
+export const Normal: React.FC<{ value: string }> = ({ value }) => {
   return (
     <span>
       {[...value].map(char => (

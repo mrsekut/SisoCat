@@ -33,7 +33,7 @@ const any = bnb.match(/./);
 
 export const textWithIndents = bnb
   .all(indents, any.repeat())
-  .map(([level, value]) => ({ level, value }));
+  .map(([level, value]) => ({ level, value: value.join('') }));
 
 const max3 = (n: number) => Math.min(3, n) as 1 | 2 | 3;
 

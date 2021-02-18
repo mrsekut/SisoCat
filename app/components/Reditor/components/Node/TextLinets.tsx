@@ -15,7 +15,7 @@ export const TextLines: React.FC<Props> = ({ note }) => {
   return (
     <x.div>
       {note.lines.map((line, index) => (
-        <Node line={line.value} index={index} noteId={note.id} />
+        <Node line={line.value} index={index} />
       ))}
     </x.div>
   );

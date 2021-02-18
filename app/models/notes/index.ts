@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { lineParser } from 'app/components/Reditor/utils/parsers/parser';
 import produce from 'immer';
@@ -9,7 +8,7 @@ import {
 } from 'app/utils/functions';
 import { useTextWidths } from '../Cursor';
 import { NoteM } from './typings';
-import { Line, LineNodeM, LineId } from './typings/note';
+import { Line, LineNodeM, LineId, NoteId } from './typings/note';
 
 // -------------------------------------------------------------------------------------
 // Notes
@@ -20,22 +19,20 @@ export const notesS = atom<Record<number, NoteM>>({
   default: {},
 });
 
-export const useNotes = (noteId: number, init?: NoteM) => {
+export const useNotes = () => {
   const [notes, setNotes] = useRecoilState(notesS);
+  const getNote = (noteId: NoteId) => {
+    return notes[noteId];
+  };
 
-  useEffect(() => {
-    if (init != null) {
-      setNotes(n => ({ ...n, [init.id]: init }));
-    }
-  }, []);
-
-  const setNote = (initialState: NoteM | ((note: NoteM) => NoteM)) => {
+  const setNote = (noteId: NoteId) => (
+    initialState: NoteM | ((note: NoteM) => NoteM),
+  ) => {
     if (typeof initialState === 'function') {
       setNotes(n => {
-        const note = notes[noteId];
         return {
           ...notes,
-          [note.id]: initialState(n[note.id]),
+          [noteId]: initialState(n[noteId]),
         };
       });
     } else {
@@ -43,7 +40,7 @@ export const useNotes = (noteId: number, init?: NoteM) => {
     }
   };
 
-  return { note: notes[noteId], setNote };
+  return { getNote, setNote };
 };
 
 // -------------------------------------------------------------------------------------
@@ -67,10 +64,12 @@ export const noteS = atom<NoteM | null>({
  * - UIには関与しない
  */
 export const useNote = (noteId: number) => {
-  const { note, setNote } = useNotes(noteId);
+  const { getNote, setNote: sss } = useNotes();
+  const note = getNote(noteId);
+  const setNote = sss(noteId); // FIXME: name
   const { textWidths } = useTextWidths();
 
-  const updateLine = (ln: number, line: string) => {
+  const _updateLine = (ln: number, line: string) => {
     setNote(note => {
       if (note == null) return note;
       return produce(note, n => {
@@ -97,7 +96,7 @@ export const useNote = (noteId: number) => {
   const insertChar = (ln: number, col: number, value: string) => {
     const line = note?.lines[ln].value ?? '';
     const inserted = insertNthChar(line, col, value);
-    updateLine(ln, inserted);
+    _updateLine(ln, inserted);
   };
 
   const removeChar = (ln: number, col: number) => {
@@ -108,7 +107,7 @@ export const useNote = (noteId: number) => {
 
     const line = note?.lines[ln].value ?? '';
     const deleted = deleteNthChar(line, col - 1);
-    updateLine(ln, deleted);
+    _updateLine(ln, deleted);
   };
 
   const removeLine = (ln: number) => {

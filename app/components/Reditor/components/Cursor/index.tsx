@@ -3,20 +3,21 @@ import styled, { x } from '@xstyled/styled-components';
 import { cursorS, useNoteOp } from 'app/models/Cursor';
 import { useRecoilValue } from 'recoil';
 import { noteStyle } from 'app/utils/style';
-import { useCursorKeymap } from 'app/models/Cursor/hooks/useCursorKeymap';
 import { textStyle } from '../../utils/settings';
+import { NoteId } from 'app/models/notes/typings/note';
 
 type Props = {
+  noteId: NoteId;
   onKeyDown: KeyboardEventHandler;
   textareaRef: RefObject<HTMLTextAreaElement>;
 };
 
-// FIXME: name, clean, move
-const useA = () => {
+// FIXME: clean, move
+const useInput = (noteId: NoteId) => {
   const [value, setValue] = useState('');
-  const { right } = useCursorKeymap();
+  // const { right } = useCursorKeymap();
   const [isComposing, setComposing] = useState(false);
-  const { insert } = useNoteOp(1); // FIXME: noteId
+  const { insert } = useNoteOp(noteId);
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     // hankaku
@@ -51,7 +52,7 @@ const useA = () => {
   };
 };
 
-export const Cursor: React.FC<Props> = ({ onKeyDown, textareaRef }) => {
+export const Cursor: React.FC<Props> = ({ noteId, onKeyDown, textareaRef }) => {
   const { pxPos } = useRecoilValue(cursorS);
   const {
     value,
@@ -59,11 +60,11 @@ export const Cursor: React.FC<Props> = ({ onKeyDown, textareaRef }) => {
     onChange,
     onCompositionStart,
     onCompositionEnd,
-  } = useA();
+  } = useInput(noteId);
 
   if (pxPos == null) return null;
   return (
-    <x.div position='absolute' top={pxPos.top} left={pxPos.left} h={'1em'}>
+    <x.div position='absolute' top={0} left={pxPos.left} h='1em'>
       <Carret />
       <Textarea
         ref={textareaRef}
@@ -91,11 +92,10 @@ const Carret = () => (
   />
 );
 
-// FIXME:
 const Textarea = styled.textarea<{ width: number }>`
   top: 0px;
   left: 0px;
-  width: ${p => p.width * 16}px;
+  width: ${p => p.width * textStyle.fontSize}px;
   height: 24px;
   font-size: ${textStyle.fontSize};
   position: absolute;
