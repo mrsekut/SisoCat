@@ -21,6 +21,10 @@ export const FocusedLine: React.FC<Props> = ({ noteId, textareaRef }) => {
   const isFocus = noteId === cursor.noteId;
   const { keyMapping } = useHotKeyMapping(isFocus, keys);
 
+  if (cursor.noteId !== noteId) {
+    return null;
+  }
+
   return (
     <Span top={cursor.pxPos?.top ?? 0}>
       <Indents level={level} />
