@@ -1,5 +1,4 @@
 import { atom, useRecoilState } from 'recoil';
-import { lineParser } from 'app/components/Reditor/utils/parsers/parser';
 import produce from 'immer';
 import {
   deleteNthChar,
@@ -8,7 +7,7 @@ import {
 } from 'app/utils/functions';
 import { useTextWidths } from '../Cursor';
 import { NoteM } from './typings';
-import { Line, LineNodeM, LineId, NoteId } from './typings/note';
+import { Line, NoteId } from './typings/note';
 
 // -------------------------------------------------------------------------------------
 // Notes
@@ -29,12 +28,10 @@ export const useNotes = () => {
     initialState: NoteM | ((note: NoteM) => NoteM),
   ) => {
     if (typeof initialState === 'function') {
-      setNotes(n => {
-        return {
-          ...notes,
-          [noteId]: initialState(n[noteId]),
-        };
-      });
+      setNotes(n => ({
+        ...notes,
+        [noteId]: initialState(n[noteId]),
+      }));
     } else {
       setNotes({ ...notes, [initialState.id]: initialState });
     }
@@ -64,9 +61,9 @@ export const noteS = atom<NoteM | null>({
  * - UIには関与しない
  */
 export const useNote = (noteId: number) => {
-  const { getNote, setNote: sss } = useNotes();
-  const note = getNote(noteId);
-  const setNote = sss(noteId); // FIXME: name
+  const un = useNotes();
+  const note = un.getNote(noteId);
+  const setNote = un.setNote(noteId);
   const { textWidths } = useTextWidths();
 
   const _updateLine = (ln: number, line: string) => {
@@ -133,13 +130,4 @@ const mergeLine = (l1: Line, l2: Line): Line => {
     value: l1.value.concat(l2.value),
     widths: l1.widths.concat(l2.widths),
   };
-};
-
-// FIXME: move
-export const parse = (text: string, index: number): LineNodeM => {
-  const result = lineParser(text, `line${index}` as LineId, index).tryParse(
-    `${text}`,
-  );
-
-  return { type: 'line', line: result };
 };

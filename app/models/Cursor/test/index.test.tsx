@@ -1,53 +1,4 @@
-import { act, renderHook } from '@testing-library/react-hooks';
-import { cursorS } from 'app/models/Cursor';
-import React, { useEffect } from 'react';
-import { RecoilRoot, useSetRecoilState } from 'recoil';
-import { useCursorKeymap } from '../hooks/useCursorKeymap';
 import { cursorUpDown } from '../utils';
-
-describe('useCursorKeymap', () => {
-  const TestComponent: React.FC = ({ children }) => {
-    const setCursor = useSetRecoilState(cursorS);
-    useEffect(() => {
-      setCursor({
-        isFocus: true,
-        noteId: 1,
-        pos: { ln: 0, col: 0 },
-        pxPos: {
-          top: 0,
-          left: 0,
-        },
-        line: { value: 'あいうえお', widths: [16, 16, 16, 16, 16] },
-      });
-    }, []);
-
-    return <>{children}</>;
-  };
-
-  const { result } = renderHook(useCursorKeymap, {
-    wrapper: ({ children }) => (
-      <RecoilRoot>
-        <TestComponent>{children}</TestComponent>
-      </RecoilRoot>
-    ),
-  });
-
-  it('move', () => {
-    expect(result.current.cursor.pos).toMatchObject({
-      ln: 0,
-      col: 0,
-    });
-
-    act(() => {
-      result.current.move(1, 1);
-    });
-
-    expect(result.current.cursor.pos).toMatchObject({
-      ln: 1,
-      col: 1,
-    });
-  });
-});
 
 describe('cursorUpDown', () => {
   it('10 or 20', () => {
@@ -80,13 +31,13 @@ describe('cursorUpDown', () => {
     expect(cursorUpDown(curLeft, widths)).toMatchObject({ col: 2, left: 20 });
   });
 
-  it('FIXME:', () => {
+  it('is at the beginning', () => {
     const curLeft = 0;
     const widths = [10, 10];
     expect(cursorUpDown(curLeft, widths)).toMatchObject({ col: 0, left: 0 });
   });
 
-  it('FIXME:', () => {
+  it('is at the end of the line', () => {
     const curLeft = 50;
     const widths = [10, 10];
     expect(cursorUpDown(curLeft, widths, true)).toMatchObject({
@@ -95,7 +46,7 @@ describe('cursorUpDown', () => {
     });
   });
 
-  it('FIXME:', () => {
+  it('is empty:', () => {
     const curLeft = 10;
     const widths: number[] = [];
     expect(cursorUpDown(curLeft, widths)).toMatchObject({ col: 0, left: 0 });

@@ -1,4 +1,10 @@
-import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
+import {
+  atom,
+  selector,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import { useRef } from 'react';
 import { noteStyle } from 'app/utils/style';
@@ -72,8 +78,7 @@ export const cursorS = selector<CursorM>({
   set: ({ set }, newValue) => set(_cursorS, newValue),
 });
 
-// DEPRECATED:
-export const lineS = selector({
+const lineS = selector({
   key: 'lineS',
   get: ({ get }) => {
     const cursor = get(cursorS);
@@ -139,7 +144,7 @@ export const useNoteOp = (noteId: number) => {
  */
 
 export const useFocus = () => {
-  const [, setCursor] = useRecoilState(cursorS);
+  const setCursor = useSetRecoilState(cursorS);
   const ref = useRef<HTMLTextAreaElement | null>(null);
   const line = useRecoilValue(lineS);
 

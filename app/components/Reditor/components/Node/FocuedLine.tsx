@@ -4,10 +4,10 @@ import { cursorS, useNoteOp } from 'app/models/Cursor';
 import { useRecoilValue } from 'recoil';
 import { useHotKeyMapping } from '../../hooks/useHotKeyMapping';
 import { NoteId } from 'app/models/notes/typings/note';
-import { Normal } from './Line';
 import { Indents } from './Indents';
 import { Cursor } from '../Cursor';
 import { textWithIndents } from '../../utils/parsers/parser';
+import { Normal } from './Normal';
 
 type Props = {
   noteId: NoteId;
