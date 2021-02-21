@@ -1,4 +1,4 @@
-export type Text = string[];
+import { Text } from './dummy';
 
 export const text1: Text = [
   '[Json]の正規化',
@@ -71,6 +71,7 @@ export const text4: Text = [
 export const text5: Text = [
   '自分で到達する',
   '	[経営理念]に関する疑問の根源',
+  '	に関する疑問の根源',
   '',
   '例えば「ミッションを決めよう」について',
   '	有名な大企業の社長はミッションを作っていたからそれにならおう',
@@ -78,7 +79,7 @@ export const text5: Text = [
   '	多くの起業家がみんな決めてるから決めよう',
   '	投資家はそういうのを欲しがるのだから決めよう',
   '',
-  'というノリに疑問が湧いていた[mrsekut.icon]',
+  'というノリに疑問が湧いていた',
   '	つければいいの？付ける意味あるの？',
   '	この時点ではただの批判に近い',
   '',
@@ -93,3 +94,7 @@ export const text5: Text = [
   'ただ批判するのではなく、',
   '自分の中で崩しと再考性が必要',
 ];
+
+// export const texts = [text1];
+
+export const texts = [text1, text2, text3, text4, text5];

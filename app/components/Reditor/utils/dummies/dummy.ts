@@ -1,12 +1,14 @@
 import { Note } from '@prisma/client';
-import { UserM, NotePM, NoteId } from 'app/models/notes/typings/note';
-import { text1, text2, text3, text4, text5, Text } from './texts';
+import { UserM, NotePM, NoteId, LinkN } from 'app/models/notes/typings/note';
+import { uniqBy } from 'app/utils/functions';
+import { lineParser } from '../parsers/parser';
+import { def } from './dict';
 
 // -------------------------------------------------------------------------------------
 // Texts
 // -------------------------------------------------------------------------------------
 
-const text2string = (text: string[]) =>
+export const text2string = (text: string[]) =>
   text.reduce((acc, cur) => `${acc}\n${cur}`, '');
 
 // -------------------------------------------------------------------------------------
@@ -21,122 +23,55 @@ const user1: UserM = {
 // -------------------------------------------------------------------------------------
 // Dictionay
 // -------------------------------------------------------------------------------------
+export type Text = string[];
 
 type TempNote = Omit<Note, 'noteId'> & { references: NoteId[] };
-const def = {
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  userId: 1,
+
+export type Dict = Record<NoteId, TempNote>;
+
+const linkMap = (text: Text) => {
+  return text
+    .map(t => lineParser(t, 0 as any, 0).tryParse(t))
+    .flatMap(t => t.nodes)
+    .filter(t => t.type === 'link') as LinkN[];
 };
 
-type Dict = Record<NoteId, TempNote>;
-
-// FIXME: 辞書作成の自動化
-// const makeRelDict = (texts: Text[]): RelDict => {};
-
-export const relDict: Dict = {
-  1: {
-    ...def,
-    id: 1,
-    title: text1[0],
-    references: [6, 7, 8],
-    lines: text2string(text1),
-  },
-  2: {
-    ...def,
-    id: 2,
-    title: text2[0],
-    references: [],
-    lines: text2string(text2),
-  },
-  3: {
-    ...def,
-    id: 3,
-    title: text3[0],
-    references: [],
-    lines: text2string(text3),
-  },
-  4: {
-    ...def,
-    id: 4,
-    title: text4[0],
-    references: [],
-    lines: text2string(text4),
-  },
-  5: {
-    ...def,
-    id: 5,
-    title: text5[0],
-    references: [],
-    lines: text2string(text5),
-  },
-  6: {
-    ...def,
-    id: 6,
-    title: 'Json',
-    references: [],
-    lines: '',
-  },
-  7: {
-    ...def,
-    id: 7,
-    title: 'CUE',
-    references: [],
-    lines: '',
-  },
-  8: {
-    ...def,
-    id: 8,
-    title: '正規化',
-    references: [],
-    lines: '',
-  },
+const searchOrCreate = (dict: Dict, title: string): TempNote => {
+  const searched = Object.values(dict).find(v => v.title === title);
+  if (searched == null) {
+    return {
+      ...def,
+      id: Object.keys(dict).length,
+      title,
+      references: [],
+      lines: '',
+    };
+  }
+  return searched;
 };
 
-// -------------------------------------------------------------------------------------
-// Res Node
-// -------------------------------------------------------------------------------------
+const arr2dict = (acc: Dict, cur: TempNote) => ({ ...acc, [cur.id]: cur });
 
-// // DEPRECATED: これもDictと統一する
-// export const note1: Note = {
-//   id: 1,
-//   title: '[Json]の正規化',
-//   lines: text2string(text1),
-//   noteId: null,
-//   ...def,
-// };
+const toDict = (dict: Dict, text: Text): Dict => {
+  return uniqBy(linkMap(text), l => l.value).reduce(
+    (accDict, link) => arr2dict(accDict, searchOrCreate(accDict, link.value)),
+    dict,
+  );
+};
 
-// export const note2: Note = {
-//   id: 2,
-//   title: '[Json]の正規化',
-//   lines: text2string(text2),
-//   noteId: null,
-//   ...def,
-// };
+export const makeRelDict = (texts: Text[]): Dict => {
+  const dict = texts
+    .map((text, id) => ({
+      ...def,
+      id,
+      title: text[0],
+      references: [],
+      lines: text2string(text),
+    }))
+    .reduce(arr2dict, {});
 
-// export const note3: Note = {
-//   id: 3,
-//   title: '自分の命より大切なものをみつけたい',
-//   lines: text2string(text3),
-//   noteId: null,
-//   ...def,
-// };
-
-// export const note4: Note = {
-//   id: 4,
-//   title: '自分の命より大切なものをみつけたい',
-//   lines: text2string(text4),
-//   noteId: null,
-//   ...def,
-// };
-
-// export const note5: Note = {
-//   id: 5,
-//   title: '自分の命より大切なものをみつけたい',
-//   lines: text2string(text5),
-//   noteId: null,
-//   ...def,
-// };
+  return texts.reduce((accDict, text) => toDict(accDict, text), dict);
+};
 
 // -------------------------------------------------------------------------------------
 // Node

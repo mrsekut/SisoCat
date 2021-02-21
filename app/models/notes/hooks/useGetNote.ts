@@ -1,4 +1,4 @@
-import { relDict } from 'app/components/Reditor/utils/dummies/dummy';
+import { relDict } from 'app/components/Reditor/utils/dummies/dict';
 import { useTextWidths } from 'app/models/Cursor';
 import { NoteM } from '../typings';
 
