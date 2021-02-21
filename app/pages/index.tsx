@@ -7,13 +7,11 @@ import React, { Suspense } from 'react';
 const Home: BlitzPage = () => {
   const noteIds = [1, 2, 3];
   return (
-    <x.div className='container'>
-      <x.main>
-        <Suspense fallback='Loading...'>
-          <Reditors noteIds={noteIds} />
-        </Suspense>
-      </x.main>
-    </x.div>
+    <x.main h='100vh'>
+      <Suspense fallback='Loading...'>
+        <Reditors noteIds={noteIds} />
+      </Suspense>
+    </x.main>
   );
 };
 
