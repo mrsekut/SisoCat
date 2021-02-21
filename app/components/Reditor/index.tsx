@@ -4,22 +4,8 @@ import { useFocus } from 'app/models/Cursor';
 import { TextLines } from './components/Node/TextLinets';
 import { useGetNote } from 'app/models/notes/hooks/useGetNote';
 import { useNotes } from 'app/models/notes';
-import { Draggable } from '../Draggable';
 import { NoteId } from 'app/models/notes/typings/note';
 import { FocusedLine } from './components/Node/FocuedLine';
-
-// FIXME: move
-export const Reditors: React.FC<{ noteIds: number[] }> = ({ noteIds }) => {
-  return (
-    <>
-      {noteIds.map(id => (
-        <Draggable>
-          <Reditor noteId={id} />
-        </Draggable>
-      ))}
-    </>
-  );
-};
 
 type Props = {
   noteId: NoteId;

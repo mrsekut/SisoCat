@@ -1,11 +1,11 @@
 import { BlitzPage } from 'blitz';
 import Layout from 'app/layouts/Layout';
-import { Reditors } from 'app/components/Reditor';
+import { Reditors } from 'app/components/Reditors';
 import { x } from '@xstyled/styled-components';
 import React, { Suspense } from 'react';
 
 const Home: BlitzPage = () => {
-  const noteIds = [1, 2];
+  const noteIds = [1, 2, 3];
   return (
     <x.div className='container'>
       <x.main>
