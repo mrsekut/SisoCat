@@ -1,13 +1,21 @@
-import React from 'react';
-import styled, { x } from '@xstyled/styled-components';
+import React, { useEffect } from 'react';
+import styled from '@xstyled/styled-components';
 import { NoteId } from 'app/models/notes/typings/note';
 import { Reditor } from '../Reditor';
+import { useNotes } from 'app/models/notes';
+import { useAllLoad } from 'app/models/notes/hooks/useGetNote';
 
 type Props = {
-  noteIds: NoteId[];
+  noteId: NoteId;
 };
 
-export const Reditors: React.FC<Props> = ({ noteIds }) => {
+export const Reditors: React.FC<Props> = ({ noteId }) => {
+  const { allLoad } = useAllLoad();
+  const { initNotes } = useNotes();
+  useEffect(() => {
+    initNotes(allLoad());
+  }, []);
+
   return (
     <Container>
       <Col>
@@ -34,7 +42,6 @@ export const Reditors: React.FC<Props> = ({ noteIds }) => {
 const Container = styled.div`
   height: 100%;
   display: flex;
-  background-color: blue;
 
   > div {
     flex: 1;
@@ -53,5 +60,5 @@ const Col = styled.div`
 
 const Row = styled.div`
   padding: 5px;
-  background-color: green;
+  background-color: #defade;
 `;

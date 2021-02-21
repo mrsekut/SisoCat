@@ -5,11 +5,10 @@ import { x } from '@xstyled/styled-components';
 import React, { Suspense } from 'react';
 
 const Home: BlitzPage = () => {
-  const noteIds = [1, 2, 3];
   return (
     <x.main h='100vh'>
       <Suspense fallback='Loading...'>
-        <Reditors noteIds={noteIds} />
+        <Reditors noteId={0} />
       </Suspense>
     </x.main>
   );

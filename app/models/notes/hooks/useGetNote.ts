@@ -22,3 +22,27 @@ export const useGetNote = (noteId: number): NoteM => {
     lines,
   };
 };
+
+// for debeug
+export const useAllLoad = () => {
+  const dict = makeRelDict(texts);
+  const { textWidths } = useTextWidths();
+
+  const allLoad = (): NoteM[] => {
+    return Object.values(dict).map(note => {
+      const lines = note.lines
+        .split('\n')
+        .map(line => ({ value: line, widths: textWidths(line) }));
+
+      return {
+        ...note,
+        author: {
+          id: 'user1',
+          name: 'mrsekut',
+        },
+        lines,
+      };
+    });
+  };
+  return { allLoad };
+};
