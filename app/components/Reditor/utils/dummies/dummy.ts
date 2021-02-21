@@ -2,13 +2,12 @@ import { Note } from '@prisma/client';
 import { UserM, NotePM, NoteId, LinkN } from 'app/models/notes/typings/note';
 import { uniqBy } from 'app/utils/functions';
 import { lineParser } from '../parsers/parser';
-import { def } from './dict';
 
 // -------------------------------------------------------------------------------------
 // Texts
 // -------------------------------------------------------------------------------------
 
-export const text2string = (text: string[]) =>
+const text2string = (text: string[]) =>
   text.reduce((acc, cur) => `${acc}\n${cur}`, '');
 
 // -------------------------------------------------------------------------------------
@@ -27,13 +26,19 @@ export type Text = string[];
 
 type TempNote = Omit<Note, 'noteId'> & { references: NoteId[] };
 
-export type Dict = Record<NoteId, TempNote>;
+type Dict = Record<NoteId, TempNote>;
+type RDict = Record<string, TempNote>;
 
-const linkMap = (text: Text) => {
-  return text
-    .map(t => lineParser(t, 0 as any, 0).tryParse(t))
-    .flatMap(t => t.nodes)
-    .filter(t => t.type === 'link') as LinkN[];
+const def = {
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  userId: 1,
+};
+
+const linkMap = (text: string) => {
+  return lineParser(text, 0 as any, 0)
+    .tryParse(text)
+    .nodes.filter(t => t.type === 'link') as LinkN[];
 };
 
 const searchOrCreate = (dict: Dict, title: string): TempNote => {
@@ -52,14 +57,34 @@ const searchOrCreate = (dict: Dict, title: string): TempNote => {
 
 const arr2dict = (acc: Dict, cur: TempNote) => ({ ...acc, [cur.id]: cur });
 
+const makeRDict = (dict: Dict): RDict =>
+  Object.values(dict).reduce(
+    (acc: RDict, cur: TempNote) => ({ ...acc, [cur.title]: cur }),
+    {},
+  );
+
 const toDict = (dict: Dict, text: Text): Dict => {
-  return uniqBy(linkMap(text), l => l.value).reduce(
+  const links = uniqBy(text.flatMap(linkMap), l => l.value);
+
+  return links.reduce(
     (accDict, link) => arr2dict(accDict, searchOrCreate(accDict, link.value)),
     dict,
   );
 };
 
+const makeReferences = (note: TempNote, rdict: RDict) => {
+  const getIds = uniqBy(linkMap(note.lines).map(l => l.value)).map(
+    l => rdict[l].id,
+  );
+
+  return {
+    ...note,
+    references: getIds,
+  };
+};
+
 export const makeRelDict = (texts: Text[]): Dict => {
+  // make by texts
   const dict = texts
     .map((text, id) => ({
       ...def,
@@ -70,7 +95,16 @@ export const makeRelDict = (texts: Text[]): Dict => {
     }))
     .reduce(arr2dict, {});
 
-  return texts.reduce((accDict, text) => toDict(accDict, text), dict);
+  // make by links
+  const addedData = texts.reduce(
+    (accDict, text) => toDict(accDict, text),
+    dict,
+  );
+
+  // make refferences
+  return Object.values(addedData).map(b =>
+    makeReferences(b, makeRDict(addedData)),
+  );
 };
 
 // -------------------------------------------------------------------------------------

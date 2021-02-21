@@ -1,13 +1,13 @@
 import { Text } from './dummy';
 
-export const text1: Text = [
+const text1: Text = [
   '[Json]の正規化',
   '\t[Json]は[正規化]するのが良い',
   '\t正規化は[** よいこと]ばかり',
   '[CUE]も良い感じらしい',
 ];
 
-export const text2: Text = [
+const text2: Text = [
   '他者に[依存]しない ',
   '',
   '人間の[依存]をどう定義するか',
@@ -29,7 +29,7 @@ export const text2: Text = [
   '			極論、島を作って独りで生きていけるようなシステムを構築しなければ、依存は解決されない',
 ];
 
-export const text3: Text = [
+const text3: Text = [
   '自分の命より大切なものを見つけたい',
   '	到底出会えるものではないだろうが。',
   '',
@@ -47,7 +47,7 @@ export const text3: Text = [
   '		50歳で見つけられたら万々歳だろう、ぐらいに思ってる',
 ];
 
-export const text4: Text = [
+const text4: Text = [
   '多様性の尊重',
   '	「君(自分にとって異質な人)の[* 存在は認める]が、俺の視界に入らないで欲しい」というのは多様性の尊重と言えるだろうか？',
   '',
@@ -68,7 +68,7 @@ export const text4: Text = [
   '「[多様性]の尊重」ってなに？？？？？？',
 ];
 
-export const text5: Text = [
+const text5: Text = [
   '自分で到達する',
   '	[経営理念]に関する疑問の根源',
   '	に関する疑問の根源',
@@ -94,7 +94,5 @@ export const text5: Text = [
   'ただ批判するのではなく、',
   '自分の中で崩しと再考性が必要',
 ];
-
-// export const texts = [text1];
 
 export const texts = [text1, text2, text3, text4, text5];
