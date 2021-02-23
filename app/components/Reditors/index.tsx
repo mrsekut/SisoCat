@@ -7,7 +7,7 @@ type Props = {
   noteId: NoteId;
 };
 
-export const Reditors: React.FC<Props> = ({ noteId }) => {
+export const Reditors: React.VFC<Props> = ({ noteId }) => {
   return (
     <Container>
       <Col>

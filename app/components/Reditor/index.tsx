@@ -9,7 +9,7 @@ type Props = {
   noteId: NoteId;
 };
 
-export const Reditor: React.FC<Props> = memo(({ noteId }) => {
+export const Reditor: React.VFC<Props> = memo(({ noteId }) => {
   const { ref: textareaRef, onFocus } = useFocus();
 
   return (

@@ -11,7 +11,9 @@ type Pos = { x: number; y: number };
 // Component
 // -------------------------------------------------------------------------------------
 
-export const Draggable: React.FC = ({ children }) => {
+export const Draggable: React.VFC<{ children: React.ReactChild }> = ({
+  children,
+}) => {
   const { handleMouseDown, isDragging, pos, ref } = useDrag();
 
   return (

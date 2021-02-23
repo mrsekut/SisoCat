@@ -10,7 +10,7 @@ type Props = {
   noteId: NoteId;
 };
 
-export const TextLines: React.FC<Props> = memo(({ noteId }) => {
+export const TextLines: React.VFC<Props> = memo(({ noteId }) => {
   const note = useRecoilValue(noteS(noteId));
   useInit(noteId);
 

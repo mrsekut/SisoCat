@@ -5,7 +5,7 @@ type Props = {
   value: string;
 };
 
-export const Normal: React.FC<Props> = ({ value }) => {
+export const Normal: React.VFC<Props> = ({ value }) => {
   return (
     <span>
       {[...value].map(char => (
@@ -16,7 +16,7 @@ export const Normal: React.FC<Props> = ({ value }) => {
 };
 
 // FIXME: move
-const Char: React.FC = ({ children }) => {
+const Char: React.VFC<{ children: React.ReactChild }> = ({ children }) => {
   return (
     <x.span fontSize='base' fontFamily='mono' lineHeight='snug'>
       {children}

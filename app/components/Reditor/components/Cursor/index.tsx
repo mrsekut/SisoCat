@@ -52,7 +52,11 @@ const useInput = (noteId: NoteId) => {
   };
 };
 
-export const Cursor: React.FC<Props> = ({ noteId, onKeyDown, textareaRef }) => {
+export const Cursor: React.VFC<Props> = ({
+  noteId,
+  onKeyDown,
+  textareaRef,
+}) => {
   const { pxPos } = useRecoilValue(cursorS);
   const {
     value,

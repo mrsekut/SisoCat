@@ -9,7 +9,7 @@ type Props = {
   index: number;
 };
 
-export const Line: React.FC<Props> = ({ line, index }) => {
+export const Line: React.VFC<Props> = ({ line, index }) => {
   const node = parse(line, index);
 
   return (
