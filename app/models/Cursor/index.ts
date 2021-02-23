@@ -8,7 +8,7 @@ import {
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import { useRef } from 'react';
 import { noteStyle } from 'app/utils/style';
-import { noteS, lineInit, useNote, notesS } from '../notes';
+import { noteS, lineInit, useNote } from '../notes';
 import { Line, NoteId } from '../notes/typings/note';
 import { useCursorKeymap } from './hooks/useCursorKeymap';
 import { getTextWidths } from './utils';
@@ -69,10 +69,10 @@ export const cursorS = selector<CursorM>({
     if (!cursor.isFocus) {
       return cursor;
     }
-    const note = get(notesS)[cursor.noteId];
+    const note = get(noteS(cursor.noteId));
     return {
       ...cursor,
-      line: note.lines[cursor.pos.ln] ?? lineInit,
+      line: note?.lines[cursor.pos.ln] ?? lineInit,
     };
   },
   set: ({ set }, newValue) => set(_cursorS, newValue),
@@ -83,7 +83,8 @@ const lineS = selector({
   get: ({ get }) => {
     const cursor = get(cursorS);
     if (!cursor.isFocus) return lineInit;
-    return get(noteS)?.lines[cursor.pos.ln] ?? lineInit;
+    const note = get(noteS(cursor.noteId));
+    return note?.lines[cursor.pos.ln] ?? lineInit;
   },
 });
 

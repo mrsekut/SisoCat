@@ -11,7 +11,7 @@ import { cursorUpDown } from '../utils';
  */
 export const useCursorKeymap = () => {
   const [cursor, setCursor] = useRecoilState(cursorS);
-  const note = useRecoilValue(noteS);
+  const note = useRecoilValue(noteS(cursor.noteId));
 
   const textLength = cursor.line?.value?.length ?? 0;
 

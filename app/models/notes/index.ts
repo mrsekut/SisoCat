@@ -13,32 +13,11 @@ import { Line, NoteId } from './typings/note';
 // Notes
 // -------------------------------------------------------------------------------------
 
-export const notesS = atom<Record<number, NoteM>>({
-  key: 'notesS',
-  default: {},
-});
-
-export const useNotes = () => {
-  const [notes, setNotes] = useRecoilState(notesS);
-  const getNote = (noteId: NoteId) => {
-    return notes[noteId];
-  };
-
-  const setNote = (noteId: NoteId) => (
-    initialState: NoteM | ((note: NoteM) => NoteM),
-  ) => {
-    if (typeof initialState === 'function') {
-      setNotes(n => ({
-        ...notes,
-        [noteId]: initialState(n[noteId]),
-      }));
-    } else {
-      setNotes({ ...notes, [initialState.id]: initialState });
-    }
-  };
-
-  return { getNote, setNote };
-};
+export const noteS = (id: NoteId) =>
+  atom<NoteM | null>({
+    key: `noteS${id}`,
+    default: null,
+  });
 
 // -------------------------------------------------------------------------------------
 // Note
@@ -49,11 +28,6 @@ export const lineInit: Line = {
   widths: [],
 };
 
-export const noteS = atom<NoteM | null>({
-  key: 'noteS',
-  default: null,
-});
-
 /**
  * Note's Model
  *
@@ -61,9 +35,7 @@ export const noteS = atom<NoteM | null>({
  * - UIには関与しない
  */
 export const useNote = (noteId: number) => {
-  const un = useNotes();
-  const note = un.getNote(noteId);
-  const setNote = un.setNote(noteId);
+  const [note, setNote] = useRecoilState(noteS(noteId));
   const { textWidths } = useTextWidths();
 
   const _updateLine = (ln: number, line: string) => {
