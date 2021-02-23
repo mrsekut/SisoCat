@@ -24,11 +24,6 @@ export const useNotes = () => {
     return notes[noteId];
   };
 
-  const initNotes = (notes: NoteM[]) => {
-    const dic = notes.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {});
-    setNotes(dic);
-  };
-
   const setNote = (noteId: NoteId) => (
     initialState: NoteM | ((note: NoteM) => NoteM),
   ) => {
@@ -42,7 +37,7 @@ export const useNotes = () => {
     }
   };
 
-  return { getNote, setNote, initNotes };
+  return { getNote, setNote };
 };
 
 // -------------------------------------------------------------------------------------

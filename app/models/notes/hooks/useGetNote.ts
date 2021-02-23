@@ -1,6 +1,7 @@
 import { makeRelDict } from 'app/components/Reditor/utils/dummies/dummy';
 import { texts } from 'app/components/Reditor/utils/dummies/texts';
 import { useTextWidths } from 'app/models/Cursor';
+import { useCallback } from 'react';
 import { NoteM } from '../typings';
 
 export const useGetNote = (noteId: number): NoteM => {
@@ -28,7 +29,7 @@ export const useAllLoad = () => {
   const dict = makeRelDict(texts);
   const { textWidths } = useTextWidths();
 
-  const allLoad = (): NoteM[] => {
+  const allLoad = useCallback((): NoteM[] => {
     return Object.values(dict).map(note => {
       const lines = note.lines
         .split('\n')
@@ -43,6 +44,7 @@ export const useAllLoad = () => {
         lines,
       };
     });
-  };
+  }, []);
+
   return { allLoad };
 };
