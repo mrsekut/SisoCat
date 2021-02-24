@@ -1,42 +1,13 @@
 import { Note } from '@prisma/client';
-import { UserM, NotePM } from 'app/models/notes/typings/note';
+import { UserM, NotePM, NoteId, LinkN } from 'app/models/notes/typings/note';
+import { uniqBy } from 'app/utils/functions';
+import { lineParser } from '../parsers/parser';
 
 // -------------------------------------------------------------------------------------
 // Texts
 // -------------------------------------------------------------------------------------
 
-const text1 = [
-  ['[Json]の正規化'],
-  ['\t[json]は[正規化]するのが良い'],
-  ['\t正規化は[** よいこと]ばかり'],
-  ['[CUE]も良い感じらしい'],
-];
-
-const text2 = [
-  ['他者に[依存]しない '],
-  [],
-  ['人間の[依存]をどう定義するか'],
-  ['　「依存」の言葉の定義が曖昧すぎる'],
-  ['　情報は他者に依存しまくっている'],
-  ['　依存の中にも好むものと好まないものがある'],
-  ['　うまく言語化できていないが、超利己的なものであることはわかる'],
-  [],
-  ['直感的に許容している依存'],
-  ['	他人が他人のために作ったライブラリ等の使用'],
-  ['	他人が他人のために書いた記事の閲覧'],
-  ['	[他人の自発的な行動による利益]の享受を許容しているのだな'],
-  ['	国というシステム  '],
-  ['		公共機関とか、学習機関とか'],
-  ['		本当はここも壊さないといけない'],
-  ['			思考を放棄しているので国のような弱者救済装置に頼ってしまっている'],
-  ['			国の存在が前提にある'],
-  ['			「でも日本に頼ってるじゃん」と言われるとぐうの音も出ない'],
-  [
-    '			極論、島を作って独りで生きていけるようなシステムを構築しなければ、依存は解決されない',
-  ],
-];
-
-const text2string = (text: string[][]) =>
+const text2string = (text: string[]) =>
   text.reduce((acc, cur) => `${acc}\n${cur}`, '');
 
 // -------------------------------------------------------------------------------------
@@ -49,27 +20,91 @@ const user1: UserM = {
 };
 
 // -------------------------------------------------------------------------------------
-// Res Node
+// Dictionay
 // -------------------------------------------------------------------------------------
+export type Text = string[];
 
-export const note1: Note = {
-  id: 1,
+type TempNote = Omit<Note, 'noteId'> & { references: NoteId[] };
+
+type Dict = Record<NoteId, TempNote>;
+type RDict = Record<string, TempNote>;
+
+const def = {
   createdAt: new Date(),
   updatedAt: new Date(),
-  title: '[Json]の正規化',
-  lines: text2string(text1),
-  noteId: null,
   userId: 1,
 };
 
-export const note2: Note = {
-  id: 2,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  title: '[Json]の正規化',
-  lines: text2string(text2),
-  noteId: null,
-  userId: 1,
+const linkMap = (text: string) => {
+  return lineParser(text, 0 as any, 0)
+    .tryParse(text)
+    .nodes.filter(t => t.type === 'link') as LinkN[];
+};
+
+const searchOrCreate = (dict: Dict, title: string): TempNote => {
+  const searched = Object.values(dict).find(v => v.title === title);
+  if (searched == null) {
+    return {
+      ...def,
+      id: Object.keys(dict).length,
+      title,
+      references: [],
+      lines: '',
+    };
+  }
+  return searched;
+};
+
+const arr2dict = (acc: Dict, cur: TempNote) => ({ ...acc, [cur.id]: cur });
+
+const makeRDict = (dict: Dict): RDict =>
+  Object.values(dict).reduce(
+    (acc: RDict, cur: TempNote) => ({ ...acc, [cur.title]: cur }),
+    {},
+  );
+
+const toDict = (dict: Dict, text: Text): Dict => {
+  const links = uniqBy(text.flatMap(linkMap), l => l.value);
+
+  return links.reduce(
+    (accDict, link) => arr2dict(accDict, searchOrCreate(accDict, link.value)),
+    dict,
+  );
+};
+
+const makeReferences = (note: TempNote, rdict: RDict) => {
+  const getIds = uniqBy(linkMap(note.lines).map(l => l.value)).map(
+    l => rdict[l].id,
+  );
+
+  return {
+    ...note,
+    references: getIds,
+  };
+};
+
+export const makeRelDict = (texts: Text[]): Dict => {
+  // make by texts
+  const dict = texts
+    .map((text, id) => ({
+      ...def,
+      id,
+      title: text[0],
+      references: [],
+      lines: text2string(text),
+    }))
+    .reduce(arr2dict, {});
+
+  // make by links
+  const addedData = texts.reduce(
+    (accDict, text) => toDict(accDict, text),
+    dict,
+  );
+
+  // make refferences
+  return Object.values(addedData).map(b =>
+    makeReferences(b, makeRDict(addedData)),
+  );
 };
 
 // -------------------------------------------------------------------------------------

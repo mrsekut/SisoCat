@@ -14,14 +14,14 @@ type Props = {
   textareaRef: RefObject<HTMLTextAreaElement>;
 };
 
-export const FocusedLine: React.FC<Props> = ({ noteId, textareaRef }) => {
+export const FocusedLine: React.VFC<Props> = ({ noteId, textareaRef }) => {
   const cursor = useRecoilValue(cursorS);
   const { level, value } = textWithIndents.tryParse(cursor.line?.value ?? '');
   const keys = useNoteOp(noteId);
   const isFocus = noteId === cursor.noteId;
   const { keyMapping } = useHotKeyMapping(isFocus, keys);
 
-  if (cursor.noteId !== noteId) {
+  if (!isFocus) {
     return null;
   }
 

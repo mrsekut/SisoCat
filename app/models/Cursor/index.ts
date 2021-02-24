@@ -6,9 +6,9 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { noteStyle } from 'app/utils/style';
-import { noteS, lineInit, useNote, notesS } from '../notes';
+import { noteS, lineInit, useNote } from '../notes';
 import { Line, NoteId } from '../notes/typings/note';
 import { useCursorKeymap } from './hooks/useCursorKeymap';
 import { getTextWidths } from './utils';
@@ -69,10 +69,10 @@ export const cursorS = selector<CursorM>({
     if (!cursor.isFocus) {
       return cursor;
     }
-    const note = get(notesS)[cursor.noteId];
+    const note = get(noteS(cursor.noteId));
     return {
       ...cursor,
-      line: note.lines[cursor.pos.ln] ?? lineInit,
+      line: note?.lines[cursor.pos.ln] ?? lineInit,
     };
   },
   set: ({ set }, newValue) => set(_cursorS, newValue),
@@ -83,7 +83,8 @@ const lineS = selector({
   get: ({ get }) => {
     const cursor = get(cursorS);
     if (!cursor.isFocus) return lineInit;
-    return get(noteS)?.lines[cursor.pos.ln] ?? lineInit;
+    const note = get(noteS(cursor.noteId));
+    return note?.lines[cursor.pos.ln] ?? lineInit;
   },
 });
 
@@ -148,36 +149,36 @@ export const useFocus = () => {
   const ref = useRef<HTMLTextAreaElement | null>(null);
   const line = useRecoilValue(lineS);
 
-  const calcCoordinate = (
-    x: number,
-    y: number,
-  ): { ln: number; col: number } => {
+  const calcCoordinate = useCallback((x: number, y: number): {
+    ln: number;
+    col: number;
+  } => {
     return {
       ln: Math.floor(y / noteStyle.lineHeight),
       col: x,
     };
-  };
+  }, []);
 
   // initialize cusror
-  const onFocus = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    noteId: NoteId,
-  ) => {
-    ref.current?.focus();
-    const rect = e.currentTarget.getBoundingClientRect();
-    const pos = calcCoordinate(e.clientX - rect.left, e.clientY - rect.top);
+  const onFocus = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>, noteId: NoteId) => {
+      ref.current?.focus();
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pos = calcCoordinate(e.clientX - rect.left, e.clientY - rect.top);
 
-    setCursor({
-      isFocus: true,
-      noteId,
-      pos,
-      pxPos: {
-        top: pos.ln * noteStyle.lineHeight,
-        left: 0, // FIXME:
-      },
-      line,
-    });
-  };
+      setCursor({
+        isFocus: true,
+        noteId,
+        pos,
+        pxPos: {
+          top: pos.ln * noteStyle.lineHeight,
+          left: 0, // FIXME:
+        },
+        line,
+      });
+    },
+    [],
+  );
 
   return { ref, onFocus };
 };

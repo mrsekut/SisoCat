@@ -9,7 +9,7 @@ type Props = {
   index: number;
 };
 
-export const Line: React.FC<Props> = ({ line, index }) => {
+export const Line: React.VFC<Props> = ({ line, index }) => {
   const node = parse(line, index);
 
   return (
@@ -24,7 +24,7 @@ export const Line: React.FC<Props> = ({ line, index }) => {
 
 const parse = (text: string, index: number): LineNodeM => {
   const result = lineParser(text, `line${index}` as LineId, index).tryParse(
-    `${text}`,
+    text,
   );
 
   return { type: 'line', line: result };

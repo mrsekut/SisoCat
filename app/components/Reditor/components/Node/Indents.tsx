@@ -7,7 +7,7 @@ type Props = {
   level: number;
 };
 
-export const Indents: React.FC<Props> = ({ level }) => {
+export const Indents: React.VFC<Props> = ({ level }) => {
   const [isOpen, setOpen] = useState(true);
 
   if (level === 0) {

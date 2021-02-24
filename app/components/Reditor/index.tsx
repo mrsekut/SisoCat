@@ -1,45 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { memo } from 'react';
 import { x } from '@xstyled/styled-components';
 import { useFocus } from 'app/models/Cursor';
 import { TextLines } from './components/Node/TextLinets';
-import { useGetNote } from 'app/models/notes/hooks/useGetNote';
-import { useNotes } from 'app/models/notes';
-import { Draggable } from '../Draggable';
 import { NoteId } from 'app/models/notes/typings/note';
 import { FocusedLine } from './components/Node/FocuedLine';
-
-// FIXME: move
-export const Reditors: React.FC<{ noteIds: number[] }> = ({ noteIds }) => {
-  return (
-    <>
-      {noteIds.map(id => (
-        <Draggable>
-          <Reditor noteId={id} />
-        </Draggable>
-      ))}
-    </>
-  );
-};
 
 type Props = {
   noteId: NoteId;
 };
 
-export const Reditor: React.FC<Props> = ({ noteId }) => {
+export const Reditor: React.VFC<Props> = memo(({ noteId }) => {
   const { ref: textareaRef, onFocus } = useFocus();
-  const resNote = useGetNote(noteId);
-  const { getNote, setNote } = useNotes();
-
-  useEffect(() => {
-    setNote(resNote.id)(resNote);
-  }, []);
-
-  const note = getNote(resNote.id);
 
   return (
     <x.div bg='gray-200' position='relative' onClick={e => onFocus(e, noteId)}>
-      {note != null && <TextLines note={note} />}
+      <TextLines noteId={noteId} />
       <FocusedLine noteId={noteId} textareaRef={textareaRef} />
     </x.div>
   );
-};
+});

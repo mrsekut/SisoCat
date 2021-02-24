@@ -6,7 +6,7 @@ type Props = {
   index: number;
 };
 
-export const Node: React.FC<Props> = ({ line, index }) => {
+export const Node: React.VFC<Props> = ({ line, index }) => {
   // if (node.type === 'block') {
   //   return <Block block={node} />;
   // }

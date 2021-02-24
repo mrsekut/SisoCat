@@ -1,9 +1,11 @@
-import { note1, note2 } from 'app/components/Reditor/utils/dummy';
+import { makeRelDict } from 'app/components/Reditor/utils/dummies/dummy';
+import { texts } from 'app/components/Reditor/utils/dummies/texts';
 import { useTextWidths } from 'app/models/Cursor';
+import { useCallback } from 'react';
 import { NoteM } from '../typings';
 
 export const useGetNote = (noteId: number): NoteM => {
-  const note = dummyNote(noteId);
+  const note = makeRelDict(texts)[noteId];
   // const [note] = useQuery(getNote, { where: { id: 1 } });
   // const [user] = useQuery(getUser, { where: { id: note.userId } });
   const { textWidths } = useTextWidths();
@@ -19,15 +21,30 @@ export const useGetNote = (noteId: number): NoteM => {
       name: 'mrsekut',
     },
     lines,
-    references: [],
   };
 };
 
-const dummyNote = (noteId: number) => {
-  switch (noteId) {
-    case 2:
-      return note2;
-    default:
-      return note1;
-  }
+// for debeug
+export const useAllLoad = () => {
+  const dict = makeRelDict(texts);
+  const { textWidths } = useTextWidths();
+
+  const allLoad = useCallback((): NoteM[] => {
+    return Object.values(dict).map(note => {
+      const lines = note.lines
+        .split('\n')
+        .map(line => ({ value: line, widths: textWidths(line) }));
+
+      return {
+        ...note,
+        author: {
+          id: 'user1',
+          name: 'mrsekut',
+        },
+        lines,
+      };
+    });
+  }, []);
+
+  return { allLoad };
 };

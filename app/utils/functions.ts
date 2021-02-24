@@ -35,3 +35,16 @@ export function sliceWithRest<T>(array: Arr<T>, n: number): [Arr<T>, Arr<T>] {
   const rest = array.slice(n);
   return [half, rest];
 }
+
+// ref: https://stackoverflow.com/a/40808569
+export const uniqBy = <T>(arr: T[], predicate: (a: T) => any = a => a): T[] => [
+  ...arr
+    .reduce((map, item) => {
+      const key = item === null || item === undefined ? item : predicate(item);
+
+      map.has(key) || map.set(key, item);
+
+      return map;
+    }, new Map())
+    .values(),
+];

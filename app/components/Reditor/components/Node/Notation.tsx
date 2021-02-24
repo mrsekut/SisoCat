@@ -7,7 +7,7 @@ type Props = {
   notation: NotationM;
 };
 
-export const Notation: React.FC<Props> = ({ notation }) => {
+export const Notation: React.VFC<Props> = ({ notation }) => {
   switch (notation.type) {
     case 'normal':
       return <Normal value={notation.value} />;
