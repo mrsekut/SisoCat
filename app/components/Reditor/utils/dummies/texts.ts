@@ -1,6 +1,6 @@
 import { Text } from './dummy';
 
-const text1: Text = [
+export const text1: Text = [
   '[Json]の正規化',
   '\t[Json]は[正規化]するのが良い',
   '\t正規化は[** よいこと]ばかり',
