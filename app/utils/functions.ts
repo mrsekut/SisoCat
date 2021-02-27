@@ -48,3 +48,41 @@ export const uniqBy = <T>(arr: T[], predicate: (a: T) => any = a => a): T[] => [
     }, new Map())
     .values(),
 ];
+
+export const timeSince = (date: number) => {
+  const curDate = new Date().getTime();
+  const seconds = Math.floor((curDate - date) / 1000);
+
+  const minute = 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+  const month = day * 30;
+  const year = day * 365;
+
+  const perYear = seconds / year;
+  if (perYear / year > 1) {
+    return Math.floor(perYear) + ' years';
+  }
+
+  const perMonth = seconds / month;
+  if (perMonth > 1) {
+    return Math.floor(perMonth) + ' months';
+  }
+
+  const perDay = seconds / day;
+  if (perDay > 1) {
+    return Math.floor(perDay) + ' days';
+  }
+
+  const perHour = seconds / hour;
+  if (perHour > 1) {
+    return Math.floor(perHour) + ' hours';
+  }
+
+  const perMinute = seconds / 60;
+  if (perMinute > 1) {
+    return Math.floor(perMinute) + ' minutes';
+  }
+
+  return Math.floor(seconds) + ' seconds';
+};

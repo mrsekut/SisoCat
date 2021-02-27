@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import styled, { css } from '@xstyled/styled-components';
-import { range } from 'app/utils/functions';
+import { range, timeSince } from 'app/utils/functions';
 import { textStyle } from '../../utils/settings';
+import { Tooltip } from 'app/components/Tooltip';
 
 type Props = {
   level: number;
 };
+
+const dummyDate = new Date('2021/2/28 0:50:34').getTime();
 
 export const Indents: React.VFC<Props> = ({ level }) => {
   const [isOpen, setOpen] = useState(true);
@@ -19,7 +22,12 @@ export const Indents: React.VFC<Props> = ({ level }) => {
       {range(level - 1).map(_ => (
         <Space />
       ))}
-      <Triangle isOpen={isOpen} onClick={() => setOpen(e => !e)} />
+      <Tooltip
+        onClick={() => setOpen(e => !e)}
+        text={`${timeSince(dummyDate)} ago`}
+      >
+        <Triangle isOpen={isOpen} />
+      </Tooltip>
     </>
   );
 };
