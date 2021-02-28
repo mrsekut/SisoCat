@@ -85,14 +85,14 @@ export const Cursor: React.VFC<Props> = ({
   );
 };
 
-const Carret = () => (
+export const Carret = () => (
   <x.div
     h='1.5em'
     w={1.5}
     fontSize='sm'
     lineHeight={noteStyle.lineHeight}
     bg='red-500'
-    display='block'
+    display='inline-block'
   />
 );
 

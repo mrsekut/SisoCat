@@ -4,6 +4,9 @@ export const deleteNthChar = (str: string, n: number) =>
 export const insertNthChar = (str: string, n: number, c: string) =>
   str.slice(0, n) + c + str.slice(n);
 
+export const insertNth = <T>(vs: T[], n: number, v: T) =>
+  vs.slice(0, n).concat([v]).concat(vs.slice(n));
+
 export const decN = (n1: number, n2: number) => Math.max(n1 - n2, 0);
 
 export const sum = (ns: number[]) => ns.reduce((acc, cur) => acc + cur, 0);

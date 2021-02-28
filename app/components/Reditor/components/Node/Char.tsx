@@ -12,9 +12,7 @@ export const Char: React.VFC<Props> = ({ children, pos }) => {
   const { focus } = useFocus2();
   return (
     <x.span
-      onClick={e => {
-        focus(pos);
-      }}
+      onClick={() => focus(pos)}
       fontSize='base'
       fontFamily='mono'
       lineHeight='snug'

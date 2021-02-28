@@ -4,13 +4,13 @@ import { useFocus3, useNoteOp, _cursor2S } from 'app/models/Cursor';
 import { useRecoilValue } from 'recoil';
 import { useHotKeyMapping } from '../../hooks/useHotKeyMapping';
 import { Indents } from './Indents';
-import { Cursor } from '../Cursor';
-import { Normal } from './Normal';
+import { Carret, Cursor } from '../Cursor';
 import { LineProps } from './ViewLine';
+import { Char } from './Char';
+import { insertNth } from 'app/utils/functions';
 
 /**
  * TODO:
- * - 次にカーソルを表示
  * - 次にカーソルを動かす
  */
 
@@ -21,13 +21,33 @@ export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
   const keys = useNoteOp(0);
   const { keyMapping } = useHotKeyMapping(true, keys);
 
+  const chars = makeChars(line.nodeValue, cursor2.pos.col);
+
   return (
     <Wrap>
       <Indents level={line.indent} />
-      <Normal value={line.nodeValue} lineIndex={cursor2.pos.ln} />
-      <Cursor noteId={0} textareaRef={textareaRef} onKeyDown={keyMapping} />
+      <span>
+        {chars.map((char, index) => {
+          if (char.type === 'cursor') {
+            return <Carret />;
+          }
+
+          return <Char pos={{ ln: lineIndex, col: index }}>{char.value}</Char>;
+        })}
+      </span>
     </Wrap>
   );
+};
+
+type CharType = { type: 'value'; value: string } | { type: 'cursor' };
+
+const makeChars = (value: string, cursorIndex: number) => {
+  const vs = [...value].map(v => ({
+    type: 'value' as const,
+    value: v,
+  }));
+
+  return insertNth<CharType>(vs, cursorIndex, { type: 'cursor' });
 };
 
 const Wrap = styled.div`
