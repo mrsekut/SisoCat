@@ -41,6 +41,23 @@ type _CursorM = Exclude<CursorFocus, 'line'> | Exclude<CursorNotFocus, 'lien'>;
 
 type CursorM = CursorFocus | CursorNotFocus;
 
+// FIXME: clean
+// -------------------------------------------------------------------------------------
+// States
+// -------------------------------------------------------------------------------------
+
+// FIXME: `_`は好くない, name
+export const _cursor2S = atom<{
+  pos: Pos;
+  isFocus: boolean;
+}>({
+  key: '_cursor2',
+  default: {
+    isFocus: false,
+    pos: { ln: 0, col: 0 },
+  },
+});
+
 // -------------------------------------------------------------------------------------
 // States
 // -------------------------------------------------------------------------------------
@@ -135,6 +152,26 @@ export const useNoteOp = (noteId: number) => {
 /**
  *
  */
+
+export const useFocus2 = () => {
+  const setCursor = useSetRecoilState(_cursor2S);
+
+  const focus = useCallback((pos: Pos) => {
+    setCursor({
+      isFocus: true,
+      pos,
+    });
+  }, []);
+
+  return { focus };
+};
+
+export const useFocus3 = () => {
+  const setCursor = useSetRecoilState(_cursor2S);
+  const ref = useRef<HTMLTextAreaElement | null>(null);
+
+  return { ref };
+};
 
 export const useFocus = () => {
   const setCursor = useSetRecoilState(cursorS);

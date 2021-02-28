@@ -1,6 +1,6 @@
-import React, { RefObject } from 'react';
+import React from 'react';
 import styled from '@xstyled/styled-components';
-import { cursorS, useNoteOp } from 'app/models/Cursor';
+import { cursorS, useFocus, useNoteOp, _cursor2S } from 'app/models/Cursor';
 import { useRecoilValue } from 'recoil';
 import { useHotKeyMapping } from '../../hooks/useHotKeyMapping';
 import { NoteId } from 'app/models/notes/typings/note';
@@ -8,34 +8,51 @@ import { Indents } from './Indents';
 import { Cursor } from '../Cursor';
 import { textWithIndents } from '../../utils/parsers/parser';
 import { Normal } from './Normal';
+import { LineProps } from './Line';
+
+/**
+ * TODO:
+ * - まずlineを表示
+ * - 次にカーソルを表示
+ * - 次にカーソルを動かす
+ */
 
 type Props = {
   noteId: NoteId;
-  textareaRef: RefObject<HTMLTextAreaElement>;
 };
 
-export const FocusedLine: React.VFC<Props> = ({ noteId, textareaRef }) => {
+export const FocusedLine: React.VFC<LineProps> = ({ value, lineIndex }) => {
   const cursor = useRecoilValue(cursorS);
-  const { level, value } = textWithIndents.tryParse(cursor.line?.value ?? '');
-  const keys = useNoteOp(noteId);
-  const isFocus = noteId === cursor.noteId;
-  const { keyMapping } = useHotKeyMapping(isFocus, keys);
+  const cursor2 = useRecoilValue(_cursor2S);
+  const { ref: textareaRef, onFocus } = useFocus();
+  // const { level, value } = textWithIndents.tryParse(cursor.line?.value ?? '');
+  const keys = useNoteOp(0);
+  // const isFocus = noteId === cursor.noteId;
+  const { keyMapping } = useHotKeyMapping(true, keys);
 
-  if (!isFocus) {
-    return null;
-  }
+  // if (!isFocus) {
+  //   return null;
+  // }
 
   return (
-    <Span top={cursor.pxPos?.top ?? 0}>
-      <Indents level={level} />
-      <Normal value={value} />
-      <Cursor
-        noteId={noteId}
-        textareaRef={textareaRef}
-        onKeyDown={keyMapping}
-      />
-    </Span>
+    <div>
+      <Indents level={0} />
+      <Normal value={'hgoehogehoghoge'} lineIndex={cursor2.pos.ln} />
+      <Cursor noteId={0} textareaRef={textareaRef} onKeyDown={keyMapping} />
+    </div>
   );
+
+  // return (
+  //   <Span top={cursor.pxPos?.top ?? 0}>
+  //     <Indents level={level} />
+  //     <Normal value={'hgoehogehoghoge'} lineIndex={cursor2.pos.ln} />
+  //     <Cursor
+  //       noteId={noteId}
+  //       textareaRef={textareaRef}
+  //       onKeyDown={keyMapping}
+  //     />
+  //   </Span>
+  // );
 };
 
 const Span = styled.span<{ top: number }>`

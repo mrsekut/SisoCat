@@ -3,12 +3,13 @@ import { Char } from './Char';
 
 type Props = {
   value: string;
+  lineIndex: number;
 };
 
-export const Normal: React.VFC<Props> = ({ value }) => (
+export const Normal: React.VFC<Props> = ({ value, lineIndex }) => (
   <span>
-    {[...value].map(char => (
-      <Char>{char}</Char>
+    {[...value].map((char, index) => (
+      <Char pos={{ ln: lineIndex, col: index }}>{char}</Char>
     ))}
   </span>
 );

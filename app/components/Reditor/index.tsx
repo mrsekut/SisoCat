@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { x } from '@xstyled/styled-components';
-import { useFocus } from 'app/models/Cursor';
 import { TextLines } from './components/Node/TextLinets';
-import { FocusedLine } from './components/Node/FocuedLine';
 
 type Props = {
   rstate: RState;
@@ -10,12 +8,10 @@ type Props = {
 
 export const Reditor: React.VFC<Props> = ({ rstate }) => {
   const { value, setValue } = rstate;
-  const { ref: textareaRef, onFocus } = useFocus();
 
   return (
-    <x.div bg='gray-200' position='relative' onClick={e => onFocus(e, 0)}>
+    <x.div bg='gray-200' position='relative'>
       <TextLines lines={value} />
-      <FocusedLine noteId={0} textareaRef={textareaRef} />
     </x.div>
   );
 };

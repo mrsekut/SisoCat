@@ -5,12 +5,13 @@ import { NotationM } from 'app/models/notes/typings/note';
 
 type Props = {
   notation: NotationM;
+  lineIndex: number;
 };
 
-export const Notation: React.VFC<Props> = ({ notation }) => {
+export const Notation: React.VFC<Props> = ({ notation, lineIndex }) => {
   switch (notation.type) {
     case 'normal':
-      return <Normal value={notation.value} />;
+      return <Normal value={notation.value} lineIndex={lineIndex} />;
     case 'italic':
       return <x.span fontStyle='italic'>{notation.value}</x.span>;
     case 'link':
