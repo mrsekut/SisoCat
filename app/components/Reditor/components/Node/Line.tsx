@@ -1,4 +1,5 @@
 import React from 'react';
+import { x } from '@xstyled/styled-components';
 import { LineId, LineNodeM } from 'app/models/notes/typings/note';
 import { Indents } from './Indents';
 import { lineParser } from '../../utils/parsers/parser';
@@ -13,12 +14,12 @@ export const Line: React.VFC<Props> = ({ line, index }) => {
   const node = parse(line, index);
 
   return (
-    <>
+    <x.div>
       <Indents level={node.line.indent} />
       {node.line.nodes.map(node => (
         <Notation notation={node} />
       ))}
-    </>
+    </x.div>
   );
 };
 

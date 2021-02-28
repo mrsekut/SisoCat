@@ -12,6 +12,7 @@ import { noteS, lineInit, useNote } from '../notes';
 import { Line, NoteId } from '../notes/typings/note';
 import { useCursorKeymap } from './hooks/useCursorKeymap';
 import { getTextWidths } from './utils';
+import { Pos } from 'app/components/Reditor/utils/types';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -19,15 +20,6 @@ import { getTextWidths } from './utils';
 
 // px単位のposition
 type PxPos = { top: number; left: number };
-
-/**
- * line, column
- * e.g. `hog|ehoge`の時, (0,3)
- */
-type Pos = {
-  ln: number; // 0始まり、0行目, 1行目,..
-  col: number; // 0始まり. 0文字目の左, 1文字目の左,..
-};
 
 type CursorFocus = {
   isFocus: true;
