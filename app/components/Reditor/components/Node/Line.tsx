@@ -1,12 +1,10 @@
 import React from 'react';
-import { x } from '@xstyled/styled-components';
-import { LineId, LineM, LineNodeM } from 'app/models/notes/typings/note';
-import { Indents } from './Indents';
+import { LineId, LineNodeM } from 'app/models/notes/typings/note';
 import { lineParser } from '../../utils/parsers/parser';
-import { Notation } from './Notation';
 import { FocusedLine } from './FocuedLine';
 import { useRecoilValue } from 'recoil';
 import { _cursor2S } from 'app/models/Cursor';
+import { ViewLine } from './ViewLine';
 
 type Props = {
   value: string;
@@ -23,23 +21,6 @@ export const Line: React.VFC<Props> = ({ value, lineIndex }) => {
   }
 
   return <ViewLine line={line} lineIndex={lineIndex} />;
-};
-
-// FIXME: move, name
-export type LineProps = {
-  line: LineM;
-  lineIndex: number;
-};
-
-const ViewLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
-  return (
-    <x.div>
-      <Indents level={line.indent} />
-      {line.nodes.map(node => (
-        <Notation notation={node} lineIndex={lineIndex} />
-      ))}
-    </x.div>
-  );
 };
 
 const parse = (text: string, index: number): LineNodeM => {

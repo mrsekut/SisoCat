@@ -31,9 +31,12 @@ const brLWithoutBrR = bnb.match(/\[(?!(.*\]))/);
 
 const any = bnb.match(/./);
 
-export const textWithIndents = bnb
-  .all(indents, any.repeat())
-  .map(([level, value]) => ({ level, value: value.join('') }));
+const splitIndents = bnb.all(indents, any.repeat());
+
+export const textWithIndents = splitIndents.map(([level, value]) => ({
+  level,
+  value: value.join(''),
+}));
 
 const max3 = (n: number) => Math.min(3, n) as 1 | 2 | 3;
 
@@ -83,6 +86,14 @@ export const lineParser = (
   id: LineId,
   index: number,
 ): bnb.Parser<LineM> =>
-  bnb
-    .all(indents, notations)
-    .map(([is, v]) => ({ id, lineIndex: index, text, nodes: v, indent: is }));
+  splitIndents.map(([level, value]) => {
+    const v = value.join('');
+    return {
+      id,
+      lineIndex: index,
+      text,
+      indent: level,
+      nodeValue: v,
+      nodes: notations.tryParse(v),
+    };
+  });
