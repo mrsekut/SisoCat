@@ -12,17 +12,17 @@ import { insertNth } from 'app/utils/functions';
 export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
   const cursor = useRecoilValue(cursorS);
   const keys = useNoteOp(0);
-  const { keyMapping } = useHotKeyMapping(true, keys);
+  const { keyMapping } = useHotKeyMapping(keys);
 
   const chars = makeChars(line.nodeValue, cursor.pos.col);
   const ref = useRef<HTMLTextAreaElement | null>(null);
 
-  // FIXME: 微妙
+  // FIXME: 微妙, []の中もこれでいいのか
   useEffect(() => {
     if (cursor.isFocus && ref.current != null) {
       ref.current.focus();
     }
-  }, []);
+  }, [chars]);
 
   return (
     <Wrap>
