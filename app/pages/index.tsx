@@ -8,7 +8,7 @@ const Home: BlitzPage = () => {
   return (
     <x.main h='100vh'>
       <Suspense fallback='Loading...'>
-        <Reditors noteId={0} />
+        <Reditors />
       </Suspense>
     </x.main>
   );

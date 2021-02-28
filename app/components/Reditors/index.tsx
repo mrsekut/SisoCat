@@ -1,11 +1,12 @@
 import React from 'react';
-import { NoteId } from 'app/models/notes/typings/note';
-import { Reditor } from '../Reditor';
+import { Reditor, useReditor } from '../Reditor';
+import { text1 } from '../Reditor/utils/dummies/texts';
 
-type Props = {
-  noteId: NoteId;
-};
+// use Reditor Component
+export const Reditors: React.VFC = () => {
+  const reditor = useReditor({
+    defaultValue: text1,
+  });
 
-export const Reditors: React.VFC<Props> = ({ noteId }) => {
-  return <Reditor noteId={0} />;
+  return <Reditor rstate={reditor} />;
 };
