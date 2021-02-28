@@ -1,7 +1,7 @@
 import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Pos } from '../../utils/types';
-import { useFocus2 } from 'app/models/Cursor';
+import { useFocus } from 'app/models/Cursor';
 
 type Props = {
   children: React.ReactChild;
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const Char: React.VFC<Props> = ({ children, pos }) => {
-  const { focus } = useFocus2();
+  const { focus } = useFocus();
   return (
     <x.span
       onClick={() => focus(pos)}

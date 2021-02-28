@@ -3,14 +3,14 @@ import { cumSumList0, decN } from 'app/utils/functions';
 import { noteStyle } from 'app/utils/style';
 import produce from 'immer';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { cursorS } from '..';
+import { cursorOldS } from '..';
 import { cursorUpDown } from '../utils';
 
 /**
  * - カーソルの操作, 移動
  */
 export const useCursorKeymap = () => {
-  const [cursor, setCursor] = useRecoilState(cursorS);
+  const [cursor, setCursor] = useRecoilState(cursorOldS);
   const note = useRecoilValue(noteS(cursor.noteId ?? 0)); // FIXME:
 
   const textLength = cursor.line?.value?.length ?? 0;

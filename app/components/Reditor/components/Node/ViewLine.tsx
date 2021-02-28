@@ -3,7 +3,6 @@ import { x } from '@xstyled/styled-components';
 import { LineM } from 'app/models/notes/typings/note';
 import { Indents } from './Indents';
 import { Notation } from './Notation';
-import { _cursor2S } from 'app/models/Cursor';
 
 export type LineProps = {
   line: LineM;
