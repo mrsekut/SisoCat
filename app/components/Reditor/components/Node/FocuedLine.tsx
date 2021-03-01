@@ -8,11 +8,13 @@ import { Cursor } from '../Cursor';
 import { LineProps } from './ViewLine';
 import { Char } from './Char';
 import { insertNth } from 'app/utils/functions';
+import { useNote } from 'app/models/notes';
 
 export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
   const cursor = useRecoilValue(cursorS);
   const keys = useNoteOp(0);
   const { keyMapping } = useHotKeyMapping(keys);
+  const note = useNote(0);
 
   const chars = makeChars(line.nodeValue, cursor.pos.col);
   const ref = useRef<HTMLTextAreaElement | null>(null);

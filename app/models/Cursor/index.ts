@@ -34,11 +34,12 @@ type _CursorM = Exclude<CursorFocus, 'line'> | Exclude<CursorNotFocus, 'lien'>;
 
 type CursorM = CursorFocus | CursorNotFocus;
 
-// FIXME: clean
 // -------------------------------------------------------------------------------------
 // States
 // -------------------------------------------------------------------------------------
 
+// FIXME: clean, model
+// e.g. getLine(col)
 export const cursorS = atom<{
   pos: Pos;
   isFocus: boolean;
@@ -90,7 +91,7 @@ export const cursorOldS = selector<CursorM>({
 export const useNoteOp = (noteId: number) => {
   const note = useNote(noteId);
   const { left, right, down, move, up, begin, end } = useCursorKeymap();
-  const [cursor] = useRecoilState(cursorOldS);
+  const [cursor] = useRecoilState(cursorS);
 
   const newLine = () => {
     if (cursor.pos == null) return;
