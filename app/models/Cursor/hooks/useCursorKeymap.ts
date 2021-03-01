@@ -1,26 +1,24 @@
 import { decN } from 'app/utils/functions';
-import produce from 'immer';
-import { useCallback } from 'react';
-import { useRecoilState } from 'recoil';
-import { cursorS } from '..';
+import { useRecoilCallback } from 'recoil';
+import { cursorPos } from '..';
 
 /**
  * - カーソルの操作, 移動
  */
 export const useCursorKeymap = () => {
-  const [cursor, setCursor] = useRecoilState(cursorS);
+  // const [cursor, setCursor] = useRecoilState(cursorS);
   // const note = useRecoilValue(noteS(cursor.noteId ?? 0)); // FIXME:
 
   // const textLength = cursor.line?.value?.length ?? 0;
 
-  //  FIXME: useCallback
+  // FIXME: moveを使用する(意味があるなら)
 
   /**
    * Keys
    * =====================
    */
-  const move = useCallback(
-    (col: number, ln = cursor.pos.ln) => {
+  const move = useRecoilCallback(
+    ({ set }) => (col: number, ln?: number) => {
       // const cum = cumSumList0(cur.line.widths);
       // const isExceedRightmost = col >= cum.length;
 
@@ -30,15 +28,9 @@ export const useCursorKeymap = () => {
       //   c.pxPos.left = cum[rightMostCol];
       //   return;
       // }
-      setCursor(cur => {
-        if (!cur.isFocus) return cur;
-        return produce(cur, c => {
-          c.pos.ln = ln;
-          c.pos.col = col;
-        });
-      });
+      set(cursorPos, pos => ({ ln: ln ?? pos.ln, col }));
     },
-    [cursor.pos],
+    [],
   );
 
   const up = () => {
@@ -51,12 +43,11 @@ export const useCursorKeymap = () => {
     // move(col, ln);
   };
 
-  const right = useCallback(
-    (n = 1) => {
-      const col = cursor.pos.col;
-      move(col + n);
+  const right = useRecoilCallback(
+    ({ set }) => (n: number = 1) => {
+      set(cursorPos, pos => ({ ...pos, col: pos.col + n }));
     },
-    [cursor.pos.col],
+    [],
   );
 
   const down = (isNewLine = false) => {
@@ -68,22 +59,25 @@ export const useCursorKeymap = () => {
     // move(col, ln);
   };
 
-  const left = useCallback(
-    (n = 1) => {
-      const col = cursor.pos.col;
-      move(decN(col, n));
+  const left = useRecoilCallback(
+    ({ set }) => (n: number = 1) => {
+      set(cursorPos, pos => ({ ...pos, col: decN(pos.col, n) }));
     },
-    [cursor.pos.col],
+    [],
   );
 
-  const begin = useCallback(() => {
-    move(0);
-  }, []);
+  const begin = useRecoilCallback(
+    ({ set }) => () => {
+      set(cursorPos, pos => ({ ...pos, col: 0 }));
+    },
+    [],
+  );
 
   const end = () => {
+    // FIXME: selecotrを使ってendを取得すればいい
     console.log('end');
     // move(textLength);
   };
 
-  return { cursor, move, up, right, down, left, begin, end };
+  return { move, up, right, down, left, begin, end };
 };
