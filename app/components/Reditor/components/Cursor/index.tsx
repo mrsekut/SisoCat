@@ -1,9 +1,9 @@
 import React, { KeyboardEventHandler, RefObject, useState } from 'react';
 import styled, { x } from '@xstyled/styled-components';
-import { useNoteOp } from 'app/models/Cursor';
 import { noteStyle } from 'app/utils/style';
 import { textStyle } from '../../utils/settings';
 import { NoteId } from 'app/models/notes/typings/note';
+import { useNoteOp } from 'app/models/notes/hooks/useNoteOp';
 
 type Props = {
   noteId: NoteId;

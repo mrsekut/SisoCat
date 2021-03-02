@@ -1,11 +1,9 @@
-import { atom, selector, useRecoilCallback, useRecoilValue } from 'recoil';
+import { atom, selector, useRecoilCallback } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
-import { useNote } from '../notes';
 import { Line } from '../notes/typings/note';
-import { useCursorKeymap } from './hooks/useCursorKeymap';
 import { getTextWidths } from './utils';
 import { Pos } from 'app/components/Reditor/utils/types';
-import { useFocuedLine } from '../FocuedLine';
+import { decN } from 'app/utils/functions';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -61,52 +59,84 @@ export const cursorS = selector({
 // -------------------------------------------------------------------------------------
 // Hooks
 // -------------------------------------------------------------------------------------
-
 /**
- * useCursorKeymapとuseNoteの接続
- * e.g. カーソル位置の文字削除、文字入力
+ * - カーソルの操作, 移動
  */
-// FIXME: move
-export const useNoteOp = (noteId: number) => {
-  const note = useNote(noteId);
-  const { left, right, down, move, up, begin, end } = useCursorKeymap();
-  const { insertChar, removeChar } = useFocuedLine();
-  const pos = useRecoilValue(cursorPos);
+export const useCursorKeymap = () => {
+  // const [cursor, setCursor] = useRecoilState(cursorS);
+  // const note = useRecoilValue(noteS(cursor.noteId ?? 0)); // FIXME:
 
-  const newLine = () => {
-    if (pos == null) return;
-    note.newLine(pos.ln, pos.col);
-    down(true);
+  // const textLength = cursor.line?.value?.length ?? 0;
+
+  // FIXME: moveを使用する(意味があるなら)
+
+  /**
+   * Keys
+   * =====================
+   */
+  const move = useRecoilCallback(
+    ({ set }) => (col: number, ln?: number) => {
+      // const cum = cumSumList0(cur.line.widths);
+      // const isExceedRightmost = col >= cum.length;
+
+      // if (isExceedRightmost) {
+      //   const rightMostCol = cur.line.widths.length;
+      //   c.pos.col = rightMostCol;
+      //   c.pxPos.left = cum[rightMostCol];
+      //   return;
+      // }
+      set(cursorPos, pos => ({ ln: ln ?? pos.ln, col }));
+    },
+    [],
+  );
+
+  const up = () => {
+    console.log('up');
+    // if (!cursor.isFocus) return;
+    // const ln = decN(cursor.pos.ln, 1);
+    // const nextLine = note?.lines[ln] ?? lineInit;
+    // const { col } = cursorUpDown(cursor.pxPos.left, nextLine.widths);
+
+    // move(col, ln);
   };
 
-  const remove = () => {
-    removeChar(pos.col);
-    if (pos.col === 0) {
-      // const lines = note.note?.lines ?? [];
-      // const prevLine = lines[cursor.pos.ln - 1];
-      // move(prevLine.value.length, cursor.pos.ln - 1);
-    } else {
-      left();
-    }
+  const right = useRecoilCallback(
+    ({ set }) => (n: number = 1) => {
+      set(cursorPos, pos => ({ ...pos, col: pos.col + n }));
+    },
+    [],
+  );
+
+  const down = (isNewLine = false) => {
+    console.log('down');
+    // if (!cursor.isFocus) return;
+    // const ln = cursor.pos.ln + 1;
+    // const nextLine = note?.lines[ln] ?? lineInit;
+    // const { col } = cursorUpDown(cursor.pxPos.left, nextLine.widths, isNewLine);
+    // move(col, ln);
   };
 
-  const insert = (value: string) => {
-    insertChar(pos.col, value);
-    right(value.length);
+  const left = useRecoilCallback(
+    ({ set }) => (n: number = 1) => {
+      set(cursorPos, pos => ({ ...pos, col: decN(pos.col, n) }));
+    },
+    [],
+  );
+
+  const begin = useRecoilCallback(
+    ({ set }) => () => {
+      set(cursorPos, pos => ({ ...pos, col: 0 }));
+    },
+    [],
+  );
+
+  const end = () => {
+    // FIXME: selecotrを使ってendを取得すればいい
+    console.log('end');
+    // move(textLength);
   };
 
-  return {
-    newLine,
-    remove,
-    insert,
-    up,
-    left,
-    right,
-    down,
-    begin,
-    end,
-    move,
-  };
+  return { move, up, right, down, left, begin, end };
 };
 
 /**

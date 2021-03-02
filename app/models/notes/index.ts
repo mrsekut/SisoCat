@@ -1,50 +1,16 @@
 import {
-  atom,
   atomFamily,
   selectorFamily,
   useRecoilCallback,
-  useRecoilState,
   useRecoilValue,
 } from 'recoil';
 import produce from 'immer';
-import {
-  deleteNthChar,
-  insertNthChar,
-  range,
-  sliceWithRest,
-} from 'app/utils/functions';
 import { useTextWidths } from '../Cursor';
-import { NoteInfo, NoteM } from './typings';
 import { Line, NoteId } from './typings/note';
 
 // -------------------------------------------------------------------------------------
 // States
 // -------------------------------------------------------------------------------------
-
-const noteId = atomFamily({
-  key: 'noteId',
-  default: (id: number) => id,
-});
-
-const noteAuthor = atomFamily({
-  key: 'noteAuthor',
-  default: { id: 0, name: 'mrsekut' },
-});
-
-const noteTitle = atomFamily({
-  key: 'noteTitle',
-  default: '',
-});
-
-const noteCreateAt = atomFamily({
-  key: 'noteCreateAt',
-  default: new Date(),
-});
-
-const noteUpdatedAt = atomFamily({
-  key: 'noteUpdatedAt',
-  default: new Date(),
-});
 
 // FIXME: line atom
 const noteLines = atomFamily<string[], NoteId>({
@@ -52,25 +18,12 @@ const noteLines = atomFamily<string[], NoteId>({
   default: [],
 });
 
-const noteRefs = atomFamily<number[], NoteId>({
-  key: 'noteRefs',
-  default: [],
-});
-
-type A = NoteInfo & { lines: string[] };
 export const noteS = selectorFamily<{ lines: string[] }, NoteId>({
-  // export const noteS = selectorFamily({
   key: 'noteS',
   get: (id: number) => ({ get }) => ({
-    // id: get(noteId(id)),
-    // author: get(noteAuthor(id)),
-    // title: get(noteTitle(id)),
-    // createdAt: get(noteCreateAt(id)),
-    // updatedAt: get(noteUpdatedAt(id)),
-    // references: get(noteRefs(id)),
     lines: get(noteLines(id)),
   }),
-  set: noteId => ({ get, set }, n) => {
+  set: noteId => ({ set }, n) => {
     set(noteLines(noteId), n.lines);
   },
 });

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import styled from '@xstyled/styled-components';
-import { useNoteOp, cursorS } from 'app/models/Cursor';
+import { cursorS } from 'app/models/Cursor';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotKeyMapping } from '../../hooks/useHotKeyMapping';
 import { Indents } from './Indents';
@@ -9,6 +9,7 @@ import { LineProps } from './ViewLine';
 import { Char } from './Char';
 import { insertNth } from 'app/utils/functions';
 import { focuedLineS } from 'app/models/FocuedLine';
+import { useNoteOp } from 'app/models/notes/hooks/useNoteOp';
 
 export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
   const cursor = useRecoilValue(cursorS);
