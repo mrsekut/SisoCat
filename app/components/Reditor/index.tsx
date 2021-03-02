@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { x } from '@xstyled/styled-components';
 import { TextLines } from './components/Node/TextLinets';
+import { useSetRecoilState } from 'recoil';
+import { noteS } from 'app/models/notes';
 
 type Props = {
   rstate: RState;
@@ -32,6 +34,13 @@ type RState = {
 
 export const useReditor = ({ defaultValue }: Input): RState => {
   const [value, setValue] = useState(defaultValue);
+  const setNote = useSetRecoilState(noteS(0));
+
+  useEffect(() => {
+    setNote({
+      lines: defaultValue,
+    });
+  }, []);
 
   return { value, setValue };
 };

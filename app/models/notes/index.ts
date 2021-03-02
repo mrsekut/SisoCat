@@ -1,24 +1,83 @@
-import { atom, useRecoilState } from 'recoil';
+import {
+  atom,
+  atomFamily,
+  selectorFamily,
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
+} from 'recoil';
 import produce from 'immer';
 import {
   deleteNthChar,
   insertNthChar,
+  range,
   sliceWithRest,
 } from 'app/utils/functions';
 import { useTextWidths } from '../Cursor';
-import { NoteM } from './typings';
+import { NoteInfo, NoteM } from './typings';
 import { Line, NoteId } from './typings/note';
 
-export const noteS = (id: NoteId) =>
-  atom<NoteM | null>({
-    key: `noteS${id}`,
-    default: null,
-  });
+// -------------------------------------------------------------------------------------
+// States
+// -------------------------------------------------------------------------------------
 
-export const lineInit: Line = {
-  value: '',
-  widths: [],
-};
+const noteId = atomFamily({
+  key: 'noteId',
+  default: (id: number) => id,
+});
+
+const noteAuthor = atomFamily({
+  key: 'noteAuthor',
+  default: { id: 0, name: 'mrsekut' },
+});
+
+const noteTitle = atomFamily({
+  key: 'noteTitle',
+  default: '',
+});
+
+const noteCreateAt = atomFamily({
+  key: 'noteCreateAt',
+  default: new Date(),
+});
+
+const noteUpdatedAt = atomFamily({
+  key: 'noteUpdatedAt',
+  default: new Date(),
+});
+
+// FIXME: line atom
+const noteLines = atomFamily<string[], NoteId>({
+  key: 'noteLines',
+  default: [],
+});
+
+const noteRefs = atomFamily<number[], NoteId>({
+  key: 'noteRefs',
+  default: [],
+});
+
+type A = NoteInfo & { lines: string[] };
+export const noteS = selectorFamily<{ lines: string[] }, NoteId>({
+  // export const noteS = selectorFamily({
+  key: 'noteS',
+  get: (id: number) => ({ get }) => ({
+    // id: get(noteId(id)),
+    // author: get(noteAuthor(id)),
+    // title: get(noteTitle(id)),
+    // createdAt: get(noteCreateAt(id)),
+    // updatedAt: get(noteUpdatedAt(id)),
+    // references: get(noteRefs(id)),
+    lines: get(noteLines(id)),
+  }),
+  set: noteId => ({ get, set }, n) => {
+    set(noteLines(noteId), n.lines);
+  },
+});
+
+// -------------------------------------------------------------------------------------
+// Hooks
+// -------------------------------------------------------------------------------------
 
 /**
  * Note's Model
@@ -27,66 +86,87 @@ export const lineInit: Line = {
  * - UIには関与しない
  */
 export const useNote = (noteId: number) => {
-  const [note, setNote] = useRecoilState(noteS(noteId));
+  const note = useRecoilValue(noteS(noteId));
+  console.log({ note });
+
   const { textWidths } = useTextWidths();
 
-  const _updateLine = (ln: number, line: string) => {
-    setNote(note => {
-      if (note == null) return note;
-      return produce(note, n => {
-        n.lines[ln] = { value: line, widths: textWidths(line) };
+  // FIXME: 実装中
+  const _updateLine = useRecoilCallback(
+    ({ set }) => (ln: number, line: string) => {
+      set(noteLines(noteId), lines => {
+        return produce(lines, l => {
+          l[ln] = line;
+          // l[ln] = { value: line, widths: textWidths(line) };
+        });
       });
-    });
-  };
+    },
+    [],
+  );
 
   const newLine = (ln: number, col: number) => {
-    const line = note?.lines[ln].value ?? '';
-    const [half, rest] = sliceWithRest(line, col);
-    setNote(note => {
-      if (note == null) return note;
-      return produce(note, n => {
-        n.lines = n.lines
-          .slice(0, ln)
-          .concat([{ value: half, widths: textWidths(half) }])
-          .concat([{ value: rest, widths: textWidths(rest) }])
-          .concat(n.lines.slice(ln + 1));
-      });
-    });
+    // const line = note?.lines[ln].value ?? '';
+    // const [half, rest] = sliceWithRest(line, col);
+    // setNote(note => {
+    //   if (note == null) return note;
+    //   return produce(note, n => {
+    //     n.lines = n.lines
+    //       .slice(0, ln)
+    //       .concat([{ value: half, widths: textWidths(half) }])
+    //       .concat([{ value: rest, widths: textWidths(rest) }])
+    //       .concat(n.lines.slice(ln + 1));
+    //   });
+    // });
   };
 
-  const insertChar = (ln: number, col: number, value: string) => {
-    const line = note?.lines[ln].value ?? '';
-    const inserted = insertNthChar(line, col, value);
-    _updateLine(ln, inserted);
-  };
+  // FIXME: 実装中
+  const insertChar = useRecoilCallback(
+    ({ set }) => (ln: number, col: number, value: string) => {
+      set(noteLines(noteId), lines => {
+        const a = lines[ln];
+        return produce(lines, l => {
+          l[ln] = insertNthChar(a, col, value);
+        });
+      });
+      // set(noteLine(noteId)(ln), cc => insertNthChar(cc, col, value));
+    },
+    [],
+  );
+
+  // const insertChar = useRecoilCallback(
+  //   ({ set }) => (ln: number, col: number, value: string) => {
+  //     //   const line = note?.lines[ln].value ?? '';
+  //     const inserted = insertNthChar(line, col, value);
+  //     _updateLine(ln, inserted);
+  //   },
+  //   [],
+  // );
 
   const removeChar = (ln: number, col: number) => {
-    if (col === 0) {
-      removeLine(ln);
-      return;
-    }
-
-    const line = note?.lines[ln].value ?? '';
-    const deleted = deleteNthChar(line, col - 1);
-    _updateLine(ln, deleted);
+    // if (col === 0) {
+    //   removeLine(ln);
+    //   return;
+    // }
+    // const line = note?.lines[ln].value ?? '';
+    // const deleted = deleteNthChar(line, col - 1);
+    // _updateLine(ln, deleted);
   };
 
   const removeLine = (ln: number) => {
-    setNote(note => {
-      if (note == null) return note;
-      return produce(note, n => {
-        const l1 = note.lines[ln - 1];
-        const l2 = note.lines[ln];
-
-        n.lines = note.lines
-          .slice(0, ln - 1)
-          .concat([mergeLine(l1, l2)])
-          .concat(note.lines.slice(ln + 1));
-      });
-    });
+    // setNote(note => {
+    //   if (note == null) return note;
+    //   return produce(note, n => {
+    //     const l1 = note.lines[ln - 1];
+    //     const l2 = note.lines[ln];
+    //     n.lines = note.lines
+    //       .slice(0, ln - 1)
+    //       .concat([mergeLine(l1, l2)])
+    //       .concat(note.lines.slice(ln + 1));
+    //   });
+    // });
   };
 
-  return { note, setNote, removeChar, insertChar, newLine };
+  return { removeChar, insertChar, newLine };
 };
 
 const mergeLine = (l1: Line, l2: Line): Line => {

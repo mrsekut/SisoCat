@@ -1,6 +1,6 @@
 import { atom, selector, useRecoilCallback, useRecoilValue } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
-import { noteS, lineInit, useNote } from '../notes';
+import { useNote } from '../notes';
 import { Line } from '../notes/typings/note';
 import { useCursorKeymap } from './hooks/useCursorKeymap';
 import { getTextWidths } from './utils';
@@ -58,38 +58,6 @@ export const cursorS = selector({
 });
 
 // -------------------------------------------------------------------------------------
-// States
-// -------------------------------------------------------------------------------------
-
-// DEPRECATED:
-const cursorInit: _CursorM = {
-  isFocus: false,
-};
-
-// DEPRECATED:
-const _cursorS = atom<_CursorM>({
-  key: '_cursorS',
-  default: cursorInit,
-});
-
-// DEPRECATED:
-export const cursorOldS = selector<CursorM>({
-  key: 'cursorOldS',
-  get: ({ get }) => {
-    const cursor = get(_cursorS);
-    if (!cursor.isFocus) {
-      return cursor;
-    }
-    const note = get(noteS(cursor.noteId));
-    return {
-      ...cursor,
-      line: note?.lines[cursor.pos.ln] ?? lineInit,
-    };
-  },
-  set: ({ set }, newValue) => set(_cursorS, newValue),
-});
-
-// -------------------------------------------------------------------------------------
 // Hooks
 // -------------------------------------------------------------------------------------
 
@@ -127,7 +95,6 @@ export const useNoteOp = (noteId: number) => {
   };
 
   return {
-    note: note.note,
     newLine,
     remove,
     insert,
