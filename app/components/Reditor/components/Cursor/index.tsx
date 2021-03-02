@@ -51,6 +51,7 @@ const useInput = (noteId: NoteId) => {
   };
 };
 
+// FIXME: textareを分割, interface
 export const Cursor: React.VFC<Props> = ({
   noteId,
   onKeyDown,

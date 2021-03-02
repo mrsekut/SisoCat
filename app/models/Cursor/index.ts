@@ -5,6 +5,7 @@ import { Line } from '../notes/typings/note';
 import { useCursorKeymap } from './hooks/useCursorKeymap';
 import { getTextWidths } from './utils';
 import { Pos } from 'app/components/Reditor/utils/types';
+import { useFocuedLine } from '../FocuedLine';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -65,32 +66,32 @@ export const cursorS = selector({
  * useCursorKeymapとuseNoteの接続
  * e.g. カーソル位置の文字削除、文字入力
  */
+// FIXME: move
 export const useNoteOp = (noteId: number) => {
   const note = useNote(noteId);
   const { left, right, down, move, up, begin, end } = useCursorKeymap();
-  const cursor = useRecoilValue(cursorS);
+  const { insertChar, removeChar } = useFocuedLine();
+  const pos = useRecoilValue(cursorPos);
 
   const newLine = () => {
-    if (cursor.pos == null) return;
-    note.newLine(cursor.pos.ln, cursor.pos.col);
+    if (pos == null) return;
+    note.newLine(pos.ln, pos.col);
     down(true);
   };
 
   const remove = () => {
-    if (cursor.pos == null) return;
-    note.removeChar(cursor.pos.ln, cursor.pos.col);
-    if (cursor.pos.col === 0) {
-      const lines = note.note?.lines ?? [];
-      const prevLine = lines[cursor.pos.ln - 1];
-      move(prevLine.value.length, cursor.pos.ln - 1);
+    removeChar(pos.col);
+    if (pos.col === 0) {
+      // const lines = note.note?.lines ?? [];
+      // const prevLine = lines[cursor.pos.ln - 1];
+      // move(prevLine.value.length, cursor.pos.ln - 1);
     } else {
       left();
     }
   };
 
   const insert = (value: string) => {
-    if (cursor.pos == null) return;
-    note.insertChar(cursor.pos.ln, cursor.pos.col, value);
+    insertChar(pos.col, value);
     right(value.length);
   };
 

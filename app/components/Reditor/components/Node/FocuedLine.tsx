@@ -1,20 +1,26 @@
 import React, { useEffect, useRef } from 'react';
 import styled from '@xstyled/styled-components';
 import { useNoteOp, cursorS } from 'app/models/Cursor';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotKeyMapping } from '../../hooks/useHotKeyMapping';
 import { Indents } from './Indents';
 import { Cursor } from '../Cursor';
 import { LineProps } from './ViewLine';
 import { Char } from './Char';
 import { insertNth } from 'app/utils/functions';
+import { focuedLineS } from 'app/models/FocuedLine';
 
 export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
   const cursor = useRecoilValue(cursorS);
   const keys = useNoteOp(0);
   const { keyMapping } = useHotKeyMapping(keys);
 
-  const chars = makeChars(line.nodeValue, cursor.pos.col);
+  const [value, setValue] = useRecoilState(focuedLineS);
+  useEffect(() => {
+    setValue(line.nodeValue);
+  }, []);
+
+  const chars = makeChars(value, cursor.pos.col);
   const ref = useRef<HTMLTextAreaElement | null>(null);
 
   // FIXME: 微妙, []の中もこれでいいのか

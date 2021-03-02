@@ -91,8 +91,7 @@ export const useNote = (noteId: number) => {
 
   const { textWidths } = useTextWidths();
 
-  // FIXME: 実装中
-  const _updateLine = useRecoilCallback(
+  const updateLine = useRecoilCallback(
     ({ set }) => (ln: number, line: string) => {
       set(noteLines(noteId), lines => {
         return produce(lines, l => {
@@ -119,39 +118,6 @@ export const useNote = (noteId: number) => {
     // });
   };
 
-  // FIXME: 実装中
-  const insertChar = useRecoilCallback(
-    ({ set }) => (ln: number, col: number, value: string) => {
-      set(noteLines(noteId), lines => {
-        const a = lines[ln];
-        return produce(lines, l => {
-          l[ln] = insertNthChar(a, col, value);
-        });
-      });
-      // set(noteLine(noteId)(ln), cc => insertNthChar(cc, col, value));
-    },
-    [],
-  );
-
-  // const insertChar = useRecoilCallback(
-  //   ({ set }) => (ln: number, col: number, value: string) => {
-  //     //   const line = note?.lines[ln].value ?? '';
-  //     const inserted = insertNthChar(line, col, value);
-  //     _updateLine(ln, inserted);
-  //   },
-  //   [],
-  // );
-
-  const removeChar = (ln: number, col: number) => {
-    // if (col === 0) {
-    //   removeLine(ln);
-    //   return;
-    // }
-    // const line = note?.lines[ln].value ?? '';
-    // const deleted = deleteNthChar(line, col - 1);
-    // _updateLine(ln, deleted);
-  };
-
   const removeLine = (ln: number) => {
     // setNote(note => {
     //   if (note == null) return note;
@@ -166,7 +132,7 @@ export const useNote = (noteId: number) => {
     // });
   };
 
-  return { removeChar, insertChar, newLine };
+  return { newLine };
 };
 
 const mergeLine = (l1: Line, l2: Line): Line => {
