@@ -12,19 +12,21 @@ import { Line, NoteId } from './typings/note';
 // States
 // -------------------------------------------------------------------------------------
 
+type N = { lines: string[] };
+
 // FIXME: line atom
 const noteLines = atomFamily<string[], NoteId>({
   key: 'noteLines',
   default: [],
 });
 
-export const noteS = selectorFamily<{ lines: string[] }, NoteId>({
+export const noteS = selectorFamily<N, NoteId>({
   key: 'noteS',
   get: (id: number) => ({ get }) => ({
     lines: get(noteLines(id)),
   }),
   set: noteId => ({ set }, n) => {
-    set(noteLines(noteId), n.lines);
+    set(noteLines(noteId), (n as N).lines);
   },
 });
 

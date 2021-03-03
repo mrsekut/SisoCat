@@ -1,26 +1,30 @@
 import { cursorPos, useCursorKeymap } from 'app/models/Cursor';
-import { useFocuedLine } from 'app/models/FocuedLine';
-import { useRecoilValue } from 'recoil';
-import { useNote } from '..';
+import { focuedLineS, useFocuedLine } from 'app/models/FocuedLine';
+import { decN } from 'app/utils/functions';
+import { useCallback } from 'react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { noteS, useNote } from '..';
 
 /**
  * useCursorKeymapとuseNoteの接続
  * e.g. カーソル位置の文字削除、文字入力
  */
 
+//  FIXME: clean
 export const useNoteOp = (noteId: number) => {
-  const note = useNote(noteId);
-  const { left, right, down, move, up, begin, end } = useCursorKeymap();
+  const n = useNote(noteId);
+  const note = useRecoilValue(noteS(noteId));
+  const { left, right, begin, end, ...c } = useCursorKeymap();
   const { insertChar, removeChar } = useFocuedLine();
+  const setFocuedLine = useSetRecoilState(focuedLineS);
   const pos = useRecoilValue(cursorPos);
 
   const newLine = () => {
-    if (pos == null) return;
-    note.newLine(pos.ln, pos.col);
-    down(true);
+    n.newLine(pos.ln, pos.col);
+    down();
   };
 
-  const remove = () => {
+  const remove = useCallback(() => {
     removeChar(pos.col);
     if (pos.col === 0) {
       // const lines = note.note?.lines ?? [];
@@ -29,12 +33,24 @@ export const useNoteOp = (noteId: number) => {
     } else {
       left();
     }
-  };
+  }, [pos.col]);
 
-  const insert = (value: string) => {
+  const insert = useCallback((value: string) => {
     insertChar(pos.col, value);
     right(value.length);
-  };
+  }, []);
+
+  const up = useCallback(() => {
+    const nextLine = note.lines[decN(pos.ln, 1)];
+    setFocuedLine(nextLine);
+    c.up();
+  }, []);
+
+  const down = useCallback(() => {
+    const nextLine = note.lines[pos.ln + 1];
+    setFocuedLine(nextLine);
+    c.down();
+  }, []);
 
   return {
     newLine,
@@ -46,6 +62,5 @@ export const useNoteOp = (noteId: number) => {
     down,
     begin,
     end,
-    move,
   };
 };

@@ -67,7 +67,7 @@ export const Cursor: React.VFC<Props> = ({
 
   return (
     <x.div h='1em' display='inline-block'>
-      <Carret />
+      <Caret />
       <Textarea
         ref={textareaRef}
         value={value}
@@ -83,7 +83,7 @@ export const Cursor: React.VFC<Props> = ({
   );
 };
 
-const Carret: React.VFC = () => (
+const Caret: React.VFC = () => (
   <x.div
     h='1.5em'
     w={1.5}
