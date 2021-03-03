@@ -1,6 +1,6 @@
 import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
 import produce from 'immer';
-import { Line, NoteId } from './typings/note';
+import { NoteId } from './typings/note';
 import { sliceWithRest } from 'app/utils/functions';
 
 // -------------------------------------------------------------------------------------
@@ -54,37 +54,35 @@ export const useNote = (noteId: number) => {
       const [half, rest] = sliceWithRest(line, col);
       set(noteS(noteId), note => {
         return produce(note, n => {
-          n.lines = n.lines
-            .slice(0, ln)
-            .concat([half])
-            .concat([rest])
-            .concat(n.lines.slice(ln + 1));
+          n.lines = [
+            ...n.lines.slice(0, ln),
+            ...half,
+            ...rest,
+            ...n.lines.slice(ln + 1),
+          ];
         });
       });
     },
     [],
   );
 
-  const removeLine = (ln: number) => {
-    // setNote(note => {
-    //   if (note == null) return note;
-    //   return produce(note, n => {
-    //     const l1 = note.lines[ln - 1];
-    //     const l2 = note.lines[ln];
-    //     n.lines = note.lines
-    //       .slice(0, ln - 1)
-    //       .concat([mergeLine(l1, l2)])
-    //       .concat(note.lines.slice(ln + 1));
-    //   });
-    // });
-  };
+  const removeLine = useRecoilCallback(
+    ({ set, snapshot }) => async (ln: number) => {
+      const note = await snapshot.getPromise(noteS(noteId));
+      const l1 = note.lines[ln - 1];
+      const l2 = note.lines[ln];
+      set(noteS(noteId), note => {
+        return produce(note, n => {
+          n.lines = [
+            ...n.lines.slice(0, ln - 1),
+            ...[l1, l2],
+            ...note.lines.slice(ln + 1),
+          ];
+        });
+      });
+    },
+    [],
+  );
 
-  return { updateLine, newLine };
-};
-
-const mergeLine = (l1: Line, l2: Line): Line => {
-  return {
-    value: l1.value.concat(l2.value),
-    widths: l1.widths.concat(l2.widths),
-  };
+  return { updateLine, newLine, removeLine };
 };

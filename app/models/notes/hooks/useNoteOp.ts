@@ -31,9 +31,10 @@ export const useNoteOp = (noteId: number) => {
       const pos = await snapshot.getPromise(cursorPos);
       removeChar(pos.col);
       if (pos.col === 0) {
-        // const lines = note.note?.lines ?? [];
-        // const prevLine = lines[cursor.pos.ln - 1];
-        // move(prevLine.value.length, cursor.pos.ln - 1);
+        const pos = await snapshot.getPromise(cursorPos);
+        n.removeLine(pos.ln);
+        up();
+        end();
       } else {
         left();
       }
