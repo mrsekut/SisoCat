@@ -1,12 +1,7 @@
-import {
-  atomFamily,
-  selectorFamily,
-  useRecoilCallback,
-  useRecoilValue,
-} from 'recoil';
+import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
 import produce from 'immer';
-import { useTextWidths } from '../Cursor';
 import { Line, NoteId } from './typings/note';
+import { sliceWithRest } from 'app/utils/functions';
 
 // -------------------------------------------------------------------------------------
 // States
@@ -41,37 +36,34 @@ export const noteS = selectorFamily<N, NoteId>({
  * - UIには関与しない
  */
 export const useNote = (noteId: number) => {
-  const note = useRecoilValue(noteS(noteId));
-  console.log({ note });
-
-  const { textWidths } = useTextWidths();
-
   const updateLine = useRecoilCallback(
     ({ set }) => (ln: number, line: string) => {
-      set(noteLines(noteId), lines => {
-        return produce(lines, l => {
+      set(noteLines(noteId), lines =>
+        produce(lines, l => {
           l[ln] = line;
-          // l[ln] = { value: line, widths: textWidths(line) };
+        }),
+      );
+    },
+    [],
+  );
+
+  const newLine = useRecoilCallback(
+    ({ set, snapshot }) => async (ln: number, col: number) => {
+      const note = await snapshot.getPromise(noteS(noteId));
+      const line = note.lines[ln];
+      const [half, rest] = sliceWithRest(line, col);
+      set(noteS(noteId), note => {
+        return produce(note, n => {
+          n.lines = n.lines
+            .slice(0, ln)
+            .concat([half])
+            .concat([rest])
+            .concat(n.lines.slice(ln + 1));
         });
       });
     },
     [],
   );
-
-  const newLine = (ln: number, col: number) => {
-    // const line = note?.lines[ln].value ?? '';
-    // const [half, rest] = sliceWithRest(line, col);
-    // setNote(note => {
-    //   if (note == null) return note;
-    //   return produce(note, n => {
-    //     n.lines = n.lines
-    //       .slice(0, ln)
-    //       .concat([{ value: half, widths: textWidths(half) }])
-    //       .concat([{ value: rest, widths: textWidths(rest) }])
-    //       .concat(n.lines.slice(ln + 1));
-    //   });
-    // });
-  };
 
   const removeLine = (ln: number) => {
     // setNote(note => {
@@ -87,7 +79,7 @@ export const useNote = (noteId: number) => {
     // });
   };
 
-  return { newLine };
+  return { updateLine, newLine };
 };
 
 const mergeLine = (l1: Line, l2: Line): Line => {

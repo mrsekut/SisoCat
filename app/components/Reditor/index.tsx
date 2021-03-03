@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { x } from '@xstyled/styled-components';
 import { TextLines } from './components/Node/TextLinets';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { noteS } from 'app/models/notes';
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const Reditor: React.VFC<Props> = ({ rstate }) => {
-  const { value, setValue } = rstate;
+  const { value } = rstate;
 
   return (
     <x.div bg='gray-200' position='relative'>
@@ -29,11 +29,10 @@ type Input = {
 
 type RState = {
   value: string[];
-  setValue: (value: string[]) => void;
 };
 
 export const useReditor = ({ defaultValue }: Input): RState => {
-  const [value, setValue] = useState(defaultValue);
+  const note = useRecoilValue(noteS(0));
   const setNote = useSetRecoilState(noteS(0));
 
   useEffect(() => {
@@ -42,5 +41,5 @@ export const useReditor = ({ defaultValue }: Input): RState => {
     });
   }, []);
 
-  return { value, setValue };
+  return { value: note.lines };
 };

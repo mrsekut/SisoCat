@@ -11,7 +11,10 @@ import { insertNth } from 'app/utils/functions';
 import { focuedLineS } from 'app/models/FocuedLine';
 import { useNoteOp } from 'app/models/notes/hooks/useNoteOp';
 
-export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
+export const FocusedLine: React.VFC<LineProps> = ({
+  line,
+  lineIndex,
+}): JSX.Element => {
   const cursor = useRecoilValue(cursorS);
   const keys = useNoteOp(0);
   const { keyMapping } = useHotKeyMapping(keys);
@@ -21,7 +24,7 @@ export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
     setValue(line.nodeValue);
   }, []);
 
-  const chars = makeChars(value, cursor.pos.col);
+  const chars = makeChars(value, cursor.pos?.col ?? 0);
   const ref = useRef<HTMLTextAreaElement | null>(null);
 
   // FIXME: 微妙, []の中もこれでいいのか
@@ -63,3 +66,6 @@ const makeChars = (value: string, cursorIndex: number) => {
 const Wrap = styled.div`
   background-color: #ff8787;
 `;
+function noteLines(noteId: any): import('recoil').RecoilValue<unknown> {
+  throw new Error('Function not implemented.');
+}
