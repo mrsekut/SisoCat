@@ -2,7 +2,7 @@ import { cursorPos, useCursorKeymap } from 'app/models/Cursor';
 import { focuedLineS, useFocuedLine } from 'app/models/FocuedLine';
 import { decN } from 'app/utils/functions';
 import { useCallback } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { noteS, useNote } from '..';
 
 /**
@@ -14,9 +14,9 @@ import { noteS, useNote } from '..';
 export const useNoteOp = (noteId: number) => {
   const n = useNote(noteId);
   const note = useRecoilValue(noteS(noteId));
-  const { left, right, begin, end, ...c } = useCursorKeymap();
+  const { left, right, ...c } = useCursorKeymap();
   const { insertChar, removeChar } = useFocuedLine();
-  const setFocuedLine = useSetRecoilState(focuedLineS);
+  const [focuedLine, setFocuedLine] = useRecoilState(focuedLineS);
   const pos = useRecoilValue(cursorPos);
 
   const newLine = () => {
@@ -50,6 +50,14 @@ export const useNoteOp = (noteId: number) => {
     const nextLine = note.lines[pos.ln + 1];
     setFocuedLine(nextLine);
     c.down();
+  }, []);
+
+  const begin = useCallback(() => {
+    c.move(0);
+  }, []);
+
+  const end = useCallback(() => {
+    c.move(focuedLine.length);
   }, []);
 
   return {

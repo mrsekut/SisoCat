@@ -3,7 +3,7 @@ import { LineId, LineNodeM } from 'app/models/notes/typings/note';
 import { lineParser } from '../../utils/parsers/parser';
 import { FocusedLine } from './FocuedLine';
 import { useRecoilValue } from 'recoil';
-import { cursorS } from 'app/models/Cursor';
+import { cursorPos } from 'app/models/Cursor';
 import { ViewLine } from './ViewLine';
 
 type Props = {
@@ -13,8 +13,8 @@ type Props = {
 
 export const Line: React.VFC<Props> = ({ value, lineIndex }) => {
   const line = parse(value, lineIndex).line;
-  const cursor = useRecoilValue(cursorS);
-  const isFocus = cursor.pos.ln === lineIndex;
+  const pos = useRecoilValue(cursorPos);
+  const isFocus = pos.ln === lineIndex;
 
   if (isFocus) {
     return <FocusedLine line={line} lineIndex={lineIndex} />;

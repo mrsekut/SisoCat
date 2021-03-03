@@ -1,6 +1,5 @@
 import { atom, selector, useRecoilCallback } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
-import { Line } from '../notes/typings/note';
 import { getTextWidths } from './utils';
 import { Pos } from 'app/components/Reditor/utils/types';
 import { decN } from 'app/utils/functions';
@@ -9,28 +8,15 @@ import { decN } from 'app/utils/functions';
 // Types
 // -------------------------------------------------------------------------------------
 
-// px単位のposition
-type PxPos = { top: number; left: number };
-
-// FIXME:
 type CursorFocus = {
   isFocus: true;
   pos: Pos;
-  pxPos: PxPos;
-  noteId: number;
-  line: Line; // on the cursor
 };
 
-// FIXME:
 type CursorNotFocus = {
   isFocus: false;
   pos?: undefined;
-  pxPos?: undefined;
-  noteId?: undefined;
-  line?: undefined;
 };
-
-type _CursorM = Exclude<CursorFocus, 'line'> | Exclude<CursorNotFocus, 'lien'>;
 
 type CursorM = CursorFocus | CursorNotFocus;
 
@@ -48,30 +34,24 @@ export const cursorPos = atom({
   default: { ln: 0, col: 0 },
 });
 
-export const cursorS = selector({
+export const cursorS = selector<CursorM>({
   key: 'cursorS',
-  get: ({ get }) => ({
-    isFocus: get(cursorFocus),
-    pos: get(cursorPos),
-  }),
+  get: ({ get }) =>
+    get(cursorFocus)
+      ? {
+          isFocus: true,
+          pos: get(cursorPos),
+        }
+      : { isFocus: false },
 });
 
 // -------------------------------------------------------------------------------------
 // Hooks
 // -------------------------------------------------------------------------------------
 /**
- * - カーソルの操作, 移動
+ * - Cursor operation and movement
  */
 export const useCursorKeymap = () => {
-  // const [cursor, setCursor] = useRecoilState(cursorS);
-  // const note = useRecoilValue(noteS(cursor.noteId ?? 0)); // FIXME:
-
-  // const textLength = cursor.line?.value?.length ?? 0;
-
-  /**
-   * Keys
-   * =====================
-   */
   const up = useRecoilCallback(
     ({ set }) => () => {
       set(cursorPos, pos => ({ ...pos, ln: decN(pos.ln, 1) }));
@@ -100,20 +80,14 @@ export const useCursorKeymap = () => {
     [],
   );
 
-  const begin = useRecoilCallback(
-    ({ set }) => () => {
-      set(cursorPos, pos => ({ ...pos, col: 0 }));
+  const move = useRecoilCallback(
+    ({ set }) => (col: number) => {
+      set(cursorPos, pos => ({ ...pos, col }));
     },
     [],
   );
 
-  const end = () => {
-    // FIXME: selecotrを使ってendを取得すればいい
-    console.log('end');
-    // move(textLength);
-  };
-
-  return { up, right, down, left, begin, end };
+  return { up, right, down, left, move };
 };
 
 /**
