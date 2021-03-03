@@ -66,6 +66,3 @@ const makeChars = (value: string, cursorIndex: number) => {
 const Wrap = styled.div`
   background-color: #ff8787;
 `;
-function noteLines(noteId: any): import('recoil').RecoilValue<unknown> {
-  throw new Error('Function not implemented.');
-}

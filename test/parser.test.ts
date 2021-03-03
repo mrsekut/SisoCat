@@ -97,6 +97,7 @@ describe('Line Parsers', () => {
       lineIndex: 3,
       indent: 4,
       text,
+      nodeValue: '[TypeScript]は、 [*** すごい]',
       nodes: [
         { type: 'link', references: [], value: 'TypeScript' },
         { type: 'normal', value: 'は、 ' },

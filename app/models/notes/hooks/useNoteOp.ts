@@ -101,6 +101,3 @@ export const useNoteOp = (noteId: number) => {
     end,
   };
 };
-function noteLines(noteId: number): import('recoil').RecoilState<unknown> {
-  throw new Error('Function not implemented.');
-}
