@@ -1,7 +1,9 @@
 import React from 'react';
-import { x } from '@xstyled/styled-components';
-import { Normal } from './Normal';
 import { NotationM } from 'app/models/notes/typings/note';
+import { Anchor } from './Anchor';
+import { Bold } from './Bold';
+import { Italic } from './Itaic';
+import { Normal } from './Normal';
 
 type Props = {
   notation: NotationM;
@@ -13,11 +15,11 @@ export const Notation: React.VFC<Props> = ({ notation, lineIndex }) => {
     case 'normal':
       return <Normal value={notation.value} lineIndex={lineIndex} />;
     case 'italic':
-      return <x.span fontStyle='italic'>{notation.value}</x.span>;
+      return <Italic value={notation.value} lineIndex={lineIndex} />;
     case 'link':
-      return <x.a href=''>{notation.value}</x.a>;
+      return <Anchor value={notation.value} lineIndex={lineIndex} />;
     case 'strong':
-      return <x.span fontWeight='bold'>{notation.value}</x.span>;
+      return <Bold value={notation.value} lineIndex={lineIndex} />;
     default:
       return <></>;
   }

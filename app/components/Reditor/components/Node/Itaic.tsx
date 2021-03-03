@@ -7,8 +7,8 @@ type Props = {
   lineIndex: number;
 };
 
-export const Normal: React.VFC<Props> = ({ value, lineIndex }) => (
-  <x.span>
+export const Italic: React.VFC<Props> = ({ value, lineIndex }) => (
+  <x.span fontStyle='italic'>
     {[...value].map((char, index) => (
       <Char pos={{ ln: lineIndex, col: index }}>{char}</Char>
     ))}

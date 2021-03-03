@@ -1,5 +1,6 @@
 import React from 'react';
 import { Line } from './Line';
+import { x } from '@xstyled/styled-components';
 
 type Props = {
   line: string;
@@ -12,9 +13,8 @@ export const Node: React.VFC<Props> = ({ line, lineIndex }) => {
   // }
 
   return (
-    <>
+    <x.div pb='2'>
       <Line value={line} lineIndex={lineIndex} />
-      <br />
-    </>
+    </x.div>
   );
 };

@@ -11,10 +11,7 @@ import { insertNth } from 'app/utils/functions';
 import { focuedLineS } from 'app/models/FocuedLine';
 import { useNoteOp } from 'app/models/notes/hooks/useNoteOp';
 
-export const FocusedLine: React.VFC<LineProps> = ({
-  line,
-  lineIndex,
-}): JSX.Element => {
+export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
   const cursor = useRecoilValue(cursorS);
   const keys = useNoteOp(0);
   const { keyMapping } = useHotKeyMapping(keys);
@@ -64,5 +61,5 @@ const makeChars = (value: string, cursorIndex: number) => {
 };
 
 const Wrap = styled.div`
-  background-color: #ff8787;
+  /* background-color: #ff8787; */
 `;
