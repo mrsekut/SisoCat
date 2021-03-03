@@ -1,20 +1,20 @@
 import React from 'react';
 import { Line } from './Line';
+import { x } from '@xstyled/styled-components';
 
 type Props = {
   line: string;
-  index: number;
+  lineIndex: number;
 };
 
-export const Node: React.VFC<Props> = ({ line, index }) => {
+export const Node: React.VFC<Props> = ({ line, lineIndex }) => {
   // if (node.type === 'block') {
   //   return <Block block={node} />;
   // }
 
   return (
-    <>
-      <Line line={line} index={index} />
-      <br />
-    </>
+    <x.div pb='2'>
+      <Line value={line} lineIndex={lineIndex} />
+    </x.div>
   );
 };

@@ -1,24 +1,33 @@
-import { atom, useRecoilState } from 'recoil';
+import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
 import produce from 'immer';
-import {
-  deleteNthChar,
-  insertNthChar,
-  sliceWithRest,
-} from 'app/utils/functions';
-import { useTextWidths } from '../Cursor';
-import { NoteM } from './typings';
-import { Line, NoteId } from './typings/note';
+import { NoteId } from './typings/note';
+import { sliceWithRest } from 'app/utils/functions';
 
-export const noteS = (id: NoteId) =>
-  atom<NoteM | null>({
-    key: `noteS${id}`,
-    default: null,
-  });
+// -------------------------------------------------------------------------------------
+// States
+// -------------------------------------------------------------------------------------
 
-export const lineInit: Line = {
-  value: '',
-  widths: [],
-};
+type N = { lines: string[] };
+
+// FIXME: line atom
+const noteLines = atomFamily<string[], NoteId>({
+  key: 'noteLines',
+  default: [],
+});
+
+export const noteS = selectorFamily<N, NoteId>({
+  key: 'noteS',
+  get: (id: number) => ({ get }) => ({
+    lines: get(noteLines(id)),
+  }),
+  set: noteId => ({ set }, n) => {
+    set(noteLines(noteId), (n as N).lines);
+  },
+});
+
+// -------------------------------------------------------------------------------------
+// Hooks
+// -------------------------------------------------------------------------------------
 
 /**
  * Note's Model
@@ -27,71 +36,53 @@ export const lineInit: Line = {
  * - UIには関与しない
  */
 export const useNote = (noteId: number) => {
-  const [note, setNote] = useRecoilState(noteS(noteId));
-  const { textWidths } = useTextWidths();
+  const updateLine = useRecoilCallback(
+    ({ set }) => (ln: number, line: string) => {
+      set(noteLines(noteId), lines =>
+        produce(lines, l => {
+          l[ln] = line;
+        }),
+      );
+    },
+    [],
+  );
 
-  const _updateLine = (ln: number, line: string) => {
-    setNote(note => {
-      if (note == null) return note;
-      return produce(note, n => {
-        n.lines[ln] = { value: line, widths: textWidths(line) };
+  const newLine = useRecoilCallback(
+    ({ set, snapshot }) => async (ln: number, col: number) => {
+      const note = await snapshot.getPromise(noteS(noteId));
+      const line = note.lines[ln];
+      const [half, rest] = sliceWithRest(line, col);
+      set(noteS(noteId), note => {
+        return produce(note, n => {
+          n.lines = [
+            ...n.lines.slice(0, ln),
+            ...half,
+            ...rest,
+            ...n.lines.slice(ln + 1),
+          ];
+        });
       });
-    });
-  };
+    },
+    [],
+  );
 
-  const newLine = (ln: number, col: number) => {
-    const line = note?.lines[ln].value ?? '';
-    const [half, rest] = sliceWithRest(line, col);
-    setNote(note => {
-      if (note == null) return note;
-      return produce(note, n => {
-        n.lines = n.lines
-          .slice(0, ln)
-          .concat([{ value: half, widths: textWidths(half) }])
-          .concat([{ value: rest, widths: textWidths(rest) }])
-          .concat(n.lines.slice(ln + 1));
+  const removeLine = useRecoilCallback(
+    ({ set, snapshot }) => async (ln: number) => {
+      const note = await snapshot.getPromise(noteS(noteId));
+      const l1 = note.lines[ln - 1];
+      const l2 = note.lines[ln];
+      set(noteS(noteId), note => {
+        return produce(note, n => {
+          n.lines = [
+            ...n.lines.slice(0, ln - 1),
+            ...[l1, l2],
+            ...note.lines.slice(ln + 1),
+          ];
+        });
       });
-    });
-  };
+    },
+    [],
+  );
 
-  const insertChar = (ln: number, col: number, value: string) => {
-    const line = note?.lines[ln].value ?? '';
-    const inserted = insertNthChar(line, col, value);
-    _updateLine(ln, inserted);
-  };
-
-  const removeChar = (ln: number, col: number) => {
-    if (col === 0) {
-      removeLine(ln);
-      return;
-    }
-
-    const line = note?.lines[ln].value ?? '';
-    const deleted = deleteNthChar(line, col - 1);
-    _updateLine(ln, deleted);
-  };
-
-  const removeLine = (ln: number) => {
-    setNote(note => {
-      if (note == null) return note;
-      return produce(note, n => {
-        const l1 = note.lines[ln - 1];
-        const l2 = note.lines[ln];
-
-        n.lines = note.lines
-          .slice(0, ln - 1)
-          .concat([mergeLine(l1, l2)])
-          .concat(note.lines.slice(ln + 1));
-      });
-    });
-  };
-
-  return { note, setNote, removeChar, insertChar, newLine };
-};
-
-const mergeLine = (l1: Line, l2: Line): Line => {
-  return {
-    value: l1.value.concat(l2.value),
-    widths: l1.widths.concat(l2.widths),
-  };
+  return { updateLine, newLine, removeLine };
 };

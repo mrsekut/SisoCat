@@ -21,13 +21,18 @@ const command = (e: React.KeyboardEvent<HTMLTextAreaElement>) => (
   !e.altKey &&
   !e.shiftKey;
 
-export const useHotKeyMapping = (
-  isFocus: boolean,
-  { up, right, down, left, begin, end, remove, newLine, insert }: Args,
-) => {
+export const useHotKeyMapping = ({
+  up,
+  right,
+  down,
+  left,
+  begin,
+  end,
+  remove,
+  newLine,
+  insert,
+}: Args) => {
   const keyMapping = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
-    if (!isFocus) return;
-
     const key = e.nativeEvent.key;
     const cmd = command(e);
 

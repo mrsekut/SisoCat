@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@prisma/client": "2.16.0",
-    "@xstyled/styled-components": "2.2.0",
+    "@xstyled/styled-components": "2.2.3",
     "blitz": "0.29.7",
     "bread-n-butter": "0.6.0",
     "immer": "8.0.1",

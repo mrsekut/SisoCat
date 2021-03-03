@@ -7,10 +7,10 @@ type Props = {
   lineIndex: number;
 };
 
-export const Normal: React.VFC<Props> = ({ value, lineIndex }) => (
-  <x.span>
+export const Anchor: React.VFC<Props> = ({ value, lineIndex }) => (
+  <x.a href=''>
     {[...value].map((char, index) => (
       <Char pos={{ ln: lineIndex, col: index }}>{char}</Char>
     ))}
-  </x.span>
+  </x.a>
 );

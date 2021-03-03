@@ -10,7 +10,7 @@ export const TextLines: React.VFC<Props> = memo(({ lines }) => {
   return (
     <x.div>
       {lines.map((line, index) => (
-        <Node line={line} index={index} />
+        <Node line={line} lineIndex={index} />
       ))}
     </x.div>
   );

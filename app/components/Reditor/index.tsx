@@ -1,21 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { x } from '@xstyled/styled-components';
-import { useFocus } from 'app/models/Cursor';
 import { TextLines } from './components/Node/TextLinets';
-import { FocusedLine } from './components/Node/FocuedLine';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { noteS } from 'app/models/notes';
 
 type Props = {
   rstate: RState;
 };
 
 export const Reditor: React.VFC<Props> = ({ rstate }) => {
-  const { value, setValue } = rstate;
-  const { ref: textareaRef, onFocus } = useFocus();
+  const { value } = rstate;
 
   return (
-    <x.div bg='gray-200' position='relative' onClick={e => onFocus(e, 0)}>
+    <x.div bg='gray-200' position='relative'>
       <TextLines lines={value} />
-      <FocusedLine noteId={0} textareaRef={textareaRef} />
     </x.div>
   );
 };
@@ -31,11 +29,17 @@ type Input = {
 
 type RState = {
   value: string[];
-  setValue: (value: string[]) => void;
 };
 
 export const useReditor = ({ defaultValue }: Input): RState => {
-  const [value, setValue] = useState(defaultValue);
+  const note = useRecoilValue(noteS(0));
+  const setNote = useSetRecoilState(noteS(0));
 
-  return { value, setValue };
+  useEffect(() => {
+    setNote({
+      lines: defaultValue,
+    });
+  }, []);
+
+  return { value: note.lines };
 };

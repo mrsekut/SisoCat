@@ -1,45 +1,65 @@
-import React, { RefObject } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from '@xstyled/styled-components';
-import { cursorS, useNoteOp } from 'app/models/Cursor';
-import { useRecoilValue } from 'recoil';
+import { cursorS } from 'app/models/Cursor';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotKeyMapping } from '../../hooks/useHotKeyMapping';
-import { NoteId } from 'app/models/notes/typings/note';
 import { Indents } from './Indents';
 import { Cursor } from '../Cursor';
-import { textWithIndents } from '../../utils/parsers/parser';
-import { Normal } from './Normal';
+import { LineProps } from './ViewLine';
+import { Char } from './Char';
+import { insertNth } from 'app/utils/functions';
+import { focuedLineS } from 'app/models/FocuedLine';
+import { useNoteOp } from 'app/models/notes/hooks/useNoteOp';
 
-type Props = {
-  noteId: NoteId;
-  textareaRef: RefObject<HTMLTextAreaElement>;
-};
-
-export const FocusedLine: React.VFC<Props> = ({ noteId, textareaRef }) => {
+export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
   const cursor = useRecoilValue(cursorS);
-  const { level, value } = textWithIndents.tryParse(cursor.line?.value ?? '');
-  const keys = useNoteOp(noteId);
-  const isFocus = noteId === cursor.noteId;
-  const { keyMapping } = useHotKeyMapping(isFocus, keys);
+  const keys = useNoteOp(0);
+  const { keyMapping } = useHotKeyMapping(keys);
 
-  if (!isFocus) {
-    return null;
-  }
+  const [value, setValue] = useRecoilState(focuedLineS);
+  useEffect(() => {
+    setValue(line.nodeValue);
+  }, []);
+
+  const chars = makeChars(value, cursor.pos?.col ?? 0);
+  const ref = useRef<HTMLTextAreaElement | null>(null);
+
+  // FIXME: 微妙, []の中もこれでいいのか
+  useEffect(() => {
+    if (cursor.isFocus && ref.current != null) {
+      ref.current.focus();
+    }
+  }, [chars]);
 
   return (
-    <Span top={cursor.pxPos?.top ?? 0}>
-      <Indents level={level} />
-      <Normal value={value} />
-      <Cursor
-        noteId={noteId}
-        textareaRef={textareaRef}
-        onKeyDown={keyMapping}
-      />
-    </Span>
+    <Wrap>
+      <Indents level={line.indent} />
+      <span>
+        {chars.map((char, index) => {
+          if (char.type === 'cursor') {
+            return (
+              <Cursor noteId={0} onKeyDown={keyMapping} textareaRef={ref} />
+            );
+          }
+
+          return <Char pos={{ ln: lineIndex, col: index }}>{char.value}</Char>;
+        })}
+      </span>
+    </Wrap>
   );
 };
 
-const Span = styled.span<{ top: number }>`
-  position: absolute;
-  top: ${p => p.top}px;
-  background-color: #ff8787;
+type CharType = { type: 'value'; value: string } | { type: 'cursor' };
+
+const makeChars = (value: string, cursorIndex: number) => {
+  const vs = [...value].map(v => ({
+    type: 'value' as const,
+    value: v,
+  }));
+
+  return insertNth<CharType>(vs, cursorIndex, { type: 'cursor' });
+};
+
+const Wrap = styled.div`
+  /* background-color: #ff8787; */
 `;

@@ -92,6 +92,7 @@ export type LineM = {
   readonly lineIndex: number; // 0始まり
   readonly text: string;
   readonly indent: number;
+  readonly nodeValue: string;
   readonly nodes: readonly NotationM[];
 };
 

@@ -1,10 +1,9 @@
 import React, { KeyboardEventHandler, RefObject, useState } from 'react';
 import styled, { x } from '@xstyled/styled-components';
-import { cursorS, useNoteOp } from 'app/models/Cursor';
-import { useRecoilValue } from 'recoil';
 import { noteStyle } from 'app/utils/style';
 import { textStyle } from '../../utils/settings';
 import { NoteId } from 'app/models/notes/typings/note';
+import { useNoteOp } from 'app/models/notes/hooks/useNoteOp';
 
 type Props = {
   noteId: NoteId;
@@ -52,12 +51,12 @@ const useInput = (noteId: NoteId) => {
   };
 };
 
+// FIXME: textareを分割, interface
 export const Cursor: React.VFC<Props> = ({
   noteId,
   onKeyDown,
   textareaRef,
 }) => {
-  const { pxPos } = useRecoilValue(cursorS);
   const {
     value,
     isComposing,
@@ -66,10 +65,9 @@ export const Cursor: React.VFC<Props> = ({
     onCompositionEnd,
   } = useInput(noteId);
 
-  if (pxPos == null) return null;
   return (
-    <x.div position='absolute' top={0} left={pxPos.left} h='1em'>
-      <Carret />
+    <x.div h='1em' display='inline-block'>
+      <Caret />
       <Textarea
         ref={textareaRef}
         value={value}
@@ -85,14 +83,14 @@ export const Cursor: React.VFC<Props> = ({
   );
 };
 
-const Carret = () => (
+const Caret: React.VFC = () => (
   <x.div
     h='1.5em'
     w={1.5}
     fontSize='sm'
     lineHeight={noteStyle.lineHeight}
-    bg='red-500'
-    display='block'
+    bg='blue-500'
+    display='inline-block'
   />
 );
 
