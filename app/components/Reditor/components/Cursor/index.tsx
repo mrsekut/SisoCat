@@ -1,15 +1,10 @@
-import React, { KeyboardEventHandler, RefObject, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled, { x } from '@xstyled/styled-components';
 import { noteStyle } from 'app/utils/style';
 import { textStyle } from '../../utils/settings';
 import { NoteId } from 'app/models/notes/typings/note';
 import { useNoteOp } from 'app/models/notes/hooks/useNoteOp';
-
-type Props = {
-  noteId: NoteId;
-  onKeyDown: KeyboardEventHandler;
-  textareaRef: RefObject<HTMLTextAreaElement>;
-};
+import { useHotKeyMapping } from '../../hooks/useHotKeyMapping';
 
 // FIXME: clean, move
 const useInput = (noteId: NoteId) => {
@@ -52,27 +47,32 @@ const useInput = (noteId: NoteId) => {
 };
 
 // FIXME: textareを分割, interface
-export const Cursor: React.VFC<Props> = ({
-  noteId,
-  onKeyDown,
-  textareaRef,
-}) => {
+export const Cursor: React.VFC = () => {
+  const keys = useNoteOp(0);
+  const { keyMapping } = useHotKeyMapping(keys);
   const {
     value,
     isComposing,
     onChange,
     onCompositionStart,
     onCompositionEnd,
-  } = useInput(noteId);
+  } = useInput(0);
+
+  useEffect(() => {
+    if (ref.current != null) {
+      ref.current.focus();
+    }
+  });
+  const ref = useRef<HTMLTextAreaElement | null>(null);
 
   return (
     <x.div h='1em' display='inline-block'>
       <Caret />
       <Textarea
-        ref={textareaRef}
+        ref={ref}
         value={value}
         onKeyDown={e => {
-          if (!isComposing) onKeyDown(e);
+          if (!isComposing) keyMapping(e);
         }}
         width={value.length}
         onChange={onChange}
