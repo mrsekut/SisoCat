@@ -5,6 +5,7 @@ import {
   LinkN,
   LineId,
   LineM,
+  LineNodeM,
 } from 'app/models/notes/typings/note';
 import * as bnb from 'bread-n-butter';
 
@@ -97,3 +98,11 @@ export const lineParser = (
       nodes: notations.tryParse(v),
     };
   });
+
+export const parseLine = (text: string, index: number): LineNodeM => {
+  const result = lineParser(text, `line${index}` as LineId, index).tryParse(
+    text,
+  );
+
+  return { type: 'line', line: result };
+};

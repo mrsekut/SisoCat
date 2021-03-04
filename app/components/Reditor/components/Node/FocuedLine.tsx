@@ -10,9 +10,11 @@ import { Char } from './Char';
 import { insertNth } from 'app/utils/functions';
 import { focuedLineS } from 'app/models/FocuedLine';
 import { useNoteOp } from 'app/models/notes/hooks/useNoteOp';
+import { parseLine } from '../../utils/parsers/parser';
 
-export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
+export const FocusedLine: React.VFC<LineProps> = ({ value: v, lineIndex }) => {
   const cursor = useRecoilValue(cursorS);
+  const line = parseLine(v, lineIndex).line;
   const keys = useNoteOp(0);
   const { keyMapping } = useHotKeyMapping(keys);
 

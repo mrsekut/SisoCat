@@ -1,16 +1,17 @@
 import React from 'react';
 import { x } from '@xstyled/styled-components';
-import { LineM } from 'app/models/notes/typings/note';
 import { Indents } from './Indents';
 import { Notation } from './Notation';
 import { Empty } from './Empty';
+import { parseLine } from '../../utils/parsers/parser';
 
 export type LineProps = {
-  line: LineM;
+  value: string;
   lineIndex: number;
 };
 
-export const ViewLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
+export const ViewLine: React.VFC<LineProps> = ({ value, lineIndex }) => {
+  const line = parseLine(value, lineIndex).line;
   return (
     <x.div display='flex'>
       <Indents level={line.indent} />
