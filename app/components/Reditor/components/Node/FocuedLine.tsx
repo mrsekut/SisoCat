@@ -8,7 +8,9 @@ import { focuedLineS } from 'app/models/FocuedLine';
 import { parseLine, textWithIndents } from '../../utils/parsers/parser';
 import { FocedNotation } from './FocuedNotation';
 
-export const FocusedLine: React.VFC<LineProps> = ({
+type Props = LineProps;
+
+export const FocusedLine: React.VFC<Props> = ({
   value: defaultValue,
   lineIndex,
 }) => {
@@ -38,20 +40,28 @@ export type CharType =
   | { type: 'space' }
   | { type: 'indent' };
 
-const makeChars = (value: string, cursorIndex: number) => {
-  const level = textWithIndents.tryParse(value).level;
-  const spaces = range(level).map(_ => ({
-    type: 'space' as const,
-  }));
+export const makeChars = (value: string, cursorIndex: number) => {
+  const { level, value: v } = textWithIndents.tryParse(value);
 
-  const indent = { type: 'indent' as const };
-
-  const vs = [...value].map(v => ({
+  const cs = [...v].map(v => ({
     type: 'value' as const,
     value: v,
   }));
 
-  return insertNth<CharType>([...spaces, indent, ...vs], cursorIndex, {
+  return insertNth<CharType>([...spaces(level), ...cs], cursorIndex, {
     type: 'cursor',
   });
+};
+
+const spaces = (level: number) => {
+  if (level === 0) {
+    return [];
+  }
+
+  const spaces = range(level - 1).map(_ => ({
+    type: 'space' as const,
+  }));
+  const indent = { type: 'indent' as const };
+
+  return [...spaces, indent];
 };

@@ -21,7 +21,7 @@ export const cumSumList0 = (ns: number[]) => cumSumList([0, ...ns]);
 
 export const range = (n1: number, n2?: number) => {
   if (n2 == null) {
-    return [...new Array(n1).keys()];
+    return [...new Array(Math.max(0, n1)).keys()];
   }
 
   const start = n1;
