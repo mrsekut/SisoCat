@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+
 type Key =
   | 'up'
   | 'right'
@@ -32,66 +34,69 @@ export const useHotKeyMapping = ({
   newLine,
   insert,
 }: Args) => {
-  const keyMapping = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
-    const key = e.nativeEvent.key;
-    const cmd = command(e);
+  const keyMapping = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+      const key = e.nativeEvent.key;
+      const cmd = command(e);
 
-    if (cmd('z')) {
-      console.log('undo');
-      return;
-    }
+      if (cmd('z')) {
+        console.log('undo');
+        return;
+      }
 
-    if (e.ctrlKey) {
+      if (e.ctrlKey) {
+        switch (key) {
+          case 'a':
+            begin();
+            break;
+          case 'e':
+            end();
+            break;
+          default:
+            break;
+        }
+        return;
+      }
+
+      if (e.altKey) {
+        return;
+      }
+
       switch (key) {
-        case 'a':
-          begin();
+        case 'ArrowUp':
+          up();
           break;
-        case 'e':
-          end();
+        case 'ArrowRight':
+          right();
+          break;
+        case 'ArrowDown':
+          down();
+          break;
+        case 'ArrowLeft':
+          left();
+          break;
+        case 'Backspace':
+          remove();
+          break;
+        case 'Enter':
+          newLine();
+          break;
+        case 'Tab':
+          insert('\t');
           break;
         default:
           break;
       }
-      return;
-    }
 
-    if (e.altKey) {
-      return;
-    }
+      if (key.length === 1) {
+        return;
+      }
 
-    switch (key) {
-      case 'ArrowUp':
-        up();
-        break;
-      case 'ArrowRight':
-        right();
-        break;
-      case 'ArrowDown':
-        down();
-        break;
-      case 'ArrowLeft':
-        left();
-        break;
-      case 'Backspace':
-        remove();
-        break;
-      case 'Enter':
-        newLine();
-        break;
-      case 'Tab':
-        insert('\t');
-        break;
-      default:
-        break;
-    }
-
-    if (key.length === 1) {
-      return;
-    }
-
-    e.preventDefault();
-    e.nativeEvent.stopImmediatePropagation();
-  };
+      e.preventDefault();
+      e.nativeEvent.stopImmediatePropagation();
+    },
+    [],
+  );
 
   return { keyMapping };
 };

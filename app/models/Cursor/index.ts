@@ -1,4 +1,4 @@
-import { atom, selector, useRecoilCallback } from 'recoil';
+import { atom, DefaultValue, selector, useRecoilCallback } from 'recoil';
 import { useFont, useFontSize } from '@xstyled/styled-components';
 import { getTextWidths } from './utils';
 import { Pos } from 'app/components/Reditor/utils/types';
@@ -29,9 +29,27 @@ const cursorFocus = atom({
   default: false,
 });
 
-export const cursorPos = atom({
+export const cursorLn = atom({
+  key: 'cursorLn',
+  default: 0,
+});
+
+export const cursorCol = atom({
+  key: 'cursorCol',
+  default: 0,
+});
+
+export const cursorPos = selector<Pos>({
   key: 'cursorPos',
-  default: { ln: 0, col: 0 },
+  get: ({ get }) => ({
+    ln: get(cursorLn),
+    col: get(cursorCol),
+  }),
+  set: ({ set }, pos) => {
+    if (pos instanceof DefaultValue) return;
+    set(cursorLn, pos.ln);
+    set(cursorCol, pos.col);
+  },
 });
 
 export const cursorS = selector<CursorM>({
@@ -54,35 +72,35 @@ export const cursorS = selector<CursorM>({
 export const useCursorKeymap = () => {
   const up = useRecoilCallback(
     ({ set }) => () => {
-      set(cursorPos, pos => ({ ...pos, ln: decN(pos.ln, 1) }));
+      set(cursorLn, ln => decN(ln, 1));
     },
     [],
   );
 
   const right = useRecoilCallback(
     ({ set }) => (n: number = 1) => {
-      set(cursorPos, pos => ({ ...pos, col: pos.col + n }));
+      set(cursorCol, col => col + n);
     },
     [],
   );
 
   const down = useRecoilCallback(
     ({ set }) => () => {
-      set(cursorPos, pos => ({ ...pos, ln: pos.ln + 1 }));
+      set(cursorLn, ln => ln + 1);
     },
     [],
   );
 
   const left = useRecoilCallback(
     ({ set }) => (n: number = 1) => {
-      set(cursorPos, pos => ({ ...pos, col: decN(pos.col, n) }));
+      set(cursorCol, col => decN(col, n));
     },
     [],
   );
 
   const move = useRecoilCallback(
     ({ set }) => (col: number) => {
-      set(cursorPos, pos => ({ ...pos, col }));
+      set(cursorCol, col);
     },
     [],
   );

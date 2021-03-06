@@ -37,6 +37,7 @@ export const useReditor = ({ defaultValue }: Input): RState => {
 
   useEffect(() => {
     setNote({
+      noteId: 0,
       lines: defaultValue,
     });
   }, []);

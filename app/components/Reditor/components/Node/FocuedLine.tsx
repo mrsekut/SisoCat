@@ -1,65 +1,67 @@
-import React, { useEffect, useRef } from 'react';
-import styled from '@xstyled/styled-components';
-import { cursorS } from 'app/models/Cursor';
+import React, { useEffect } from 'react';
+import { x } from '@xstyled/styled-components';
+import { cursorCol } from 'app/models/Cursor';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { useHotKeyMapping } from '../../hooks/useHotKeyMapping';
-import { Indents } from './Indents';
-import { Cursor } from '../Cursor';
 import { LineProps } from './ViewLine';
-import { Char } from './Char';
-import { insertNth } from 'app/utils/functions';
+import { insertNth, range } from 'app/utils/functions';
 import { focuedLineS } from 'app/models/FocuedLine';
-import { useNoteOp } from 'app/models/notes/hooks/useNoteOp';
+import { parseLine, textWithIndents } from '../../utils/parsers/parser';
+import { FocedNotation } from './FocuedNotation';
 
-export const FocusedLine: React.VFC<LineProps> = ({ line, lineIndex }) => {
-  const cursor = useRecoilValue(cursorS);
-  const keys = useNoteOp(0);
-  const { keyMapping } = useHotKeyMapping(keys);
+type Props = LineProps;
 
+export const FocusedLine: React.VFC<Props> = ({
+  value: defaultValue,
+  lineIndex,
+}) => {
+  const col = useRecoilValue(cursorCol);
   const [value, setValue] = useRecoilState(focuedLineS);
+
   useEffect(() => {
-    setValue(line.nodeValue);
+    setValue(parseLine(defaultValue, lineIndex).line.text);
   }, []);
 
-  const chars = makeChars(value, cursor.pos?.col ?? 0);
-  const ref = useRef<HTMLTextAreaElement | null>(null);
-
-  // FIXME: 微妙, []の中もこれでいいのか
-  useEffect(() => {
-    if (cursor.isFocus && ref.current != null) {
-      ref.current.focus();
-    }
-  }, [chars]);
-
   return (
-    <Wrap>
-      <Indents level={line.indent} />
-      <span>
-        {chars.map((char, index) => {
-          if (char.type === 'cursor') {
-            return (
-              <Cursor noteId={0} onKeyDown={keyMapping} textareaRef={ref} />
-            );
-          }
-
-          return <Char pos={{ ln: lineIndex, col: index }}>{char.value}</Char>;
-        })}
-      </span>
-    </Wrap>
+    <x.div>
+      {makeChars(value, col).map((char, index) => (
+        <FocedNotation charType={char} index={index} lineIndex={lineIndex} />
+      ))}
+    </x.div>
   );
 };
 
-type CharType = { type: 'value'; value: string } | { type: 'cursor' };
+// -------------------------------------------------------------------------------------
+// util
+// -------------------------------------------------------------------------------------
 
-const makeChars = (value: string, cursorIndex: number) => {
-  const vs = [...value].map(v => ({
+export type CharType =
+  | { type: 'value'; value: string }
+  | { type: 'cursor' }
+  | { type: 'space' }
+  | { type: 'indent' };
+
+export const makeChars = (value: string, cursorIndex: number) => {
+  const { level, value: v } = textWithIndents.tryParse(value);
+
+  const cs = [...v].map(v => ({
     type: 'value' as const,
     value: v,
   }));
 
-  return insertNth<CharType>(vs, cursorIndex, { type: 'cursor' });
+  return insertNth<CharType>([...spaces(level), ...cs], cursorIndex, {
+    type: 'cursor',
+  });
 };
 
-const Wrap = styled.div`
-  /* background-color: #ff8787; */
-`;
+const spaces = (level: number) => {
+  if (level === 0) {
+    return [];
+  }
+
+  const spaces = range(level - 1).map(_ => ({
+    type: 'space' as const,
+  }));
+  const indent = { type: 'indent' as const };
+
+  return [...spaces, indent];
+};
