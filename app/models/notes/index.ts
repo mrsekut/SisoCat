@@ -1,4 +1,9 @@
-import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
+import {
+  atomFamily,
+  DefaultValue,
+  selectorFamily,
+  useRecoilCallback,
+} from 'recoil';
 import produce from 'immer';
 import { NoteId } from './typings/note';
 import { sliceWithRest } from 'app/utils/functions';
@@ -7,7 +12,15 @@ import { sliceWithRest } from 'app/utils/functions';
 // States
 // -------------------------------------------------------------------------------------
 
-type N = { lines: string[] };
+type N = {
+  noteId: NoteId;
+  lines: string[];
+};
+
+const noteId = atomFamily({
+  key: 'noteId',
+  default: 0,
+});
 
 // FIXME: line atom
 const noteLines = atomFamily<string[], NoteId>({
@@ -18,10 +31,14 @@ const noteLines = atomFamily<string[], NoteId>({
 export const noteS = selectorFamily<N, NoteId>({
   key: 'noteS',
   get: (id: number) => ({ get }) => ({
+    noteId: get(noteId(id)),
     lines: get(noteLines(id)),
   }),
-  set: noteId => ({ set }, n) => {
-    set(noteLines(noteId), (n as N).lines);
+  set: id => ({ set }, note) => {
+    if (note instanceof DefaultValue) return;
+
+    set(noteId(id), note.noteId);
+    set(noteLines(id), note.lines);
   },
 });
 
