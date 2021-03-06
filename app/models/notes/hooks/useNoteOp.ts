@@ -15,33 +15,38 @@ import { noteS, useNote } from '..';
  * e.g. カーソル位置の文字削除、文字入力
  */
 
-//  FIXME: clean
 export const useNoteOp = (noteId: number) => {
   const n = useNote(noteId);
   const c = useCursorKeymap();
-  const { insertChar, removeChar } = useFocuedLine();
+  const f = useFocuedLine();
   const setFocuedLine = useSetRecoilState(focuedLineS);
 
   const newLine = useRecoilCallback(
     ({ snapshot }) => async () => {
       const pos = await snapshot.getPromise(cursorPos);
       n.newLine(pos.ln, pos.col);
+
       down();
+      begin();
     },
     [],
   );
 
   const remove = useRecoilCallback(
     ({ snapshot }) => async () => {
-      const pos = await snapshot.getPromise(cursorPos);
-      removeChar(pos.col);
-      if (pos.col === 0) {
-        const pos = await snapshot.getPromise(cursorPos);
-        n.removeLine(pos.ln);
-        up();
+      const col = await snapshot.getPromise(cursorCol);
+      const isBegin = col === 0;
+
+      if (isBegin) {
+        const ln = await snapshot.getPromise(cursorLn);
+        const focuedLine = await snapshot.getPromise(focuedLineS);
+
+        n.removeLine(ln, focuedLine);
+        c.up();
         end();
       } else {
-        left();
+        f.removeChar(col);
+        c.left();
       }
     },
     [],
@@ -50,7 +55,7 @@ export const useNoteOp = (noteId: number) => {
   const insert = useRecoilCallback(
     ({ snapshot }) => async (value: string) => {
       const col = await snapshot.getPromise(cursorCol);
-      insertChar(col, value);
+      f.insertChar(col, value);
       c.right(value.length);
     },
     [],
@@ -61,6 +66,7 @@ export const useNoteOp = (noteId: number) => {
       const focuedLine = await snapshot.getPromise(focuedLineS);
       const ln = await snapshot.getPromise(cursorLn);
       n.updateLine(ln, focuedLine);
+
       const note = await snapshot.getPromise(noteS(noteId));
       const nextLine = note.lines[decN(ln, 1)];
       setFocuedLine(nextLine);
@@ -72,14 +78,14 @@ export const useNoteOp = (noteId: number) => {
   const right = useRecoilCallback(
     ({ snapshot }) => async () => {
       const focuedLine = await snapshot.getPromise(focuedLineS);
-      const pos = await snapshot.getPromise(cursorPos);
-      const isEnd = focuedLine.length === pos.ln;
-      console.log({ f: focuedLine.length, c: pos.col, isEnd });
+      const col = await snapshot.getPromise(cursorCol);
+      const isEnd = focuedLine.length === col;
+
       if (isEnd) {
         c.down();
         begin();
       } else {
-        c.right(1);
+        c.right();
       }
     },
     [],
@@ -99,12 +105,16 @@ export const useNoteOp = (noteId: number) => {
   );
 
   const left = useRecoilCallback(
-    ({ set, snapshot }) => async () => {
-      const focuedLine = await snapshot.getPromise(focuedLineS);
-      const pos = await snapshot.getPromise(cursorPos);
-      const isEnd = focuedLine.length === pos.ln;
-      console.log({ f: focuedLine.length, c: pos.col, isEnd });
-      c.left();
+    ({ snapshot }) => async () => {
+      const col = await snapshot.getPromise(cursorCol);
+      const isBegin = col === 0;
+
+      if (isBegin) {
+        c.up();
+        end();
+      } else {
+        c.left();
+      }
     },
     [],
   );

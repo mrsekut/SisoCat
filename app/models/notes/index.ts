@@ -56,8 +56,8 @@ export const useNote = (noteId: number) => {
         return produce(note, n => {
           n.lines = [
             ...n.lines.slice(0, ln),
-            ...half,
-            ...rest,
+            half,
+            rest,
             ...n.lines.slice(ln + 1),
           ];
         });
@@ -67,15 +67,12 @@ export const useNote = (noteId: number) => {
   );
 
   const removeLine = useRecoilCallback(
-    ({ set, snapshot }) => async (ln: number) => {
-      const note = await snapshot.getPromise(noteS(noteId));
-      const l1 = note.lines[ln - 1];
-      const l2 = note.lines[ln];
+    ({ set }) => async (ln: number, focuedLine: string) => {
       set(noteS(noteId), note => {
         return produce(note, n => {
           n.lines = [
             ...n.lines.slice(0, ln - 1),
-            ...[l1, l2],
+            n.lines[ln - 1] + focuedLine,
             ...note.lines.slice(ln + 1),
           ];
         });
