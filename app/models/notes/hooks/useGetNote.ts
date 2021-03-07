@@ -1,6 +1,6 @@
-import { makeRelDict } from 'app/components/Reditor/utils/dummies/dummy';
-import { texts } from 'app/components/Reditor/utils/dummies/texts';
-import { useTextWidths } from 'app/models/Cursor';
+import { useTextWidths } from 'packages/Reditor/dist/Cursor/model';
+import { makeRelDict } from 'packages/Reditor/dist/Shared/utils/dummies/dummy';
+import { texts } from 'packages/Reditor/dist/Shared/utils/dummies/texts';
 import { useCallback } from 'react';
 import { NoteM } from '../typings';
 
