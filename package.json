@@ -26,9 +26,15 @@
       "eslint --fix"
     ]
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/reditor",
+      "**/reditor/**"
+    ]
+  },
   "prettier": {
     "jsxSingleQuote": true,
     "singleQuote": true,

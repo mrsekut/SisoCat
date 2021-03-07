@@ -13,8 +13,7 @@ export const Reditor: React.VFC<Props> = ({ rstate }) => {
 
   return (
     <x.div bg='gray-200' position='relative'>
-      oooo
-      {/* <TextLines lines={value} /> */}
+      <TextLines lines={value} />
     </x.div>
   );
 };
@@ -36,13 +35,12 @@ export const useReditor = ({ defaultValue }: Input): RState => {
   const note = useRecoilValue(noteS(0));
   const setNote = useSetRecoilState(noteS(0));
 
-  // useEffect(() => {
-  //   setNote({
-  //     noteId: 0,
-  //     lines: defaultValue,
-  //   });
-  // }, []);
+  useEffect(() => {
+    setNote({
+      noteId: 0,
+      lines: defaultValue,
+    });
+  }, []);
 
-  return { value: ['wwww'] };
-  // return { value: note.lines };
+  return { value: note.lines };
 };
