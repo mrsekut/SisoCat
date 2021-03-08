@@ -1,0 +1,20 @@
+{
+  "name": "reditor",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "tsc": "tsc",
+    "watch": "tsc -w"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^4.2.3"
+  },
+  "devDependencies": {}
+}

@@ -9,8 +9,6 @@ import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { RecoilRoot } from 'recoil';
 import { queryCache } from 'react-query';
 import LoginForm from 'app/auth/components/LoginForm';
-import { ThemeProvider } from '@xstyled/styled-components';
-import { theme } from 'app/utils/style';
 
 export default function App({ Component, pageProps }: AppProps) {
   const getLayout = Component.getLayout || (page => page);
@@ -26,9 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
         queryCache.resetErrorBoundaries();
       }}
     >
-      <ThemeProvider theme={theme}>
-        <RecoilRoot>{getLayout(<Component {...pageProps} />)}</RecoilRoot>
-      </ThemeProvider>
+      <RecoilRoot>{getLayout(<Component {...pageProps} />)}</RecoilRoot>
     </ErrorBoundary>
   );
 }

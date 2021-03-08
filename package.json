@@ -26,6 +26,15 @@
       "eslint --fix"
     ]
   },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/reditor",
+      "**/reditor/**"
+    ]
+  },
   "prettier": {
     "jsxSingleQuote": true,
     "singleQuote": true,
@@ -45,6 +54,7 @@
     "react-error-boundary": "3.1.0",
     "react-hook-form": "6.14.2",
     "recoil": "0.1.2",
+    "reditor": "file:packages/Reditor",
     "secure-password": "4.0.0",
     "styled-components": "5.2.1",
     "typescript": "4.1.3",
