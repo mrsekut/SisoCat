@@ -1,7 +1,7 @@
 import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Pos } from '../Shared/typings';
-import { useFocus } from '../Cursor/model';
+import { useFocus } from '../Cursor/useFocus';
 
 type Props = {
   children: React.ReactChild;
