@@ -1,4 +1,4 @@
-import { Text } from './dummy';
+type Text = string[];
 
 export const text1: Text = [
   '[Json]の正規化',
