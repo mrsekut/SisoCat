@@ -1,4 +1,4 @@
-import { sum, range, uniqBy, sliceWithRest } from './functions';
+import { sum, range, uniqBy, sliceWithRest } from '.';
 
 describe('sum', () => {
   it('calculates the sum of the list', () => {

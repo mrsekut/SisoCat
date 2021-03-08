@@ -9,7 +9,7 @@ import {
   notation,
   notations,
   lineParser,
-} from './utils/parsers/parser';
+} from '.';
 
 describe('Util Parsers', () => {
   it('brackets', () => {

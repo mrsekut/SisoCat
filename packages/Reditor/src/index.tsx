@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { x } from '@xstyled/styled-components';
+import { ThemeProvider, x } from '@xstyled/styled-components';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { TextLines } from './components/TextLinets';
 import { noteS } from './Note/model';
+import { theme } from './Shared/style';
 
 type Props = {
   rstate: RState;
@@ -12,9 +13,11 @@ export const Reditor: React.VFC<Props> = ({ rstate }) => {
   const { value } = rstate;
 
   return (
-    <x.div bg='gray-200' position='relative'>
-      <TextLines lines={value} />
-    </x.div>
+    <ThemeProvider theme={theme}>
+      <x.div bg='gray-200' position='relative'>
+        <TextLines lines={value} />
+      </x.div>
+    </ThemeProvider>
   );
 };
 

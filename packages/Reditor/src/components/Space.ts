@@ -1,5 +1,5 @@
 import styled from '@xstyled/styled-components';
-import { textStyle } from '../Shared/utils/settings';
+import { textStyle } from '../Shared/settings';
 
 export const Space = styled.span`
   position: relative;

@@ -1,8 +1,6 @@
 import { atom, DefaultValue, selector, useRecoilCallback } from 'recoil';
-import { useFont, useFontSize } from '@xstyled/styled-components';
 import { decN } from '../Shared/functions';
 import { Pos } from '../Shared/typings';
-import { getTextWidths } from '../Shared/util';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -122,16 +120,4 @@ export const useFocus = () => {
   );
 
   return { focus };
-};
-
-/**
- *
- */
-export const useTextWidths = () => {
-  const fontSize = useFontSize('base');
-  const font = useFont('mono');
-  const textWidths = (line: string) =>
-    getTextWidths(line ?? '', `${fontSize} ${font}`);
-
-  return { textWidths };
 };

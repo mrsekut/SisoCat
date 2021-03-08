@@ -3,7 +3,7 @@ import { x } from '@xstyled/styled-components';
 import { Indents } from './Indents';
 import { Notation } from './Notation';
 import { Empty } from './Empty';
-import { parseLine } from '../Shared/utils/parsers/parser';
+import { parseLine } from '../Shared/parsers';
 
 export type LineProps = {
   value: string;

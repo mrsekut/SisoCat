@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from '@xstyled/styled-components';
-import { textStyle } from '../Shared/utils/settings';
 import { useHotKeyMapping } from '../FocusedLine/useHotKeyMapping';
 import { NoteId } from '../Note/note';
 import { useNoteOp } from '../Note/useNoteOp';
+import { textStyle } from '../Shared/settings';
 
 export const HiddenTextarea: React.VFC = () => {
   const { keyMapping } = useHotKeyMapping(useNoteOp(0));

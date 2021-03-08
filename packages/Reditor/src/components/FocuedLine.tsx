@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import { x } from '@xstyled/styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { LineProps } from './ViewLine';
-import { parseLine, textWithIndents } from '../Shared/utils/parsers/parser';
 import { FocedNotation } from './FocuedNotation';
 import { cursorCol } from '../Cursor/model';
 import { focuedLineS } from '../FocusedLine/model';
 import { insertNth, range } from '../Shared/functions';
+import { parseLine, textWithIndents } from '../Shared/parsers';
 
 type Props = LineProps;
 
