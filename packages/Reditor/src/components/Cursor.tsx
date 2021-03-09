@@ -4,9 +4,8 @@ import { HiddenTextarea } from './HiddenTextarea';
 import { noteStyle } from '../Shared/style';
 
 export const Cursor: React.VFC = memo(() => (
-  <x.div h='1em' display='inline-block' position='absolute'>
+  <x.div h='1em' position='relative'>
     <Caret />
-
     {/* FIXME: ここでtop/leftのstyleをあてたい */}
     <HiddenTextarea />
   </x.div>
@@ -19,6 +18,5 @@ const Caret: React.VFC = () => (
     fontSize='sm'
     lineHeight={noteStyle.lineHeight}
     bg='blue-500'
-    display='inline-block'
   />
 );
