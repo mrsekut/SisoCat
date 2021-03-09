@@ -4,7 +4,7 @@ import { cursorCol, cursorLn, cursorPos } from '../Cursor/model';
 import { useCursorKeymap } from '../Cursor/useCursorKeymap';
 import { focuedLineS, useFocuedLine } from '../FocusedLine/model';
 import { decN } from '../Shared/functions';
-import { noteS, useNote } from './model';
+import { noteLines, noteS, useNote } from './model';
 
 /**
  * useCursorKeymapとuseNoteの接続
@@ -35,11 +35,14 @@ export const useNoteOp = (noteId: number) => {
 
       if (isBegin) {
         const ln = await snapshot.getPromise(cursorLn);
+        if (ln === 0) return;
+
         const focuedLine = await snapshot.getPromise(focuedLineS);
+        const lines = await snapshot.getPromise(noteLines(noteId));
 
         n.removeLine(ln, focuedLine);
         c.up();
-        end();
+        c.move(lines[decN(ln, 1)].length);
       } else {
         f.removeChar(col);
         c.left();

@@ -22,7 +22,7 @@ const noteId = atomFamily({
   default: 0,
 });
 
-const noteLines = atomFamily<string[], NoteId>({
+export const noteLines = atomFamily<string[], NoteId>({
   key: 'noteLines',
   default: [],
 });
@@ -84,6 +84,8 @@ export const useNote = (noteId: number) => {
 
   const removeLine = useRecoilCallback(
     ({ set }) => async (ln: number, focuedLine: string) => {
+      if (ln === 0) return;
+
       set(noteS(noteId), note =>
         produce(note, n => {
           n.lines = [

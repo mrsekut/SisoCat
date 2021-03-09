@@ -14,7 +14,7 @@ export const Cursor: React.VFC = memo(() => (
 const Caret: React.VFC = () => (
   <x.div
     h='1.5em'
-    w={1.5}
+    w='2px'
     fontSize='sm'
     lineHeight={noteStyle.lineHeight}
     bg='blue-500'
