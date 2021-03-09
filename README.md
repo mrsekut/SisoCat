@@ -1,4 +1,4 @@
 # SisoCat
 
 - packages
-  - [reditor](./packages/Reditor/README.md)
+  - [reditor](./packages/Reditor)

@@ -46,12 +46,11 @@ export const noteS = selectorFamily<N, NoteId>({
 // -------------------------------------------------------------------------------------
 
 /**
- * Note's Model
- *
- * - ノートの内容の操作
- * - UIには関与しない
+ * Line Model
+ * - Handle the contents of Line
+ * - Not involved in UI or Cursor, etc.
  */
-export const useNote = (noteId: number) => {
+export const useLine = (noteId: number) => {
   const updateLine = useRecoilCallback(
     ({ set }) => (ln: number, line: string) => {
       set(noteLines(noteId), lines =>
@@ -68,16 +67,12 @@ export const useNote = (noteId: number) => {
       const note = await snapshot.getPromise(noteS(noteId));
       const line = note.lines[ln];
       const [half, rest] = sliceWithRest(line, col);
-      set(noteS(noteId), note =>
-        produce(note, n => {
-          n.lines = [
-            ...n.lines.slice(0, ln),
-            half,
-            rest,
-            ...n.lines.slice(ln + 1),
-          ];
-        }),
-      );
+      set(noteLines(noteId), lines => [
+        ...lines.slice(0, ln),
+        half,
+        rest,
+        ...lines.slice(ln + 1),
+      ]);
     },
     [],
   );
@@ -86,15 +81,11 @@ export const useNote = (noteId: number) => {
     ({ set }) => async (ln: number, focuedLine: string) => {
       if (ln === 0) return;
 
-      set(noteS(noteId), note =>
-        produce(note, n => {
-          n.lines = [
-            ...n.lines.slice(0, ln - 1),
-            n.lines[ln - 1] + focuedLine,
-            ...note.lines.slice(ln + 1),
-          ];
-        }),
-      );
+      set(noteLines(noteId), lines => [
+        ...lines.slice(0, ln - 1),
+        lines[ln - 1] + focuedLine,
+        ...lines.slice(ln + 1),
+      ]);
     },
     [],
   );

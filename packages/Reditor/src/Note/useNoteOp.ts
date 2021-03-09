@@ -4,7 +4,7 @@ import { cursorCol, cursorLn, cursorPos } from '../Cursor/model';
 import { useCursorKeymap } from '../Cursor/useCursorKeymap';
 import { focuedLineS, useFocuedLine } from '../FocusedLine/model';
 import { decN } from '../Shared/functions';
-import { noteLines, noteS, useNote } from './model';
+import { noteLines, noteS, useLine } from './model';
 
 /**
  * useCursorKeymapとuseNoteの接続
@@ -12,7 +12,7 @@ import { noteLines, noteS, useNote } from './model';
  */
 
 export const useNoteOp = (noteId: number) => {
-  const n = useNote(noteId);
+  const l = useLine(noteId);
   const c = useCursorKeymap();
   const f = useFocuedLine();
   const setFocuedLine = useSetRecoilState(focuedLineS);
@@ -20,7 +20,7 @@ export const useNoteOp = (noteId: number) => {
   const newLine = useRecoilCallback(
     ({ snapshot }) => async () => {
       const pos = await snapshot.getPromise(cursorPos);
-      n.newLine(pos.ln, pos.col);
+      l.newLine(pos.ln, pos.col);
 
       c.down();
       begin();
@@ -40,7 +40,7 @@ export const useNoteOp = (noteId: number) => {
         const focuedLine = await snapshot.getPromise(focuedLineS);
         const lines = await snapshot.getPromise(noteLines(noteId));
 
-        n.removeLine(ln, focuedLine);
+        l.removeLine(ln, focuedLine);
         c.up();
         c.move(lines[decN(ln, 1)].length);
       } else {
@@ -64,7 +64,7 @@ export const useNoteOp = (noteId: number) => {
     ({ snapshot }) => async () => {
       const focuedLine = await snapshot.getPromise(focuedLineS);
       const ln = await snapshot.getPromise(cursorLn);
-      n.updateLine(ln, focuedLine);
+      l.updateLine(ln, focuedLine);
 
       const note = await snapshot.getPromise(noteS(noteId));
       const nextLine = note.lines[decN(ln, 1)];
@@ -94,7 +94,7 @@ export const useNoteOp = (noteId: number) => {
     ({ snapshot }) => async () => {
       const focuedLine = await snapshot.getPromise(focuedLineS);
       const ln = await snapshot.getPromise(cursorLn);
-      n.updateLine(ln, focuedLine);
+      l.updateLine(ln, focuedLine);
       const note = await snapshot.getPromise(noteS(noteId));
       const nextLine = note.lines[ln + 1];
       setFocuedLine(nextLine);
