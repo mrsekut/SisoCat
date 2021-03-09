@@ -22,7 +22,7 @@ export const useNoteOp = (noteId: number) => {
       const pos = await snapshot.getPromise(cursorPos);
       n.newLine(pos.ln, pos.col);
 
-      down();
+      c.down();
       begin();
     },
     [],

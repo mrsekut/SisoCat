@@ -22,7 +22,6 @@ const noteId = atomFamily({
   default: 0,
 });
 
-// FIXME: line atom
 const noteLines = atomFamily<string[], NoteId>({
   key: 'noteLines',
   default: [],
@@ -69,31 +68,31 @@ export const useNote = (noteId: number) => {
       const note = await snapshot.getPromise(noteS(noteId));
       const line = note.lines[ln];
       const [half, rest] = sliceWithRest(line, col);
-      set(noteS(noteId), note => {
-        return produce(note, n => {
+      set(noteS(noteId), note =>
+        produce(note, n => {
           n.lines = [
             ...n.lines.slice(0, ln),
             half,
             rest,
             ...n.lines.slice(ln + 1),
           ];
-        });
-      });
+        }),
+      );
     },
     [],
   );
 
   const removeLine = useRecoilCallback(
     ({ set }) => async (ln: number, focuedLine: string) => {
-      set(noteS(noteId), note => {
-        return produce(note, n => {
+      set(noteS(noteId), note =>
+        produce(note, n => {
           n.lines = [
             ...n.lines.slice(0, ln - 1),
             n.lines[ln - 1] + focuedLine,
             ...note.lines.slice(ln + 1),
           ];
-        });
-      });
+        }),
+      );
     },
     [],
   );
