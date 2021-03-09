@@ -4,6 +4,7 @@ import { Indents } from './Indents';
 import { Notation } from './Notation';
 import { Empty } from './Empty';
 import { parseLine } from '../Shared/parsers';
+import { textStyle } from '../Shared/settings';
 
 export type LineProps = {
   value: string;
@@ -13,13 +14,12 @@ export type LineProps = {
 export const ViewLine: React.VFC<LineProps> = ({ value, lineIndex }) => {
   const line = parseLine(value, lineIndex).line;
   return (
-    <x.div display='flex'>
+    <x.div display='flex' h={`${textStyle.lineHeight}px`}>
       <Indents level={line.indent} />
       {line.nodes.map(node => (
         <Notation notation={node} lineIndex={lineIndex} />
       ))}
 
-      {/* FIXME: ここでflex='1 0 auto'を指定したい */}
       <Empty pos={{ ln: lineIndex, col: line.text.length }} />
     </x.div>
   );

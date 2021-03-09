@@ -7,6 +7,8 @@ import { cursorCol } from '../Cursor/model';
 import { focuedLineS } from '../FocusedLine/model';
 import { insertNth, range } from '../Shared/functions';
 import { parseLine, textWithIndents } from '../Shared/parsers';
+import { textStyle } from '../Shared/settings';
+import { Empty } from './Empty';
 
 type Props = LineProps;
 
@@ -22,10 +24,12 @@ export const FocusedLine: React.VFC<Props> = ({
   }, []);
 
   return (
-    <x.div>
+    <x.div display='flex' h={`${textStyle.lineHeight}px`}>
       {makeChars(value, col).map((char, index) => (
         <FocedNotation charType={char} index={index} lineIndex={lineIndex} />
       ))}
+
+      <Empty pos={{ ln: lineIndex, col: value.length }} />
     </x.div>
   );
 };
