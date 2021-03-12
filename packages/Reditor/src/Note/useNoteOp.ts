@@ -1,8 +1,7 @@
 import { useCallback } from 'react';
 import { useSetRecoilState, useRecoilCallback } from 'recoil';
-import { cursorCol, cursorLn, cursorPos } from '../Cursor/model';
-import { useCursorKeymap } from '../Cursor/useCursorKeymap';
-import { focuedLineS, useFocuedLine } from '../FocusedLine/model';
+import { useCursorKeymap, cursorCol, cursorLn, cursorPos } from '../Cursor';
+import { focuedLineS, useFocuedLine } from '../FocusedLine';
 import { decN } from '../Shared/functions';
 import { noteLines, noteS, useLine } from './model';
 

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { ThemeProvider, x } from '@xstyled/styled-components';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { TextLines } from './components/TextLinets';
-import { noteS } from './Note/model';
+import { noteS } from './Note';
 import { theme } from './Shared/style';
 
 type Props = {

@@ -3,12 +3,12 @@ import { x } from '@xstyled/styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { LineProps } from './ViewLine';
 import { FocusedNotation } from './FocusedNotation';
-import { cursorCol } from '../Cursor/model';
-import { focuedLineS } from '../FocusedLine/model';
-import { insertNth, range } from '../Shared/functions';
-import { parseLine, textWithIndents } from '../Shared/parsers';
+import { cursorCol } from '../Cursor';
+import { focuedLineS } from '../FocusedLine';
+import { parseLine } from '../Shared/parsers';
 import { textStyle } from '../Shared/settings';
 import { Empty } from './Empty';
+import { makeChars } from '../FocusedLine';
 
 type Props = LineProps;
 
@@ -32,40 +32,4 @@ export const FocusedLine: React.VFC<Props> = ({
       <Empty pos={{ ln: lineIndex, col: value.length }} />
     </x.div>
   );
-};
-
-// -------------------------------------------------------------------------------------
-// util
-// -------------------------------------------------------------------------------------
-
-export type CharType =
-  | { type: 'value'; value: string }
-  | { type: 'cursor' }
-  | { type: 'space' }
-  | { type: 'indent' };
-
-export const makeChars = (value: string, cursorIndex: number) => {
-  const { level, value: v } = textWithIndents.tryParse(value);
-
-  const cs = [...v].map(v => ({
-    type: 'value' as const,
-    value: v,
-  }));
-
-  return insertNth<CharType>([...spaces(level), ...cs], cursorIndex, {
-    type: 'cursor',
-  });
-};
-
-const spaces = (level: number) => {
-  if (level === 0) {
-    return [];
-  }
-
-  const spaces = range(level - 1).map(_ => ({
-    type: 'space' as const,
-  }));
-  const indent = { type: 'indent' as const };
-
-  return [...spaces, indent];
 };

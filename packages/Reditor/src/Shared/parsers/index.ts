@@ -7,7 +7,7 @@ import {
   LineId,
   LineM,
   LineNodeM,
-} from '../../Note/note';
+} from '../../Note';
 
 // -------------------------------------------------------------------------------------
 // util parsers
