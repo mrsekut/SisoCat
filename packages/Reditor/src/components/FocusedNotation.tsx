@@ -1,7 +1,7 @@
 import React from 'react';
+import { CharType } from '../FocusedLine';
 import { Char } from './Char';
 import { Cursor } from './Cursor';
-import { CharType } from './FocuedLine';
 import { Space } from './Space';
 import { Triangle } from './Triangle';
 
@@ -11,7 +11,7 @@ type Props = {
   lineIndex: number;
 };
 
-export const FocedNotation: React.VFC<Props> = ({
+export const FocusedNotation: React.VFC<Props> = ({
   charType,
   index,
   lineIndex,

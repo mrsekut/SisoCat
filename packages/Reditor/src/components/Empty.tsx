@@ -1,7 +1,7 @@
 import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Pos } from '../Shared/typings';
-import { useFocus } from '../Cursor/useFocus';
+import { useFocus } from '../Cursor';
 
 type Props = {
   pos: Pos;

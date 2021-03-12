@@ -1,10 +1,10 @@
 type Text = string[];
 
 export const text1: Text = [
-  '[Json]の正規化',
-  '\t[Json]は[正規化]するのが良い',
-  '\t正規化は[** よいこと]ばかり',
-  '[CUE]も良い感じらしい',
+  '[Reditor]は随時編集可能なエディタ',
+  '\t[リンク]や[** 強調]や[/ イタリック]に限らず、様々に拡張可能',
+  '\t[SisoCat]のインターフェースとして実装したが',
+  '\t\tpackageとして切り出している',
 ];
 
 const text2: Text = [

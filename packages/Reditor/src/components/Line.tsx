@@ -1,8 +1,8 @@
 import React from 'react';
-import { FocusedLine } from './FocuedLine';
+import { FocusedLine } from './FocusedLine';
 import { useRecoilValue } from 'recoil';
 import { ViewLine } from './ViewLine';
-import { cursorLn } from '../Cursor/model';
+import { cursorLn } from '../Cursor';
 
 type Props = {
   value: string;

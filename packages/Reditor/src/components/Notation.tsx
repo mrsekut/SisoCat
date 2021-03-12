@@ -1,5 +1,5 @@
 import React from 'react';
-import { NotationM } from '../Note/note';
+import { NotationM } from '../Note';
 import { Anchor } from './Anchor';
 import { Bold } from './Bold';
 import { Italic } from './Itaic';

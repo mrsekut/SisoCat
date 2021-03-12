@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { ThemeProvider, x } from '@xstyled/styled-components';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { TextLines } from './components/TextLinets';
-import { noteS } from './Note/model';
+import { noteS } from './Note';
 import { theme } from './Shared/style';
 
 type Props = {
@@ -14,7 +14,7 @@ export const Reditor: React.VFC<Props> = ({ rstate }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <x.div bg='gray-200' position='relative'>
+      <x.div position='relative'>
         <TextLines lines={value} />
       </x.div>
     </ThemeProvider>
