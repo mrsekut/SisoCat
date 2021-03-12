@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { x } from '@xstyled/styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { LineProps } from './ViewLine';
-import { FocedNotation } from './FocuedNotation';
+import { FocusedNotation } from './FocusedNotation';
 import { cursorCol } from '../Cursor/model';
 import { focuedLineS } from '../FocusedLine/model';
 import { insertNth, range } from '../Shared/functions';
@@ -26,7 +26,7 @@ export const FocusedLine: React.VFC<Props> = ({
   return (
     <x.div display='flex' h={`${textStyle.lineHeight}px`}>
       {makeChars(value, col).map((char, index) => (
-        <FocedNotation charType={char} index={index} lineIndex={lineIndex} />
+        <FocusedNotation charType={char} index={index} lineIndex={lineIndex} />
       ))}
 
       <Empty pos={{ ln: lineIndex, col: value.length }} />

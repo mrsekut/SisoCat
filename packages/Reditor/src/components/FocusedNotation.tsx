@@ -11,7 +11,7 @@ type Props = {
   lineIndex: number;
 };
 
-export const FocedNotation: React.VFC<Props> = ({
+export const FocusedNotation: React.VFC<Props> = ({
   charType,
   index,
   lineIndex,
