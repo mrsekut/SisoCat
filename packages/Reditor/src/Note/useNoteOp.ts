@@ -67,8 +67,10 @@ export const useNoteOp = (noteId: number) => {
 
       const note = await snapshot.getPromise(noteS(noteId));
       const nextLine = note.lines[decN(ln, 1)];
-      setFocuedLine(nextLine);
-      c.up();
+      if (nextLine != null) {
+        setFocuedLine(nextLine);
+        c.up();
+      }
     },
     [],
   );
@@ -96,8 +98,10 @@ export const useNoteOp = (noteId: number) => {
       l.updateLine(ln, focuedLine);
       const note = await snapshot.getPromise(noteS(noteId));
       const nextLine = note.lines[ln + 1];
-      setFocuedLine(nextLine);
-      c.down();
+      if (nextLine != null) {
+        setFocuedLine(nextLine);
+        c.down();
+      }
     },
     [],
   );
