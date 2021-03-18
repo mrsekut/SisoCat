@@ -1,17 +1,16 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Node } from '.';
+import { useRecoilValue } from 'recoil';
+import { lineIds } from '../Note';
 
-type Props = {
-  lines: string[];
-};
-
-export const TextLines: React.VFC<Props> = memo(({ lines }) => {
+export const TextLines: React.VFC = () => {
+  const ids = useRecoilValue(lineIds(0));
   return (
     <x.div>
-      {lines.map((line, index) => (
-        <Node line={line} lineIndex={index} />
+      {ids.map((line, index) => (
+        <Node lineIndex={index} />
       ))}
     </x.div>
   );
-});
+};

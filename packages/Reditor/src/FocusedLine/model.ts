@@ -1,4 +1,6 @@
-import { atom, useRecoilCallback } from 'recoil';
+import { selector, useRecoilCallback } from 'recoil';
+import { cursorLn } from '../Cursor';
+import { noteLine } from '../Note';
 import { deleteNthChar, insertNthChar } from '../Shared/functions';
 
 // -------------------------------------------------------------------------------------
@@ -7,9 +9,25 @@ import { deleteNthChar, insertNthChar } from '../Shared/functions';
 
 type Char = string;
 
-export const focuedLineS = atom({
+export const focuedLineS = selector<string>({
   key: 'focuedLineS',
-  default: '',
+  get: ({ get }) => {
+    return get(
+      noteLine({
+        noteId: 0, // FIXME:
+        lineId: get(cursorLn),
+      }),
+    );
+  },
+  set: ({ set, get }, value) => {
+    set(
+      noteLine({
+        noteId: 0, // FIXME:
+        lineId: get(cursorLn),
+      }),
+      value,
+    );
+  },
 });
 
 // -------------------------------------------------------------------------------------

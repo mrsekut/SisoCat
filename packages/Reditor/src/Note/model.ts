@@ -27,7 +27,7 @@ export const noteId = atomFamily<NoteId, NoteId>({
   default: n => n,
 });
 
-const noteLine = atomFamily<Line, { noteId: NoteId; lineId: LineId }>({
+export const noteLine = atomFamily<Line, { noteId: NoteId; lineId: LineId }>({
   key: 'noteLine',
   default: '',
 });
