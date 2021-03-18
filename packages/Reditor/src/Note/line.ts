@@ -6,26 +6,15 @@ import {
   useRecoilCallback,
 } from 'recoil';
 import { insertNth, range, sliceWithRest } from '../Shared/functions';
-import { NoteId } from './note';
+import { noteS, NoteId } from '.';
 
-// -------------------------------------------------------------------------------------
-// States
-// -------------------------------------------------------------------------------------
-
-// FIXME: clean
 type LineId = number;
 type Ln = number;
 type Line = string;
 
-type Note = {
-  noteId: NoteId;
-  lines: string[];
-};
-
-export const noteIdS = atomFamily<NoteId, NoteId>({
-  key: 'noteIdS',
-  default: n => n,
-});
+// -------------------------------------------------------------------------------------
+// States
+// -------------------------------------------------------------------------------------
 
 export const noteLineS = atomFamily<Line, { noteId: NoteId; lineId: LineId }>({
   key: 'noteLineS',
@@ -56,20 +45,6 @@ export const noteLinesS = selectorFamily<string[], NoteId>({
     );
     set(latestLineIdS, id => id + lines.length);
     set(lineIdsS(noteId), range(lineId, lineId + lines.length));
-  },
-});
-
-export const noteS = selectorFamily<Note, NoteId>({
-  key: 'noteS',
-  get: id => ({ get }) => ({
-    noteId: get(noteIdS(id)),
-    lines: get(noteLinesS(id)),
-  }),
-  set: id => ({ set }, note) => {
-    if (note instanceof DefaultValue) return;
-
-    set(noteIdS(id), note.noteId);
-    set(noteLinesS(id), note.lines);
   },
 });
 

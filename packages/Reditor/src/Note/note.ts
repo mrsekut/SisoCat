@@ -1,184 +1,30 @@
-export type UserM = {
-  id: UserId;
-  name: string;
-};
-
-export type ProjectId = `project${number}`;
-export type UserId = `user${number}`;
-export type NoteId = number;
-export type LineId = `line${number}`;
+import { atomFamily, DefaultValue, selectorFamily } from 'recoil';
+import { NoteId, noteLinesS } from '.';
 
 // -------------------------------------------------------------------------------------
-// Network Model
+// States
 // -------------------------------------------------------------------------------------
 
-export type NetworkM = {
-  readonly projects: ProjectM[];
+type Note = {
+  noteId: NoteId;
+  lines: string[];
 };
 
-// -------------------------------------------------------------------------------------
-// Project Model
-// -------------------------------------------------------------------------------------
+export const noteIdS = atomFamily<NoteId, NoteId>({
+  key: 'noteIdS',
+  default: n => n,
+});
 
-export type ProjectM = {
-  readonly id: ProjectId;
-  readonly name: string;
-  readonly author: UserM;
-  readonly notes: NoteId[];
-};
+export const noteS = selectorFamily<Note, NoteId>({
+  key: 'noteS',
+  get: id => ({ get }) => ({
+    noteId: get(noteIdS(id)),
+    lines: get(noteLinesS(id)),
+  }),
+  set: id => ({ set }, note) => {
+    if (note instanceof DefaultValue) return;
 
-// -------------------------------------------------------------------------------------
-// Notes Model
-// -------------------------------------------------------------------------------------
-
-// export type NotesPM = Normalize<NoteId, NotePM>;
-
-// export type NotePM = NoteInfo & {
-//   readonly nodes: NodeM[];
-// };
-
-export type Line = {
-  value: string;
-  widths: number[];
-};
-
-// -------------------------------------------------------------------------------------
-// Node Model
-// -------------------------------------------------------------------------------------
-
-export type NodeM = BlokNodeM | LineNodeM;
-
-// BlockNode
-type BlockType = BlockM['type'];
-
-export type BlokNodeM = {
-  readonly type: 'block';
-  readonly block: BlockM;
-  readonly lines: LineNodeM[];
-};
-
-type BlockM =
-  | {
-      readonly type: 'code';
-      readonly extension: ExtensionType;
-    }
-  | {
-      readonly type: 'tex';
-    };
-type ExtensionType =
-  | {
-      readonly language: 'Haskell';
-      readonly extension: '.hs';
-    }
-  | {
-      readonly language: 'TypeScript';
-      readonly extension: '.ts';
-    };
-
-// LineNode
-export type LineNodeM = {
-  readonly type: 'line';
-  readonly line: LineM;
-};
-
-// -------------------------------------------------------------------------------------
-// Line Model
-// -------------------------------------------------------------------------------------
-
-export type LineM = {
-  readonly id: LineId;
-  readonly lineIndex: number; // 0始まり
-  readonly text: string;
-  readonly indent: number;
-  readonly nodeValue: string;
-  readonly nodes: readonly NotationM[];
-};
-
-// -------------------------------------------------------------------------------------
-// Notation Model
-// -------------------------------------------------------------------------------------
-
-export type NotationType = NotationM['type'];
-export type NotationM =
-  | NormalN
-  | LinkN
-  | StrongN
-  | RedirectN
-  | ExpandN
-  | ItalicN
-  | TexN
-  | CodeN
-  | UrlN;
-
-// hoge
-export type NormalN = {
-  readonly type: 'normal';
-  readonly value: string;
-};
-
-// [hoge]
-export type LinkN = {
-  readonly type: 'link';
-  readonly value: string;
-  readonly references: NoteId[];
-};
-
-// [** hoge]
-export type StrongN = {
-  readonly type: 'strong';
-  readonly value: string;
-  readonly level: 1 | 2 | 3;
-};
-
-// [→ hoge]
-export type RedirectN = {
-  readonly type: 'redirect';
-  readonly value: string;
-  readonly references: NoteId[];
-};
-
-// [> hoge]
-export type ExpandN = {
-  readonly type: 'expand';
-  readonly value: string;
-  readonly note: NoteId;
-};
-
-// [/ hoge]
-export type ItalicN = {
-  readonly type: 'italic';
-  readonly value: string;
-};
-
-// [$ hoge]
-export type TexN = {
-  readonly type: 'tex';
-  readonly value: string;
-};
-
-// [` hoge]
-export type CodeN = {
-  readonly type: 'code';
-  readonly value: string;
-};
-
-// [http://example.com hoge]
-export type UrlN = {
-  readonly type: 'url';
-  readonly value: string;
-  readonly url: string;
-};
-
-// -------------------------------------------------------------------------------------
-// Utils
-// -------------------------------------------------------------------------------------
-
-type Normalize<K extends keyof any, V> = {
-  byId: Record<K, V>;
-  allIds: K[];
-};
-
-const keyBy = <T, K extends string | number, R extends { [key in keyof T]: T }>(
-  arr: T[],
-  key: (e: T) => K,
-) => arr.reduce((acc, cur) => ({ ...acc, [key(cur)]: cur }), {} as R);
+    set(noteIdS(id), note.noteId);
+    set(noteLinesS(id), note.lines);
+  },
+});

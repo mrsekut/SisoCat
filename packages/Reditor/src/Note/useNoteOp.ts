@@ -3,7 +3,7 @@ import { useSetRecoilState, useRecoilCallback } from 'recoil';
 import { useCursorKeymap, cursorColS, cursorLnS, cursorPosS } from '../Cursor';
 import { focuedLineS, useFocuedLine } from '../FocusedLine';
 import { decN } from '../Shared/functions';
-import { noteLinesS, noteS, useLines } from './model';
+import { noteLinesS, noteS, useLines } from '.';
 
 /**
  * useCursorKeymapとuseNoteの接続
