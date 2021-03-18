@@ -32,10 +32,17 @@ export const noteLine = atomFamily<Line, { noteId: NoteId; lineId: LineId }>({
   default: '',
 });
 
+export const noteLineS = selectorFamily<Line, { id: NoteId; ln: Ln }>({
+  key: 'noteLineS',
+  get: ({ id, ln }) => ({ get }) => {
+    return get(noteLine({ noteId: id, lineId: get(lineIdsS(id))[ln] }));
+  },
+});
+
 export const noteLines = selectorFamily<string[], NoteId>({
   key: 'noteLines',
   get: noteId => ({ get }) => {
-    return get(lineIds(noteId)).map(lineId =>
+    return get(lineIdsS(noteId)).map(lineId =>
       get(noteLine({ noteId, lineId })),
     );
   },
@@ -48,7 +55,7 @@ export const noteLines = selectorFamily<string[], NoteId>({
       set(noteLine({ noteId, lineId: index + lineId }), line),
     );
     set(latestLineId, id => id + lines.length);
-    set(lineIds(noteId), range(lineId, lineId + lines.length));
+    set(lineIdsS(noteId), range(lineId, lineId + lines.length));
   },
 });
 
@@ -66,8 +73,8 @@ export const noteS = selectorFamily<Note, NoteId>({
   },
 });
 
-export const lineIds = atomFamily<LineId[], NoteId>({
-  key: 'lineIds',
+export const lineIdsS = atomFamily<LineId[], NoteId>({
+  key: 'lineIdsS',
   default: [],
 });
 
@@ -97,7 +104,7 @@ export const useLines = (noteId: NoteId) => {
 
   const updateLine = useRecoilCallback(
     ({ set, snapshot }) => async (ln: Ln, value: string) => {
-      const ids = await snapshot.getPromise(lineIds(noteId));
+      const ids = await snapshot.getPromise(lineIdsS(noteId));
       set(noteLine({ noteId, lineId: ids[ln] }), value);
     },
     [],
@@ -129,7 +136,7 @@ export const useLines = (noteId: NoteId) => {
     ({ set, snapshot }) => async (ln: Ln, value: string) => {
       const lineId = await makeId();
       set(noteLine({ noteId, lineId }), value);
-      set(lineIds(noteId), ids => insertNth(ids, ln, lineId));
+      set(lineIdsS(noteId), ids => insertNth(ids, ln, lineId));
     },
     [],
   );

@@ -26,8 +26,8 @@ export const cursorFocus = atom({
   default: false,
 });
 
-export const cursorLn = atom({
-  key: 'cursorLn',
+export const cursorLnS = atom({
+  key: 'cursorLnS',
   default: 0,
 });
 
@@ -39,12 +39,12 @@ export const cursorCol = atom({
 export const cursorPos = selector<Pos>({
   key: 'cursorPos',
   get: ({ get }) => ({
-    ln: get(cursorLn),
+    ln: get(cursorLnS),
     col: get(cursorCol),
   }),
   set: ({ set }, pos) => {
     if (pos instanceof DefaultValue) return;
-    set(cursorLn, pos.ln);
+    set(cursorLnS, pos.ln);
     set(cursorCol, pos.col);
   },
 });

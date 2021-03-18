@@ -2,14 +2,15 @@ import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Node } from '.';
 import { useRecoilValue } from 'recoil';
-import { lineIds } from '../Note';
+import { lineIdsS } from '../Note';
 
 export const TextLines: React.VFC = () => {
-  const ids = useRecoilValue(lineIds(0));
+  const lineIds = useRecoilValue(lineIdsS(0));
+
   return (
     <x.div>
-      {ids.map((line, index) => (
-        <Node lineIndex={index} />
+      {lineIds.map(index => (
+        <Node ln={index} />
       ))}
     </x.div>
   );

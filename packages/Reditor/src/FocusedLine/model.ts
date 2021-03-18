@@ -1,5 +1,5 @@
 import { selector, useRecoilCallback } from 'recoil';
-import { cursorLn } from '../Cursor';
+import { cursorLnS } from '../Cursor';
 import { noteLine } from '../Note';
 import { deleteNthChar, insertNthChar } from '../Shared/functions';
 
@@ -15,7 +15,7 @@ export const focuedLineS = selector<string>({
     return get(
       noteLine({
         noteId: 0, // FIXME:
-        lineId: get(cursorLn),
+        lineId: get(cursorLnS),
       }),
     );
   },
@@ -23,7 +23,7 @@ export const focuedLineS = selector<string>({
     set(
       noteLine({
         noteId: 0, // FIXME:
-        lineId: get(cursorLn),
+        lineId: get(cursorLnS),
       }),
       value,
     );

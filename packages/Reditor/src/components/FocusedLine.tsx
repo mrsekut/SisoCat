@@ -12,24 +12,21 @@ import { makeChars } from '../FocusedLine';
 
 type Props = LineProps;
 
-export const FocusedLine: React.VFC<Props> = ({
-  value: defaultValue,
-  lineIndex,
-}) => {
+export const FocusedLine: React.VFC<Props> = ({ value: defaultValue, ln }) => {
   const col = useRecoilValue(cursorCol);
   const [value, setValue] = useRecoilState(focuedLineS);
 
   useEffect(() => {
-    setValue(parseLine(defaultValue, lineIndex).line.text);
+    setValue(parseLine(defaultValue, ln).line.text);
   }, []);
 
   return (
     <x.div display='flex' h={`${textStyle.lineHeight}px`}>
       {makeChars(value, col).map((char, index) => (
-        <FocusedNotation charType={char} index={index} lineIndex={lineIndex} />
+        <FocusedNotation charType={char} index={index} ln={ln} />
       ))}
 
-      <Empty pos={{ ln: lineIndex, col: value.length }} />
+      <Empty pos={{ ln, col: value.length }} />
     </x.div>
   );
 };
