@@ -3,7 +3,7 @@ import { x } from '@xstyled/styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { LineProps } from './ViewLine';
 import { FocusedNotation } from './FocusedNotation';
-import { cursorCol } from '../Cursor';
+import { cursorColS } from '../Cursor';
 import { focuedLineS } from '../FocusedLine';
 import { parseLine } from '../Shared/parsers';
 import { textStyle } from '../Shared/settings';
@@ -13,7 +13,7 @@ import { makeChars } from '../FocusedLine';
 type Props = LineProps;
 
 export const FocusedLine: React.VFC<Props> = ({ value: defaultValue, ln }) => {
-  const col = useRecoilValue(cursorCol);
+  const col = useRecoilValue(cursorColS);
   const [value, setValue] = useRecoilState(focuedLineS);
 
   useEffect(() => {

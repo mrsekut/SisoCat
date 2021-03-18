@@ -22,39 +22,39 @@ type Note = {
   lines: string[];
 };
 
-export const noteId = atomFamily<NoteId, NoteId>({
-  key: 'noteId',
+export const noteIdS = atomFamily<NoteId, NoteId>({
+  key: 'noteIdS',
   default: n => n,
 });
 
-export const noteLine = atomFamily<Line, { noteId: NoteId; lineId: LineId }>({
-  key: 'noteLine',
+export const noteLineS = atomFamily<Line, { noteId: NoteId; lineId: LineId }>({
+  key: 'noteLineS',
   default: '',
 });
 
-export const noteLineS = selectorFamily<Line, { id: NoteId; ln: Ln }>({
-  key: 'noteLineS',
+export const noteLineByLnS = selectorFamily<Line, { id: NoteId; ln: Ln }>({
+  key: 'noteLineByLnS',
   get: ({ id, ln }) => ({ get }) => {
-    return get(noteLine({ noteId: id, lineId: get(lineIdsS(id))[ln] }));
+    return get(noteLineS({ noteId: id, lineId: get(lineIdsS(id))[ln] }));
   },
 });
 
-export const noteLines = selectorFamily<string[], NoteId>({
-  key: 'noteLines',
+export const noteLinesS = selectorFamily<string[], NoteId>({
+  key: 'noteLinesS',
   get: noteId => ({ get }) => {
     return get(lineIdsS(noteId)).map(lineId =>
-      get(noteLine({ noteId, lineId })),
+      get(noteLineS({ noteId, lineId })),
     );
   },
   set: noteId => ({ get, set }, lines) => {
     if (lines instanceof DefaultValue) return;
 
     // FIXME: clean
-    const lineId = get(latestLineId);
+    const lineId = get(latestLineIdS);
     lines.map((line, index) =>
-      set(noteLine({ noteId, lineId: index + lineId }), line),
+      set(noteLineS({ noteId, lineId: index + lineId }), line),
     );
-    set(latestLineId, id => id + lines.length);
+    set(latestLineIdS, id => id + lines.length);
     set(lineIdsS(noteId), range(lineId, lineId + lines.length));
   },
 });
@@ -62,14 +62,14 @@ export const noteLines = selectorFamily<string[], NoteId>({
 export const noteS = selectorFamily<Note, NoteId>({
   key: 'noteS',
   get: id => ({ get }) => ({
-    noteId: get(noteId(id)),
-    lines: get(noteLines(id)),
+    noteId: get(noteIdS(id)),
+    lines: get(noteLinesS(id)),
   }),
   set: id => ({ set }, note) => {
     if (note instanceof DefaultValue) return;
 
-    set(noteId(id), note.noteId);
-    set(noteLines(id), note.lines);
+    set(noteIdS(id), note.noteId);
+    set(noteLinesS(id), note.lines);
   },
 });
 
@@ -78,8 +78,8 @@ export const lineIdsS = atomFamily<LineId[], NoteId>({
   default: [],
 });
 
-const latestLineId = atom<LineId>({
-  key: 'latestLineId',
+const latestLineIdS = atom<LineId>({
+  key: 'latestLineIdS',
   default: 0,
 });
 
@@ -95,8 +95,8 @@ const latestLineId = atom<LineId>({
 export const useLines = (noteId: NoteId) => {
   const makeId = useRecoilCallback(
     ({ set, snapshot }) => async () => {
-      const newId = await snapshot.getPromise(latestLineId);
-      set(latestLineId, newId + 1);
+      const newId = await snapshot.getPromise(latestLineIdS);
+      set(latestLineIdS, newId + 1);
       return newId;
     },
     [],
@@ -105,7 +105,7 @@ export const useLines = (noteId: NoteId) => {
   const updateLine = useRecoilCallback(
     ({ set, snapshot }) => async (ln: Ln, value: string) => {
       const ids = await snapshot.getPromise(lineIdsS(noteId));
-      set(noteLine({ noteId, lineId: ids[ln] }), value);
+      set(noteLineS({ noteId, lineId: ids[ln] }), value);
     },
     [],
   );
@@ -116,7 +116,7 @@ export const useLines = (noteId: NoteId) => {
       const note = await snapshot.getPromise(noteS(noteId));
       const line = note.lines[ln];
       const [half, rest] = sliceWithRest(line, col);
-      set(noteLines(noteId), lines => [
+      set(noteLinesS(noteId), lines => [
         ...lines.slice(0, ln),
         half,
         rest,
@@ -135,7 +135,7 @@ export const useLines = (noteId: NoteId) => {
   const add = useRecoilCallback(
     ({ set, snapshot }) => async (ln: Ln, value: string) => {
       const lineId = await makeId();
-      set(noteLine({ noteId, lineId }), value);
+      set(noteLineS({ noteId, lineId }), value);
       set(lineIdsS(noteId), ids => insertNth(ids, ln, lineId));
     },
     [],
@@ -146,7 +146,7 @@ export const useLines = (noteId: NoteId) => {
       if (ln === 0) return;
 
       // FIXME: note全体を更新しているが、本来は2行の更新のみでいい
-      set(noteLines(noteId), lines => [
+      set(noteLinesS(noteId), lines => [
         ...lines.slice(0, ln - 1),
         lines[ln - 1] + focuedLine,
         ...lines.slice(ln + 1),

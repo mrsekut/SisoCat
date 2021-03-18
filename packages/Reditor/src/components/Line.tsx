@@ -2,7 +2,7 @@ import React from 'react';
 import { FocusedLine } from './FocusedLine';
 import { useRecoilValue } from 'recoil';
 import { ViewLine } from './ViewLine';
-import { noteLineS } from '../Note';
+import { noteLineByLnS } from '../Note';
 import { cursorLnS } from '../Cursor';
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 
 export const Line: React.VFC<Props> = ({ ln }) => {
   const cursorLn = useRecoilValue(cursorLnS);
-  const value = useRecoilValue(noteLineS({ id: 0, ln }));
+  const value = useRecoilValue(noteLineByLnS({ id: 0, ln }));
   const isFocus = cursorLn === ln;
 
   if (isFocus) {
