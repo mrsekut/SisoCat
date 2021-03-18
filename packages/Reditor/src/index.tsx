@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { ThemeProvider, x } from '@xstyled/styled-components';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { TextLines } from './components/TextLinets';
-import { noteS } from './Note';
+import { noteId, noteLines, noteS } from './Note';
 import { theme } from './Shared/style';
 
 type Props = {
@@ -34,15 +34,16 @@ type RState = {
   value: string[];
 };
 
+// FIXME: clean
 export const useReditor = ({ defaultValue }: Input): RState => {
   const note = useRecoilValue(noteS(0));
-  const setNote = useSetRecoilState(noteS(0));
+  console.log({ note, defaultValue });
+  const setNote = useSetRecoilState(noteId(0));
+  const setLines = useSetRecoilState(noteLines(0));
 
   useEffect(() => {
-    setNote({
-      noteId: 0,
-      lines: defaultValue,
-    });
+    setNote(0);
+    setLines(defaultValue);
   }, []);
 
   return { value: note.lines };

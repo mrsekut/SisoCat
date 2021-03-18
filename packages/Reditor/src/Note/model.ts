@@ -1,35 +1,60 @@
 import {
+  atom,
   atomFamily,
   DefaultValue,
   selectorFamily,
   useRecoilCallback,
 } from 'recoil';
-import produce from 'immer';
-import { sliceWithRest } from '../Shared/functions';
+import { insertNth, range, sliceWithRest } from '../Shared/functions';
 import { NoteId } from './note';
 
 // -------------------------------------------------------------------------------------
 // States
 // -------------------------------------------------------------------------------------
 
-type N = {
+// FIXME: clean
+type LineId = number;
+type Ln = number;
+type Line = string;
+
+type Note = {
   noteId: NoteId;
   lines: string[];
 };
 
-const noteId = atomFamily({
+export const noteId = atomFamily<NoteId, NoteId>({
   key: 'noteId',
-  default: 0,
+  default: n => n,
 });
 
-export const noteLines = atomFamily<string[], NoteId>({
+const noteLine = atomFamily<Line, { noteId: NoteId; lineId: LineId }>({
+  key: 'noteLine',
+  default: '',
+});
+
+export const noteLines = selectorFamily<string[], NoteId>({
   key: 'noteLines',
-  default: [],
+  get: noteId => ({ get }) => {
+    return get(lineIds(noteId)).map(lineId =>
+      get(noteLine({ noteId, lineId })),
+    );
+  },
+  set: noteId => ({ get, set }, lines) => {
+    if (lines instanceof DefaultValue) return;
+
+    // FIXME: clean
+    const lineId = get(latestLineId);
+    lines.map((line, index) =>
+      set(noteLine({ noteId, lineId: index + lineId }), line),
+    );
+    set(latestLineId, id => id + lines.length);
+    set(lineIds(noteId), range(lineId, lineId + lines.length));
+  },
 });
 
-export const noteS = selectorFamily<N, NoteId>({
+export const noteS = selectorFamily<Note, NoteId>({
   key: 'noteS',
-  get: (id: number) => ({ get }) => ({
+  get: id => ({ get }) => ({
     noteId: get(noteId(id)),
     lines: get(noteLines(id)),
   }),
@@ -41,6 +66,16 @@ export const noteS = selectorFamily<N, NoteId>({
   },
 });
 
+export const lineIds = atomFamily<LineId[], NoteId>({
+  key: 'lineIds',
+  default: [],
+});
+
+const latestLineId = atom<LineId>({
+  key: 'latestLineId',
+  default: 0,
+});
+
 // -------------------------------------------------------------------------------------
 // Hooks
 // -------------------------------------------------------------------------------------
@@ -50,18 +85,25 @@ export const noteS = selectorFamily<N, NoteId>({
  * - Handle the contents of Line
  * - Not involved in UI or Cursor, etc.
  */
-export const useLine = (noteId: number) => {
-  const updateLine = useRecoilCallback(
-    ({ set }) => (ln: number, line: string) => {
-      set(noteLines(noteId), lines =>
-        produce(lines, l => {
-          l[ln] = line;
-        }),
-      );
+export const useLines = (noteId: NoteId) => {
+  const makeId = useRecoilCallback(
+    ({ set, snapshot }) => async () => {
+      const newId = await snapshot.getPromise(latestLineId);
+      set(latestLineId, newId + 1);
+      return newId;
     },
     [],
   );
 
+  const updateLine = useRecoilCallback(
+    ({ set, snapshot }) => async (ln: Ln, value: string) => {
+      const ids = await snapshot.getPromise(lineIds(noteId));
+      set(noteLine({ noteId, lineId: ids[ln] }), value);
+    },
+    [],
+  );
+
+  // FIXME:
   const newLine = useRecoilCallback(
     ({ set, snapshot }) => async (ln: number, col: number) => {
       const note = await snapshot.getPromise(noteS(noteId));
@@ -77,15 +119,33 @@ export const useLine = (noteId: number) => {
     [],
   );
 
+  /**
+   * 行の追加
+   * - idを生成
+   * - lineを生成
+   * - lineIdsに登録
+   */
+  const add = useRecoilCallback(
+    ({ set, snapshot }) => async (ln: Ln, value: string) => {
+      const lineId = await makeId();
+      set(noteLine({ noteId, lineId }), value);
+      set(lineIds(noteId), ids => insertNth(ids, ln, lineId));
+    },
+    [],
+  );
+
   const removeLine = useRecoilCallback(
     ({ set }) => async (ln: number, focuedLine: string) => {
       if (ln === 0) return;
 
+      // FIXME: note全体を更新しているが、本来は2行の更新のみでいい
       set(noteLines(noteId), lines => [
         ...lines.slice(0, ln - 1),
         lines[ln - 1] + focuedLine,
         ...lines.slice(ln + 1),
       ]);
+
+      // set(lineIds(noteId), ids => ids.filter(id => id !== ln));
     },
     [],
   );

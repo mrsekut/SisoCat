@@ -3,7 +3,7 @@ import { useSetRecoilState, useRecoilCallback } from 'recoil';
 import { useCursorKeymap, cursorCol, cursorLn, cursorPos } from '../Cursor';
 import { focuedLineS, useFocuedLine } from '../FocusedLine';
 import { decN } from '../Shared/functions';
-import { noteLines, noteS, useLine } from './model';
+import { noteLines, noteS, useLines } from './model';
 
 /**
  * useCursorKeymapとuseNoteの接続
@@ -11,7 +11,7 @@ import { noteLines, noteS, useLine } from './model';
  */
 
 export const useNoteOp = (noteId: number) => {
-  const l = useLine(noteId);
+  const l = useLines(noteId);
   const c = useCursorKeymap();
   const f = useFocuedLine();
   const setFocuedLine = useSetRecoilState(focuedLineS);
