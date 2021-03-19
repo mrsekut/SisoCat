@@ -72,6 +72,7 @@
     "@typescript-eslint/eslint-plugin": "4.14.1",
     "@typescript-eslint/parser": "4.14.1",
     "babel-eslint": "10.1.0",
+    "better-typescript-lib": "1.0.1",
     "eslint": "7.18.0",
     "eslint-config-react-app": "6.0.0",
     "eslint-plugin-flowtype": "5.2.0",
