@@ -1,4 +1,31 @@
 import { cursorUpDown } from '../Shared/util';
+import { act } from '@testing-library/react-hooks';
+import { useRecoilValue } from 'recoil';
+import { cursorColS, cursorFocusS, cursorLnS, useCursorKeymap } from '.';
+import { renderRecoilHook } from '../Shared';
+
+const useMock = () => {
+  const fs = useCursorKeymap();
+  const focus = useRecoilValue(cursorFocusS);
+  const ln = useRecoilValue(cursorLnS);
+  const col = useRecoilValue(cursorColS);
+
+  return { ...fs, focus, ln, col };
+};
+
+describe('useCursorKeymap', () => {
+  const { result } = renderRecoilHook(useMock);
+
+  it('right', () => {
+    expect(result.current.col).toBe(0);
+
+    act(() => {
+      result.current.right();
+    });
+
+    expect(result.current.col).toBe(4);
+  });
+});
 
 describe('cursorUpDown', () => {
   it('10 or 20', () => {
