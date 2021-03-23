@@ -8,18 +8,14 @@ import { Triangle } from './Triangle';
 type Props = {
   charType: CharType;
   index: number;
-  lineIndex: number;
+  ln: number;
 };
 
-export const FocusedNotation: React.VFC<Props> = ({
-  charType,
-  index,
-  lineIndex,
-}) => {
+export const FocusedNotation: React.VFC<Props> = ({ charType, index, ln }) => {
   switch (charType.type) {
     case 'value':
       return (
-        <Char key={index} pos={{ ln: lineIndex, col: index }}>
+        <Char key={index} pos={{ ln, col: index }}>
           {charType.value}
         </Char>
       );

@@ -21,41 +21,41 @@ type CursorM = CursorFocus | CursorNotFocus;
 // States
 // -------------------------------------------------------------------------------------
 
-export const cursorFocus = atom({
-  key: 'cursorFocus',
+export const cursorFocusS = atom({
+  key: 'cursorFocusS',
   default: false,
 });
 
-export const cursorLn = atom({
-  key: 'cursorLn',
+export const cursorLnS = atom({
+  key: 'cursorLnS',
   default: 0,
 });
 
-export const cursorCol = atom({
-  key: 'cursorCol',
+export const cursorColS = atom({
+  key: 'cursorColS',
   default: 0,
 });
 
-export const cursorPos = selector<Pos>({
-  key: 'cursorPos',
+export const cursorPosS = selector<Pos>({
+  key: 'cursorPosS',
   get: ({ get }) => ({
-    ln: get(cursorLn),
-    col: get(cursorCol),
+    ln: get(cursorLnS),
+    col: get(cursorColS),
   }),
   set: ({ set }, pos) => {
     if (pos instanceof DefaultValue) return;
-    set(cursorLn, pos.ln);
-    set(cursorCol, pos.col);
+    set(cursorLnS, pos.ln);
+    set(cursorColS, pos.col);
   },
 });
 
 export const cursorS = selector<CursorM>({
   key: 'cursorS',
   get: ({ get }) =>
-    get(cursorFocus)
+    get(cursorFocusS)
       ? {
           isFocus: true,
-          pos: get(cursorPos),
+          pos: get(cursorPosS),
         }
       : { isFocus: false },
 });

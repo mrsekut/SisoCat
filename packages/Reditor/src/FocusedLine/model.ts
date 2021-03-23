@@ -1,15 +1,31 @@
-import { atom, useRecoilCallback } from 'recoil';
+import { selector, useRecoilCallback } from 'recoil';
+import { cursorLnS } from '../Cursor';
+import { noteLineS } from '../Note';
 import { deleteNthChar, insertNthChar } from '../Shared/functions';
 
 // -------------------------------------------------------------------------------------
 // States
 // -------------------------------------------------------------------------------------
 
-type Char = string;
-
-export const focuedLineS = atom({
+export const focuedLineS = selector<string>({
   key: 'focuedLineS',
-  default: '',
+  get: ({ get }) => {
+    return get(
+      noteLineS({
+        noteId: 0, // FIXME:
+        lineId: get(cursorLnS),
+      }),
+    );
+  },
+  set: ({ set, get }, value) => {
+    set(
+      noteLineS({
+        noteId: 0, // FIXME:
+        lineId: get(cursorLnS),
+      }),
+      value,
+    );
+  },
 });
 
 // -------------------------------------------------------------------------------------
@@ -17,8 +33,8 @@ export const focuedLineS = atom({
 // -------------------------------------------------------------------------------------
 
 export const useFocuedLine = () => {
-  const insertChar = useRecoilCallback(
-    ({ set }) => (col: number, value: Char) => {
+  const insertValue = useRecoilCallback(
+    ({ set }) => (col: number, value: string) => {
       set(focuedLineS, line => insertNthChar(line, col, value));
     },
     [],
@@ -34,5 +50,5 @@ export const useFocuedLine = () => {
     [],
   );
 
-  return { insertChar, removeChar };
+  return { insertValue, removeChar };
 };

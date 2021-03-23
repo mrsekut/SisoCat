@@ -2,20 +2,21 @@ import React from 'react';
 import { FocusedLine } from './FocusedLine';
 import { useRecoilValue } from 'recoil';
 import { ViewLine } from './ViewLine';
-import { cursorLn } from '../Cursor';
+import { noteLineByLnS } from '../Note';
+import { cursorLnS } from '../Cursor';
 
 type Props = {
-  value: string;
-  lineIndex: number;
+  ln: number;
 };
 
-export const Line: React.VFC<Props> = ({ value, lineIndex }) => {
-  const ln = useRecoilValue(cursorLn);
-  const isFocus = ln === lineIndex;
+export const Line: React.VFC<Props> = ({ ln }) => {
+  const cursorLn = useRecoilValue(cursorLnS);
+  const value = useRecoilValue(noteLineByLnS({ id: 0, ln }));
+  const isFocus = cursorLn === ln;
 
   if (isFocus) {
-    return <FocusedLine value={value} lineIndex={lineIndex} />;
+    return <FocusedLine value={value} ln={ln} />;
   }
 
-  return <ViewLine value={value} lineIndex={lineIndex} />;
+  return <ViewLine value={value} ln={ln} />;
 };

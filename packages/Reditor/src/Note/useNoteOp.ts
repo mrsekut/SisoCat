@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
-import { useSetRecoilState, useRecoilCallback } from 'recoil';
-import { useCursorKeymap, cursorCol, cursorLn, cursorPos } from '../Cursor';
+import { useRecoilCallback } from 'recoil';
+import { useCursorKeymap, cursorColS, cursorLnS, cursorPosS } from '../Cursor';
 import { focuedLineS, useFocuedLine } from '../FocusedLine';
 import { decN } from '../Shared/functions';
-import { noteLines, noteS, useLine } from './model';
+import { lineIdsS, noteLinesS, useLines } from '.';
 
 /**
  * useCursorKeymapとuseNoteの接続
@@ -11,14 +11,13 @@ import { noteLines, noteS, useLine } from './model';
  */
 
 export const useNoteOp = (noteId: number) => {
-  const l = useLine(noteId);
+  const l = useLines(noteId);
   const c = useCursorKeymap();
   const f = useFocuedLine();
-  const setFocuedLine = useSetRecoilState(focuedLineS);
 
   const newLine = useRecoilCallback(
     ({ snapshot }) => async () => {
-      const pos = await snapshot.getPromise(cursorPos);
+      const pos = await snapshot.getPromise(cursorPosS);
       l.newLine(pos.ln, pos.col);
 
       c.down();
@@ -29,17 +28,16 @@ export const useNoteOp = (noteId: number) => {
 
   const remove = useRecoilCallback(
     ({ snapshot }) => async () => {
-      const col = await snapshot.getPromise(cursorCol);
+      const col = await snapshot.getPromise(cursorColS);
       const isBegin = col === 0;
 
       if (isBegin) {
-        const ln = await snapshot.getPromise(cursorLn);
+        const ln = await snapshot.getPromise(cursorLnS);
         if (ln === 0) return;
 
-        const focuedLine = await snapshot.getPromise(focuedLineS);
-        const lines = await snapshot.getPromise(noteLines(noteId));
+        const lines = await snapshot.getPromise(noteLinesS(noteId));
 
-        l.removeLine(ln, focuedLine);
+        l.removeLine(ln);
         c.up();
         c.move(lines[decN(ln, 1)].length);
       } else {
@@ -52,8 +50,8 @@ export const useNoteOp = (noteId: number) => {
 
   const insert = useRecoilCallback(
     ({ snapshot }) => async (value: string) => {
-      const col = await snapshot.getPromise(cursorCol);
-      f.insertChar(col, value);
+      const col = await snapshot.getPromise(cursorColS);
+      f.insertValue(col, value);
       c.right(value.length);
     },
     [],
@@ -61,14 +59,9 @@ export const useNoteOp = (noteId: number) => {
 
   const up = useRecoilCallback(
     ({ snapshot }) => async () => {
-      const focuedLine = await snapshot.getPromise(focuedLineS);
-      const ln = await snapshot.getPromise(cursorLn);
-      l.updateLine(ln, focuedLine);
+      const ln = await snapshot.getPromise(cursorLnS);
 
-      const note = await snapshot.getPromise(noteS(noteId));
-      const nextLine = note.lines[decN(ln, 1)];
-      if (nextLine != null) {
-        setFocuedLine(nextLine);
+      if (ln > 0) {
         c.up();
       }
     },
@@ -78,11 +71,11 @@ export const useNoteOp = (noteId: number) => {
   const right = useRecoilCallback(
     ({ snapshot }) => async () => {
       const focuedLine = await snapshot.getPromise(focuedLineS);
-      const col = await snapshot.getPromise(cursorCol);
+      const col = await snapshot.getPromise(cursorColS);
       const isEnd = focuedLine.length === col;
 
       if (isEnd) {
-        c.down();
+        down();
         begin();
       } else {
         c.right();
@@ -93,13 +86,9 @@ export const useNoteOp = (noteId: number) => {
 
   const down = useRecoilCallback(
     ({ snapshot }) => async () => {
-      const focuedLine = await snapshot.getPromise(focuedLineS);
-      const ln = await snapshot.getPromise(cursorLn);
-      l.updateLine(ln, focuedLine);
-      const note = await snapshot.getPromise(noteS(noteId));
-      const nextLine = note.lines[ln + 1];
-      if (nextLine != null) {
-        setFocuedLine(nextLine);
+      const ln = await snapshot.getPromise(cursorLnS);
+      const lineIds = await snapshot.getPromise(lineIdsS(noteId));
+      if (ln + 1 < lineIds.length) {
         c.down();
       }
     },
@@ -108,11 +97,11 @@ export const useNoteOp = (noteId: number) => {
 
   const left = useRecoilCallback(
     ({ snapshot }) => async () => {
-      const col = await snapshot.getPromise(cursorCol);
+      const col = await snapshot.getPromise(cursorColS);
       const isBegin = col === 0;
 
       if (isBegin) {
-        c.up();
+        up();
         end();
       } else {
         c.left();

@@ -4,13 +4,13 @@ import { Char } from './Char';
 
 type Props = {
   value: string;
-  lineIndex: number;
+  ln: number;
 };
 
-export const Italic: React.VFC<Props> = ({ value, lineIndex }) => (
+export const Italic: React.VFC<Props> = ({ value, ln }) => (
   <x.span fontStyle='italic'>
     {[...value].map((char, index) => (
-      <Char pos={{ ln: lineIndex, col: index }}>{char}</Char>
+      <Char pos={{ ln, col: index }}>{char}</Char>
     ))}
   </x.span>
 );

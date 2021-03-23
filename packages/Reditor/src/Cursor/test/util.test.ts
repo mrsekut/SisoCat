@@ -1,4 +1,4 @@
-import { cursorUpDown } from '../Shared/util';
+import { cursorUpDown } from '../../Shared';
 
 describe('cursorUpDown', () => {
   it('10 or 20', () => {

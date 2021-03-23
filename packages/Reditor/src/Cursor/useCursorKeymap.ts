@@ -1,6 +1,6 @@
 import { useRecoilCallback } from 'recoil';
 import { decN } from '../Shared/functions';
-import { cursorLn, cursorCol } from './model';
+import { cursorLnS, cursorColS } from './model';
 
 /**
  * Cursor operation and movement
@@ -8,35 +8,35 @@ import { cursorLn, cursorCol } from './model';
 export const useCursorKeymap = () => {
   const up = useRecoilCallback(
     ({ set }) => () => {
-      set(cursorLn, ln => decN(ln, 1));
+      set(cursorLnS, ln => decN(ln, 1));
     },
     [],
   );
 
   const right = useRecoilCallback(
     ({ set }) => (n: number = 1) => {
-      set(cursorCol, col => col + n);
+      set(cursorColS, col => col + n);
     },
     [],
   );
 
   const down = useRecoilCallback(
     ({ set }) => () => {
-      set(cursorLn, ln => ln + 1);
+      set(cursorLnS, ln => ln + 1);
     },
     [],
   );
 
   const left = useRecoilCallback(
     ({ set }) => (n: number = 1) => {
-      set(cursorCol, col => decN(col, n));
+      set(cursorColS, col => decN(col, n));
     },
     [],
   );
 
   const move = useRecoilCallback(
     ({ set }) => (col: number) => {
-      set(cursorCol, col);
+      set(cursorColS, col);
     },
     [],
   );

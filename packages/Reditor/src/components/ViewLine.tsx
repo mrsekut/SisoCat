@@ -8,19 +8,20 @@ import { textStyle } from '../Shared/settings';
 
 export type LineProps = {
   value: string;
-  lineIndex: number;
+  ln: number;
 };
 
-export const ViewLine: React.VFC<LineProps> = ({ value, lineIndex }) => {
-  const line = parseLine(value, lineIndex).line;
+export const ViewLine: React.VFC<LineProps> = ({ value, ln }) => {
+  const line = parseLine(value, ln).line;
+
   return (
     <x.div display='flex' h={`${textStyle.lineHeight}px`}>
       <Indents level={line.indent} />
       {line.nodes.map(node => (
-        <Notation notation={node} lineIndex={lineIndex} />
+        <Notation notation={node} ln={ln} />
       ))}
 
-      <Empty pos={{ ln: lineIndex, col: line.text.length }} />
+      <Empty pos={{ ln, col: line.text.length }} />
     </x.div>
   );
 };

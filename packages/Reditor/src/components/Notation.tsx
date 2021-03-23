@@ -7,19 +7,19 @@ import { Normal } from './Normal';
 
 type Props = {
   notation: NotationM;
-  lineIndex: number;
+  ln: number;
 };
 
-export const Notation: React.VFC<Props> = ({ notation, lineIndex }) => {
+export const Notation: React.VFC<Props> = ({ notation, ln: lineIndex }) => {
   switch (notation.type) {
     case 'normal':
-      return <Normal value={notation.value} lineIndex={lineIndex} />;
+      return <Normal value={notation.value} ln={lineIndex} />;
     case 'italic':
-      return <Italic value={notation.value} lineIndex={lineIndex} />;
+      return <Italic value={notation.value} ln={lineIndex} />;
     case 'link':
-      return <Anchor value={notation.value} lineIndex={lineIndex} />;
+      return <Anchor value={notation.value} ln={lineIndex} />;
     case 'strong':
-      return <Bold value={notation.value} lineIndex={lineIndex} />;
+      return <Bold value={notation.value} ln={lineIndex} />;
     default:
       return <></>;
   }

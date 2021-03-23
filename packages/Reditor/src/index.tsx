@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { ThemeProvider, x } from '@xstyled/styled-components';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { TextLines } from './components/TextLinets';
-import { noteS } from './Note';
+import { noteIdS, noteLinesS } from './Note';
 import { theme } from './Shared/style';
 
 type Props = {
@@ -10,12 +10,10 @@ type Props = {
 };
 
 export const Reditor: React.VFC<Props> = ({ rstate }) => {
-  const { value } = rstate;
-
   return (
     <ThemeProvider theme={theme}>
       <x.div position='relative'>
-        <TextLines lines={value} />
+        <TextLines />
       </x.div>
     </ThemeProvider>
   );
@@ -34,16 +32,15 @@ type RState = {
   value: string[];
 };
 
+// FIXME: clean
 export const useReditor = ({ defaultValue }: Input): RState => {
-  const note = useRecoilValue(noteS(0));
-  const setNote = useSetRecoilState(noteS(0));
+  const setNote = useSetRecoilState(noteIdS(0));
+  const setLines = useSetRecoilState(noteLinesS(0));
 
   useEffect(() => {
-    setNote({
-      noteId: 0,
-      lines: defaultValue,
-    });
+    setNote(0);
+    setLines(defaultValue);
   }, []);
 
-  return { value: note.lines };
+  return { value: [] };
 };
