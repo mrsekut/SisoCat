@@ -72,3 +72,18 @@ describe('useLines', () => {
      */
   });
 });
+
+it('removeLine', async () => {
+  const { result, waitForNextUpdate } = renderRecoilHook(useMock);
+
+  // initialize
+  act(() => {
+    result.current.setLines(['aaa', 'bbb']);
+  });
+
+  await act(async () => {
+    result.current.f.removeLine(1);
+    await waitForNextUpdate();
+  });
+  expect(result.current.lines).toStrictEqual(['aaabbb']);
+});

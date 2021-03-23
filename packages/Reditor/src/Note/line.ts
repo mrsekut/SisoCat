@@ -6,7 +6,7 @@ import {
   useRecoilCallback,
 } from 'recoil';
 import { insertNth, range, sliceWithRest } from '../Shared/functions';
-import { noteS, NoteId } from '.';
+import { NoteId } from '.';
 
 type LineId = number;
 type Ln = number;
@@ -86,8 +86,8 @@ export const useLines = (noteId: NoteId) => {
 
   const newLine = useRecoilCallback(
     ({ set, snapshot }) => async (ln: number, col: number) => {
-      const note = await snapshot.getPromise(noteS(noteId));
-      const line = note.lines[ln];
+      const lines = await snapshot.getPromise(noteLinesS(noteId));
+      const line = lines[ln];
       const [half, rest] = sliceWithRest(line, col);
 
       const ids = await snapshot.getPromise(lineIdsS(noteId));
@@ -100,19 +100,16 @@ export const useLines = (noteId: NoteId) => {
     [],
   );
 
-  // FIXME: interfaceおかしくない？
   const removeLine = useRecoilCallback(
-    ({ set }) => async (ln: number, focuedLine: string) => {
+    ({ set, snapshot }) => async (ln: number) => {
       if (ln === 0) return;
 
-      // FIXME: note全体を更新しているが、本来は2行の更新のみでいい
-      set(noteLinesS(noteId), lines => [
-        ...lines.slice(0, ln - 1),
-        lines[ln - 1] + focuedLine,
-        ...lines.slice(ln + 1),
-      ]);
-
-      // set(lineIds(noteId), ids => ids.filter(id => id !== ln));
+      const lines = await snapshot.getPromise(noteLinesS(noteId));
+      const preLine = lines[ln - 1];
+      const curLine = lines[ln];
+      const ids = await snapshot.getPromise(lineIdsS(noteId));
+      set(noteLineS({ noteId, lineId: ids[ln - 1] }), preLine + curLine);
+      set(lineIdsS(noteId), ids => ids.filter(id => id !== ln));
     },
     [],
   );
