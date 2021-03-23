@@ -1,29 +1,48 @@
 import { cursorUpDown } from '../Shared/util';
 import { act } from '@testing-library/react-hooks';
 import { useRecoilValue } from 'recoil';
-import { cursorColS, cursorFocusS, cursorLnS, useCursorKeymap } from '.';
+import { cursorColS, cursorLnS, useCursorKeymap } from '.';
 import { renderRecoilHook } from '../Shared';
 
+// FIXME: move
 const useMock = () => {
   const fs = useCursorKeymap();
-  const focus = useRecoilValue(cursorFocusS);
   const ln = useRecoilValue(cursorLnS);
   const col = useRecoilValue(cursorColS);
 
-  return { ...fs, focus, ln, col };
+  return { ...fs, ln, col };
 };
 
+// FIXME: move
 describe('useCursorKeymap', () => {
-  const { result } = renderRecoilHook(useMock);
-
-  it('right', () => {
+  it('right/left', () => {
+    const { result } = renderRecoilHook(useMock);
     expect(result.current.col).toBe(0);
 
     act(() => {
       result.current.right();
     });
+    expect(result.current.col).toBe(1);
 
-    expect(result.current.col).toBe(4);
+    act(() => {
+      result.current.left();
+    });
+    expect(result.current.col).toBe(0);
+  });
+
+  it('down/up', () => {
+    const { result } = renderRecoilHook(useMock);
+    expect(result.current.ln).toBe(0);
+
+    act(() => {
+      result.current.down();
+    });
+    expect(result.current.ln).toBe(1);
+
+    act(() => {
+      result.current.up();
+    });
+    expect(result.current.ln).toBe(0);
   });
 });
 

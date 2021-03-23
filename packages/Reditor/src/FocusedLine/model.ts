@@ -7,8 +7,6 @@ import { deleteNthChar, insertNthChar } from '../Shared/functions';
 // States
 // -------------------------------------------------------------------------------------
 
-type Char = string;
-
 export const focuedLineS = selector<string>({
   key: 'focuedLineS',
   get: ({ get }) => {
@@ -35,8 +33,8 @@ export const focuedLineS = selector<string>({
 // -------------------------------------------------------------------------------------
 
 export const useFocuedLine = () => {
-  const insertChar = useRecoilCallback(
-    ({ set }) => (col: number, value: Char) => {
+  const insertValue = useRecoilCallback(
+    ({ set }) => (col: number, value: string) => {
       set(focuedLineS, line => insertNthChar(line, col, value));
     },
     [],
@@ -52,5 +50,5 @@ export const useFocuedLine = () => {
     [],
   );
 
-  return { insertChar, removeChar };
+  return { insertValue, removeChar };
 };

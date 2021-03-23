@@ -53,7 +53,7 @@ export const useNoteOp = (noteId: number) => {
   const insert = useRecoilCallback(
     ({ snapshot }) => async (value: string) => {
       const col = await snapshot.getPromise(cursorColS);
-      f.insertChar(col, value);
+      f.insertValue(col, value);
       c.right(value.length);
     },
     [],

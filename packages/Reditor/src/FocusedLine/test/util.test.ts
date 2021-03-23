@@ -1,4 +1,4 @@
-import { makeChars } from './util';
+import { makeChars } from '..';
 
 describe('makeChars', () => {
   it('cursor at 0 without spaces', () => {

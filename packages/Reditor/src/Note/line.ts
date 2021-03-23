@@ -68,7 +68,7 @@ const latestLineIdS = atom<LineId>({
  * - Not involved in UI or Cursor, etc.
  */
 export const useLines = (noteId: NoteId) => {
-  const makeId = useRecoilCallback(
+  const _makeId = useRecoilCallback(
     ({ set, snapshot }) => async () => {
       const newId = await snapshot.getPromise(latestLineIdS);
       set(latestLineIdS, newId + 1);
@@ -109,7 +109,7 @@ export const useLines = (noteId: NoteId) => {
    */
   const add = useRecoilCallback(
     ({ set, snapshot }) => async (ln: Ln, value: string) => {
-      const lineId = await makeId();
+      const lineId = await _makeId();
       set(noteLineS({ noteId, lineId }), value);
       set(lineIdsS(noteId), ids => insertNth(ids, ln, lineId));
     },
