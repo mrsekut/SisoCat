@@ -9,8 +9,8 @@ export const TextLines: React.VFC = () => {
 
   return (
     <x.div>
-      {lineIds.map(index => (
-        <Node ln={index} />
+      {lineIds.map((id, index) => (
+        <Node key={id} ln={index} />
       ))}
     </x.div>
   );
