@@ -1,5 +1,5 @@
 import { atom, DefaultValue, selector } from 'recoil';
-import { Pos } from '../Shared/typings';
+import { Ln, Pos } from '../Shared/typings';
 
 // -------------------------------------------------------------------------------------
 // Types
@@ -26,9 +26,9 @@ export const cursorFocusS = atom({
   default: false,
 });
 
-export const cursorLnS = atom({
+export const cursorLnS = atom<Ln>({
   key: 'cursorLnS',
-  default: 0,
+  default: Ln(0),
 });
 
 export const cursorColS = atom({

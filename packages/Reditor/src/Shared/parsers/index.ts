@@ -4,9 +4,9 @@ import {
   StrongN,
   ItalicN,
   LinkN,
-  LineId,
   LineM,
   LineNodeM,
+  LineId,
 } from '../../Note';
 
 // -------------------------------------------------------------------------------------

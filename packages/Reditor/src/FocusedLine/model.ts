@@ -1,6 +1,6 @@
 import { selector, useRecoilCallback } from 'recoil';
 import { cursorLnS } from '../Cursor';
-import { lineIdsS, noteLineS } from '../Note';
+import { displayLids, noteLineS } from '../Note';
 import { deleteNthChar, insertNthChar } from '../Shared/functions';
 
 // -------------------------------------------------------------------------------------
@@ -12,8 +12,8 @@ export const focuedLineS = selector<string>({
   get: ({ get }) => {
     return get(
       noteLineS({
-        noteId: 0,
-        lineId: get(lineIdsS(0))[get(cursorLnS)],
+        noteId: 0, // FIXME:
+        lid: get(displayLids(0))[get(cursorLnS)],
       }),
     );
   },
@@ -21,7 +21,7 @@ export const focuedLineS = selector<string>({
     set(
       noteLineS({
         noteId: 0, // FIXME:
-        lineId: get(lineIdsS(0))[get(cursorLnS)],
+        lid: get(displayLids(0))[get(cursorLnS)],
       }),
       value,
     );

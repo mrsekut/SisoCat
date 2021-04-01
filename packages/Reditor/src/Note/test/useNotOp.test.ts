@@ -1,6 +1,6 @@
 import { act } from '@testing-library/react-hooks';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { renderRecoilHook } from '../../Shared';
+import { Ln, renderRecoilHook } from '../../Shared';
 import { cursorPosS } from '../../Cursor';
 import { noteLinesS, useNoteOp } from '..';
 import { focuedLineS } from '../../FocusedLine';
@@ -23,7 +23,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['abc']);
-      result.current.setPos({ ln: 0, col: 2 }); // ab|c
+      result.current.setPos({ ln: Ln(0), col: 2 }); // ab|c
     });
 
     await act(async () => {
@@ -41,7 +41,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['aaa', 'bbb', 'ccc']);
-      result.current.setPos({ ln: 1, col: 2 }); // bb|b
+      result.current.setPos({ ln: Ln(1), col: 2 }); // bb|b
     });
 
     await act(async () => {
@@ -59,7 +59,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['a', 'def']);
-      result.current.setPos({ ln: 1, col: 1 }); // d|ef
+      result.current.setPos({ ln: Ln(1), col: 1 }); // d|ef
     });
 
     await act(async () => {
@@ -83,7 +83,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['abc']);
-      result.current.setPos({ ln: 0, col: 2 }); // ab|c
+      result.current.setPos({ ln: Ln(0), col: 2 }); // ab|c
     });
 
     await act(async () => {
@@ -100,7 +100,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['abc', 'def']);
-      result.current.setPos({ ln: 1, col: 1 }); // d|ef
+      result.current.setPos({ ln: Ln(1), col: 1 }); // d|ef
     });
 
     await act(async () => {
@@ -116,7 +116,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['abc', 'def']);
-      result.current.setPos({ ln: 0, col: 2 }); // ab|c
+      result.current.setPos({ ln: Ln(0), col: 2 }); // ab|c
     });
 
     await act(async () => {
@@ -138,7 +138,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['abc', 'def']);
-      result.current.setPos({ ln: 0, col: 1 }); // a|bc
+      result.current.setPos({ ln: Ln(0), col: 1 }); // a|bc
     });
 
     await act(async () => {
@@ -166,7 +166,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['abc', 'def']);
-      result.current.setPos({ ln: 1, col: 1 }); // d|ef
+      result.current.setPos({ ln: Ln(1), col: 1 }); // d|ef
     });
 
     await act(async () => {
@@ -188,7 +188,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['abc']);
-      result.current.setPos({ ln: 0, col: 2 });
+      result.current.setPos({ ln: Ln(0), col: 2 });
     });
 
     await act(async () => {
@@ -204,7 +204,7 @@ describe('useNoteOp', () => {
     // initialize
     act(() => {
       result.current.setLines(['abc']);
-      result.current.setPos({ ln: 0, col: 0 });
+      result.current.setPos({ ln: Ln(0), col: 0 });
     });
 
     await act(async () => {
@@ -222,7 +222,7 @@ describe('new line', () => {
     // initialize
     act(() => {
       result.current.setLines(['aaaaa', 'bbbbb', 'ccccc']);
-      result.current.setPos({ ln: 1, col: 2 }); // bb|bbb
+      result.current.setPos({ ln: Ln(1), col: 2 }); // bb|bbb
     });
 
     await act(async () => {
@@ -233,7 +233,6 @@ describe('new line', () => {
       result.current.u.newLine();
       await waitForNextUpdate();
     });
-    console.log(result.current.focuedLine);
     expect(result.current.pos).toMatchObject({ ln: 2, col: 0 });
     expect(result.current.focuedLine).toBe('bbb');
     expect(result.current.lines).toStrictEqual([

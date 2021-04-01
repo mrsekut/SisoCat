@@ -1,10 +1,11 @@
 import React from 'react';
 import { x } from '@xstyled/styled-components';
 import { Char } from './Char';
+import { Ln } from '../Shared';
 
 type Props = {
   value: string;
-  ln: number;
+  ln: Ln;
 };
 
 export const Bold: React.VFC<Props> = ({ value, ln }) => (

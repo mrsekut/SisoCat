@@ -5,10 +5,11 @@ import { Notation } from './Notation';
 import { Empty } from './Empty';
 import { parseLine } from '../Shared/parsers';
 import { textStyle } from '../Shared/settings';
+import { Ln } from '../Shared';
 
 export type LineProps = {
   value: string;
-  ln: number;
+  ln: Ln;
 };
 
 export const ViewLine: React.VFC<LineProps> = ({ value, ln }) => {
