@@ -1,17 +1,19 @@
 import { act } from '@testing-library/react-hooks';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { renderRecoilHook } from '../../Shared';
 import { cursorPosS } from '../../Cursor';
 import { noteLinesS, useNoteOp } from '..';
+import { focuedLineS } from '../../FocusedLine';
 
 const useMock = () => {
   const noteId = 0;
 
+  const focuedLine = useRecoilValue(focuedLineS);
   const [lines, setLines] = useRecoilState(noteLinesS(noteId));
   const u = useNoteOp(noteId);
   const [pos, setPos] = useRecoilState(cursorPosS);
 
-  return { pos, setPos, u, lines, setLines };
+  return { pos, setPos, u, lines, setLines, focuedLine };
 };
 
 describe('useNoteOp', () => {
@@ -30,6 +32,25 @@ describe('useNoteOp', () => {
     });
     expect(result.current.pos).toMatchObject({ ln: 1, col: 0 });
     expect(result.current.lines).toStrictEqual(['ab', 'c']);
+    expect(result.current.focuedLine).toBe('c');
+  });
+
+  it('newLine in multiple lines', async () => {
+    const { result, waitForNextUpdate } = renderRecoilHook(useMock);
+
+    // initialize
+    act(() => {
+      result.current.setLines(['aaa', 'bbb', 'ccc']);
+      result.current.setPos({ ln: 1, col: 2 }); // bb|b
+    });
+
+    await act(async () => {
+      result.current.u.newLine();
+      await waitForNextUpdate();
+    });
+    expect(result.current.pos).toMatchObject({ ln: 2, col: 0 });
+    expect(result.current.lines).toStrictEqual(['aaa', 'bb', 'b', 'ccc']);
+    expect(result.current.focuedLine).toBe('b');
   });
 
   it('remove', async () => {
@@ -191,5 +212,35 @@ describe('useNoteOp', () => {
       await waitForNextUpdate();
     });
     expect(result.current.pos.col).toEqual(3);
+  });
+});
+
+describe('new line', () => {
+  it('insert value and enter', async () => {
+    const { result, waitForNextUpdate } = renderRecoilHook(useMock);
+
+    // initialize
+    act(() => {
+      result.current.setLines(['aaaaa', 'bbbbb', 'ccccc']);
+      result.current.setPos({ ln: 1, col: 2 }); // bb|bbb
+    });
+
+    await act(async () => {
+      result.current.u.insert('XXX');
+      await waitForNextUpdate();
+    });
+    await act(async () => {
+      result.current.u.newLine();
+      await waitForNextUpdate();
+    });
+    console.log(result.current.focuedLine);
+    expect(result.current.pos).toMatchObject({ ln: 2, col: 0 });
+    expect(result.current.focuedLine).toBe('bbb');
+    expect(result.current.lines).toStrictEqual([
+      'aaaaa',
+      'bbXXX',
+      'bbb',
+      'ccccc',
+    ]);
   });
 });
