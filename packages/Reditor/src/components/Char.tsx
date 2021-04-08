@@ -1,6 +1,6 @@
 import React from 'react';
 import { x } from '@xstyled/styled-components';
-import { Pos } from '../Shared/typings';
+import { Pos } from '../Shared';
 import { useFocus } from '../Cursor';
 import { Space } from './Space';
 

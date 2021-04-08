@@ -233,7 +233,6 @@ describe('new line', () => {
       result.current.u.newLine();
       await waitForNextUpdate();
     });
-    console.log(result.current.focuedLine);
     expect(result.current.pos).toMatchObject({ ln: 2, col: 0 });
     expect(result.current.focuedLine).toBe('bbb');
     expect(result.current.lines).toStrictEqual([
