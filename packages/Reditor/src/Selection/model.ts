@@ -1,4 +1,4 @@
-import { atom, selector } from 'recoil';
+import { atom, selector, useRecoilCallback } from 'recoil';
 import { Pos, sortBy } from '../Shared';
 
 // -------------------------------------------------------------------------------------
@@ -25,6 +25,18 @@ const selectionTextsS = selector({
   },
 });
 
+const useInSelection = () => {
+  const f = useRecoilCallback(
+    ({ snapshot }) => async (pos: Pos) => {
+      const selection = await snapshot.getPromise(selectionS);
+      return inSelection(pos, selection);
+    },
+    [],
+  );
+
+  return { inSelection: f };
+};
+
 export const getSelectedLines = (
   pos1: Pos,
   pos2: Pos,
@@ -49,4 +61,14 @@ export const sortPos = (pos1: Pos, pos2: Pos): [Pos, Pos] => {
   }
 
   return [pos1, pos2].sort(sortBy(p => p.ln)) as [Pos, Pos];
+};
+
+export const inSelection = (pos: Pos, selection: Selection) => {
+  const [start, end] = sortPos(selection.start, selection.end);
+
+  const inRange = start.ln <= pos.ln && pos.ln <= end.ln;
+  const inStartLine = start.col <= pos.col;
+  const inEndLine = pos.col <= end.col;
+
+  return inRange && inStartLine && inEndLine;
 };
