@@ -1,4 +1,4 @@
-import { act } from '@testing-library/react-hooks';
+import { act } from '@testing-library/react-hooks/dom';
 import { useRecoilState } from 'recoil';
 import { focuedLineS, useFocuedLine } from '..';
 import { renderRecoilHook } from '../../Shared';

@@ -4,9 +4,10 @@ import { useRecoilValue } from 'recoil';
 import { ViewLine } from './ViewLine';
 import { noteLineByLnS } from '../Note';
 import { cursorLnS } from '../Cursor';
+import { Ln } from '../Shared';
 
 type Props = {
-  ln: number;
+  ln: Ln;
 };
 
 export const Line: React.VFC<Props> = ({ ln }) => {
