@@ -1,4 +1,4 @@
-import { act } from '@testing-library/react-hooks';
+import { act } from '@testing-library/react-hooks/dom';
 import { useRecoilValue } from 'recoil';
 import { useCursorKeymap, cursorLnS, cursorColS } from '..';
 import { renderRecoilHook } from '../../Shared';

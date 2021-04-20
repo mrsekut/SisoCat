@@ -1,4 +1,4 @@
-import { act } from '@testing-library/react-hooks';
+import { act } from '@testing-library/react-hooks/dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { Ln, renderRecoilHook } from '../../Shared';
 import { displayLids, noteLinesS, useLines } from '..';
