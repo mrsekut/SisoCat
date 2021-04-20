@@ -1,12 +1,12 @@
-import { act } from '@testing-library/react-hooks';
+import { act } from '@testing-library/react-hooks/dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { renderRecoilHook } from '../../Shared';
-import { lineIdsS, noteLinesS, useLines } from '..';
+import { Ln, renderRecoilHook } from '../../Shared';
+import { displayLids, noteLinesS, useLines } from '..';
 
 const useMock = () => {
   const noteId = 0;
 
-  const lineIds = useRecoilValue(lineIdsS(noteId));
+  const lineIds = useRecoilValue(displayLids(noteId));
   const f = useLines(noteId);
   const [lines, setLines] = useRecoilState(noteLinesS(noteId));
 
@@ -34,7 +34,7 @@ describe('useLines', () => {
     });
 
     await act(async () => {
-      result.current.f.updateLine(0, 'hogehoge');
+      result.current.f.updateLine(Ln(0), 'hogehoge');
       await waitForNextUpdate();
     });
     expect(result.current.lines).toStrictEqual(['hogehoge', 'ijklmno']);
@@ -55,7 +55,7 @@ describe('useLines', () => {
     });
 
     await act(async () => {
-      result.current.f.newLine(1, 3);
+      result.current.f.newLine(Ln(1), 3);
       await waitForNextUpdate();
     });
     expect(result.current.lines).toStrictEqual([
@@ -82,7 +82,7 @@ it('removeLine', async () => {
   });
 
   await act(async () => {
-    result.current.f.removeLine(1);
+    result.current.f.removeLine(Ln(1));
     await waitForNextUpdate();
   });
   expect(result.current.lines).toStrictEqual(['aaabbb']);

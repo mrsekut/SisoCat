@@ -7,16 +7,23 @@ import {
 } from 'recoil';
 import { insertNth, range, sliceWithRest } from '../Shared/functions';
 import { NoteId } from '.';
+import { Branded, Ln } from '../Shared';
 
-type LineId = number;
-type Ln = number;
+// -------------------------------------------------------------------------------------
+// Types
+// -------------------------------------------------------------------------------------
+
 type Line = string;
+
+type LID = Branded<number, 'lid'>;
+const LID = (n: number) => n as LID;
+const LIDs = (ns: number[]) => ns as LID[];
 
 // -------------------------------------------------------------------------------------
 // States
 // -------------------------------------------------------------------------------------
 
-export const noteLineS = atomFamily<Line, { noteId: NoteId; lineId: LineId }>({
+export const noteLineS = atomFamily<Line, { noteId: NoteId; lid: LID }>({
   key: 'noteLineS',
   default: '',
 });
@@ -24,37 +31,35 @@ export const noteLineS = atomFamily<Line, { noteId: NoteId; lineId: LineId }>({
 export const noteLineByLnS = selectorFamily<Line, { id: NoteId; ln: Ln }>({
   key: 'noteLineByLnS',
   get: ({ id, ln }) => ({ get }) => {
-    return get(noteLineS({ noteId: id, lineId: get(lineIdsS(id))[ln] }));
+    return get(noteLineS({ noteId: id, lid: get(displayLids(id))[ln] }));
   },
 });
 
 export const noteLinesS = selectorFamily<string[], NoteId>({
   key: 'noteLinesS',
   get: noteId => ({ get }) => {
-    return get(lineIdsS(noteId)).map(lineId =>
-      get(noteLineS({ noteId, lineId })),
-    );
+    return get(displayLids(noteId)).map(lid => get(noteLineS({ noteId, lid })));
   },
   set: noteId => ({ get, set }, lines) => {
     if (lines instanceof DefaultValue) return;
 
-    const lineId = get(nextLineIdS);
+    const lid = get(nextLidS);
     lines.map((line, index) =>
-      set(noteLineS({ noteId, lineId: index + lineId }), line),
+      set(noteLineS({ noteId, lid: LID(index + lid) }), line),
     );
-    set(nextLineIdS, id => id + lines.length);
-    set(lineIdsS(noteId), range(lineId, lineId + lines.length - 1));
+    set(nextLidS, id => LID(id + lines.length));
+    set(displayLids(noteId), LIDs(range(lid, lid + lines.length - 1)));
   },
 });
 
-export const lineIdsS = atomFamily<LineId[], NoteId>({
-  key: 'lineIdsS',
+export const displayLids = atomFamily<LID[], NoteId>({
+  key: 'displayLids',
   default: [],
 });
 
-const nextLineIdS = atom<LineId>({
-  key: 'latestLineIdS',
-  default: 0,
+const nextLidS = atom<LID>({
+  key: 'nextLidS',
+  default: LID(0),
 });
 
 // -------------------------------------------------------------------------------------
@@ -69,8 +74,8 @@ const nextLineIdS = atom<LineId>({
 export const useLines = (noteId: NoteId) => {
   const _makeId = useRecoilCallback(
     ({ set, snapshot }) => async () => {
-      const newId = await snapshot.getPromise(nextLineIdS);
-      set(nextLineIdS, newId + 1);
+      const newId = await snapshot.getPromise(nextLidS);
+      set(nextLidS, LID(newId + 1));
       return newId;
     },
     [],
@@ -78,38 +83,38 @@ export const useLines = (noteId: NoteId) => {
 
   const updateLine = useRecoilCallback(
     ({ set, snapshot }) => async (ln: Ln, value: string) => {
-      const ids = await snapshot.getPromise(lineIdsS(noteId));
-      set(noteLineS({ noteId, lineId: ids[ln] }), value);
+      const ids = await snapshot.getPromise(displayLids(noteId));
+      set(noteLineS({ noteId, lid: ids[ln] }), value);
     },
     [],
   );
 
   const newLine = useRecoilCallback(
-    ({ set, snapshot }) => async (ln: number, col: number) => {
+    ({ set, snapshot }) => async (ln: Ln, col: number) => {
       const lines = await snapshot.getPromise(noteLinesS(noteId));
       const line = lines[ln];
       const [half, rest] = sliceWithRest(line, col);
 
-      const ids = await snapshot.getPromise(lineIdsS(noteId));
+      const ids = await snapshot.getPromise(displayLids(noteId));
       const lineId = await _makeId();
 
-      set(noteLineS({ noteId, lineId: ids[ln] }), half);
-      set(noteLineS({ noteId, lineId: lineId }), rest);
-      set(lineIdsS(noteId), ids => insertNth(ids, ln + 1, lineId));
+      set(noteLineS({ noteId, lid: ids[ln] }), half);
+      set(noteLineS({ noteId, lid: lineId }), rest);
+      set(displayLids(noteId), ids => insertNth(ids, ln + 1, lineId));
     },
     [],
   );
 
   const removeLine = useRecoilCallback(
-    ({ set, snapshot }) => async (ln: number) => {
+    ({ set, snapshot }) => async (ln: Ln) => {
       if (ln === 0) return;
 
       const lines = await snapshot.getPromise(noteLinesS(noteId));
       const preLine = lines[ln - 1];
       const curLine = lines[ln];
-      const ids = await snapshot.getPromise(lineIdsS(noteId));
-      set(noteLineS({ noteId, lineId: ids[ln - 1] }), preLine + curLine);
-      set(lineIdsS(noteId), ids => ids.filter(id => id !== ln));
+      const ids = await snapshot.getPromise(displayLids(noteId));
+      set(noteLineS({ noteId, lid: ids[ln - 1] }), preLine + curLine);
+      set(displayLids(noteId), ids => ids.filter(id => id !== ids[ln]));
     },
     [],
   );

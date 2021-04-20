@@ -3,7 +3,7 @@ import { useRecoilCallback } from 'recoil';
 import { useCursorKeymap, cursorColS, cursorLnS, cursorPosS } from '../Cursor';
 import { focuedLineS, useFocuedLine } from '../FocusedLine';
 import { decN } from '../Shared/functions';
-import { lineIdsS, noteLinesS, useLines } from '.';
+import { displayLids, noteLinesS, useLines } from '.';
 
 /**
  * useCursorKeymapとuseNoteの接続
@@ -87,7 +87,7 @@ export const useNoteOp = (noteId: number) => {
   const down = useRecoilCallback(
     ({ snapshot }) => async () => {
       const ln = await snapshot.getPromise(cursorLnS);
-      const lineIds = await snapshot.getPromise(lineIdsS(noteId));
+      const lineIds = await snapshot.getPromise(displayLids(noteId));
       if (ln + 1 < lineIds.length) {
         c.down();
       }
