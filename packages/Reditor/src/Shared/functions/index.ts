@@ -29,6 +29,9 @@ export const range = (n1: number, n2?: number) => {
   return [...Array(end - start + 1)].map((_, i) => start + i);
 };
 
+export const sortBy = <T, R>(predicate: (a: T) => R) => (a: T, b: T) =>
+  predicate(a) > predicate(b) ? 1 : predicate(b) > predicate(a) ? -1 : 0;
+
 /**
  * 配列をn番目で分割して両方返す
  * ex. sliceWithRest([0,1,2,3,4,5], 2) // -> [[0,1], [2,3,4,5]]
@@ -51,7 +54,7 @@ export const uniqBy = <T>(arr: T[], predicate: (a: T) => any = a => a): T[] => [
       map.has(key) || map.set(key, item);
 
       return map;
-    }, new Map())
+    }, new Map<T, T>())
     .values(),
 ];
 
