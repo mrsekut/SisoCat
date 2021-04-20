@@ -1,5 +1,5 @@
 import { atom, selector, useRecoilCallback } from 'recoil';
-import { Pos, sortBy } from '../Shared';
+import { Ln, Pos, sortBy } from '../Shared';
 
 // -------------------------------------------------------------------------------------
 // States
@@ -13,8 +13,8 @@ type Selection = {
 const selectionS = atom<Selection>({
   key: 'selectionS',
   default: {
-    start: { ln: 0, col: 0 },
-    end: { ln: 0, col: 0 },
+    start: { ln: Ln(0), col: 0 },
+    end: { ln: Ln(0), col: 0 },
   },
 });
 

@@ -54,7 +54,7 @@ export const uniqBy = <T>(arr: T[], predicate: (a: T) => any = a => a): T[] => [
       map.has(key) || map.set(key, item);
 
       return map;
-    }, new Map())
+    }, new Map<T, T>())
     .values(),
 ];
 

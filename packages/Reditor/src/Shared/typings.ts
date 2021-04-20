@@ -6,6 +6,8 @@ export type Pos = {
   ln: Ln; // 0始まり、0行目, 1行目,..
   col: number; // 0始まり. 0文字目の左, 1文字目の左,..
 };
+export const Pos = (pos: { ln: number; col: number }) =>
+  ({ ln: Ln(pos.ln), col: pos.col } as Pos);
 
 export type Ln = Branded<number, 'ln'>;
 export const Ln = (n: number) => n as Ln;
